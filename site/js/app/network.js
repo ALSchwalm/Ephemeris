@@ -2,8 +2,8 @@
  * A module which handles networking
  * @module app/network
  */
-define(["app/config", "socketio"],
-function(config, io){
+define(["app/config", "socketio", "app/player"],
+function(config, io, player){
     "use strict"
 
     /**
@@ -12,6 +12,9 @@ function(config, io){
      */
     var Network = function() {
         this.socket = io();
+        this.socket.on("connected", function(){
+            player.id = this.socket.id;
+        }.bind(this));
     }
 
     Network.prototype.init = function(game, handler) {
@@ -19,12 +22,12 @@ function(config, io){
         this.handler = handler;
 
         this.socket.on("action", function(action){
-            action.remote = true;
             this.handler.do(action);
         }.bind(this));
     }
 
     Network.prototype.send = function(action) {
+        action.source = player.id;
         this.socket.emit("action", action);
     }
 

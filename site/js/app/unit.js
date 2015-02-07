@@ -2,14 +2,17 @@
  * A module which defines a basic unit
  * @module app/unit
  */
-define(["app/config", "Phaser", "app/controls"],
-function(config, Phaser, controls){
+define(["app/config", "Phaser", "app/controls", "app/utils", "app/player"],
+function(config, Phaser, controls, utils, player){
     "use strict"
 
     var Unit = function() {}
-    Unit.prototype.init = function(game) {
+    Unit.prototype.init = function(game, config) {
         this.game = game;
-        this.game.registerUnit(this);
+
+        for (var id in config) {
+            this[id] = config[id];
+        }
 
         this.destination = this.destination || null;
         this.path = this.path || [];
@@ -17,6 +20,9 @@ function(config, Phaser, controls){
         this.selectGraphic = this.selectGraphic || null;
         this.focus = this.focus || null;
         this.speed = this.speed || 1;
+        this.id = this.id || utils.genUUID();
+        this.player = this.player || player.id;
+        this.game.registerUnit(this);
     }
 
     Object.defineProperty(Unit.prototype, "position", {
@@ -29,7 +35,8 @@ function(config, Phaser, controls){
     });
 
     Unit.prototype.onClick = function() {
-        if (this.game.input.mouse.button == 0) {
+        if (this.game.input.mouse.button == 0 &&
+            this.player == player.id) {
             controls.unitSelected(this);
             this.onSelect();
         }

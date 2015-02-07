@@ -18,11 +18,9 @@ function(config, handler, Ship, controls, network){
         game.stage.disableVisibilityChange = true;
 
         game.world.setBounds(0, 0, 2000, 2000);
-        controls.init(game);
+        controls.init(game, handler);
         handler.init(game);
         network.init(game, handler);
-        var t = new Ship(game, config.game.width/2, config.game.height/2);
-        var u = new Ship(game, config.game.width/2+100, config.game.height/2);
     };
 
     return create;

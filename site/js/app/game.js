@@ -22,15 +22,11 @@ function(config, Phaser, preload, update, create){
         update  : update,
         create  : create,
     }, true);
-    game.id = 0;
     game.units = {};
     game.selectedUnits = [];
 
     game.registerUnit = function(unit) {
-        var id = game.id;
-        game.id++;
-        unit.id = id;
-        game.units[id] = unit;
+        game.units[unit.id] = unit;
     }
 
     return game;

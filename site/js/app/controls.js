@@ -1,5 +1,5 @@
-define(["app/config","Phaser", "app/action"],
-function(config, Phaser, action){
+define(["app/config","Phaser", "app/player"],
+function(config, Phaser, player){
     "use strict"
 
     /**
@@ -7,8 +7,9 @@ function(config, Phaser, action){
      * @exports app/controls
      */
     var controls = {
-        init : function(game) {
+        init : function(game, handler) {
             this.game = game;
+            this.handler = handler;
             this.graphics = this.game.add.graphics(0, 0);
             game.canvas.oncontextmenu = function(e) {e.preventDefault();}
         },
@@ -52,7 +53,7 @@ function(config, Phaser, action){
         onRightClick : function() {
             if (this.game.selectedUnits.length) {
                 this.game.selectedUnits.map(function(unit){
-                    action.do({
+                    this.handler.do({
                         type: "move",
                         data : {
                             id : unit.id,
@@ -104,7 +105,8 @@ function(config, Phaser, action){
             for (var id in this.game.units) {
                 var bounds = this.game.units[id].sprite.getBounds();
 
-                if (Phaser.Rectangle.intersects(rect, bounds)) {
+                if (Phaser.Rectangle.intersects(rect, bounds) &&
+                   this.game.units[id].player == player.id) {
                     selected.push(this.game.units[id]);
                 }
             }
@@ -168,6 +170,19 @@ function(config, Phaser, action){
             }
         }
     };
+
+    controls.registerControl(Phaser.Keyboard.N, function(){
+        require(["app/action"], function(action){
+            action.do({
+                type: "create",
+                data: {
+                    type: "Ship",
+                    x: Math.random()*200,
+                    y: Math.random()*200,
+                }
+            });
+        })
+    });
 
     // Prevent the browser from taking the normal action (scrolling, etc)
     window.addEventListener("keydown", function(e) {
