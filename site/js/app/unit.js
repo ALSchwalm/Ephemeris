@@ -21,7 +21,7 @@ function(config, Phaser, controls, utils, player){
         this.focus = this.focus || null;
         this.speed = this.speed || 1;
         this.id = this.id || utils.genUUID();
-        this.player = this.player || player.id;
+        this.playerID = this.playerID || player.id;
         this.game.registerUnit(this);
     }
 
@@ -36,7 +36,7 @@ function(config, Phaser, controls, utils, player){
 
     Unit.prototype.onClick = function() {
         if (this.game.input.mouse.button == 0 &&
-            this.player == player.id) {
+            this.playerID == player.id) {
             controls.unitSelected(this);
             this.onSelect();
         }

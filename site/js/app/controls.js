@@ -92,10 +92,19 @@ function(config, Phaser, player){
 
         getSelectBoxBounds : function() {
             if (!this.selectBoxStart) return null;
-            return new Phaser.Rectangle(this.selectBoxStart.x,
-                                        this.selectBoxStart.y,
-                                        this.game.input.activePointer.position.x - this.selectBoxStart.x,
-                                        this.game.input.activePointer.position.y - this.selectBoxStart.y)
+            var x = this.selectBoxStart.x;
+            var y = this.selectBoxStart.y;
+            var width = Math.abs(this.game.input.activePointer.position.x - this.selectBoxStart.x);
+            var height = Math.abs(this.game.input.activePointer.position.y - this.selectBoxStart.y);
+
+            // Phaser impliments Rectangle strangely, so always construct one
+            // with (x, y) as the upper left hand corner and no negative width/height
+            if (this.selectBoxStart.x > this.game.input.activePointer.position.x) {
+                x = this.game.input.activePointer.position.x;
+            } if (this.selectBoxStart.y > this.game.input.activePointer.position.y) {
+                y = this.game.input.activePointer.position.y;
+            }
+            return new Phaser.Rectangle(x, y, width, height);
         },
 
         releaseSelectBox : function(){
@@ -106,7 +115,7 @@ function(config, Phaser, player){
                 var bounds = this.game.units[id].sprite.getBounds();
 
                 if (Phaser.Rectangle.intersects(rect, bounds) &&
-                   this.game.units[id].player == player.id) {
+                    this.game.units[id].playerID == player.id) {
                     selected.push(this.game.units[id]);
                 }
             }

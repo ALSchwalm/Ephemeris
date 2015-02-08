@@ -12,7 +12,7 @@ function(config, io, player){
      */
     var Network = function() {
         this.socket = io();
-        this.socket.on("connected", function(){
+        this.socket.on("connected", function(msg){
             player.id = this.socket.id;
         }.bind(this));
     }

@@ -30,8 +30,8 @@ function(config, network, player, utils, Ship){
                                    action.data.config);
             clone.data.config = clone.data.config || {};
             clone.data.config.id = newUnit.id;
-            if (!clone.sourc){
-                clone.data.config.player = player.id;
+            if (!clone.source){
+                clone.data.config.playerID = player.id;
             }
             break;
         default:

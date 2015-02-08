@@ -1,4 +1,5 @@
-define(["app/config", "Phaser", "app/unit"], function(config, Phaser, Unit){
+define(["app/config", "Phaser", "app/unit", "app/player"],
+function(config, Phaser, Unit, player){
     "use strict"
 
     var Ship = function(game, x, y, config){
@@ -10,6 +11,12 @@ define(["app/config", "Phaser", "app/unit"], function(config, Phaser, Unit){
         this.sprite.events.onInputDown.add(this.onClick, this);
         this.speed = 2;
         this.sprite.update = this.update.bind(this);
+
+        if (this.playerID == player.id) {
+            this.sprite.tint = 0x4169FF;
+        } else {
+            this.sprite.tint = 0xCC0000;
+        }
     }
 
     Ship.prototype = new Unit();
