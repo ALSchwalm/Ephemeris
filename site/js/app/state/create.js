@@ -3,8 +3,9 @@
  * phase of Phaser js startup
  * @module app/state/create
  */
-define(["app/config", "app/action", "app/map", "app/controls", "app/network"],
-function(config, handler, map, controls, network){
+define(["app/config", "app/action", "app/map",
+        "app/controls", "app/network", "app/movement"],
+function(config, handler, map, controls, network, movement){
     "use strict"
 
     /**
@@ -22,6 +23,7 @@ function(config, handler, map, controls, network){
         controls.init(game, handler);
         handler.init(game);
         network.init(game, handler);
+        movement.init(game, handler);
         map.init(game);
     };
 

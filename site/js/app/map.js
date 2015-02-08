@@ -1,11 +1,21 @@
 /**
  * Module which generates a random map
- * @module app/utils
+ * @module app/map
  */
 define(["app/config", "app/utils"], function(config, utils){
     "use strict"
 
+    /**
+     * Singleton which generates a random map (as seeded by the server)
+     * @alias module:app/network
+     */
     var Map = function() {}
+
+    /**
+     * Generate the map
+     *
+     * @param {Phaser.Game} game - A reference to the current game object
+     */
     Map.prototype.init = function(game) {
         this.game = game;
         this.graphics = this.game.add.graphics(0, 0);
@@ -46,8 +56,14 @@ define(["app/config", "app/utils"], function(config, utils){
         for (var i=0; i < possible; ++i) {
             this.planets.push(this.addPlanet());
         }
+        return this;
     }
 
+    /**
+     * Generate a random planet and place it on the map
+     *
+     * @returns {Phaser.Image} - The images added to the game
+     */
     Map.prototype.addPlanet = function() {
         var index = Math.floor(utils.seededRandom()*this.availableImages.length);
         var image = this.availableImages[index];

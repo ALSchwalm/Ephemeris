@@ -1,5 +1,5 @@
-define(["app/config","Phaser", "app/player"],
-function(config, Phaser, player){
+define(["app/config","Phaser", "app/player", "app/movement"],
+function(config, Phaser, player, movement){
     "use strict"
 
     /**
@@ -50,26 +50,31 @@ function(config, Phaser, player){
             this.keys.push(keyObj);
         },
 
+        /**
+         * Callback executed when a right click occurs
+         */
         onRightClick : function() {
             if (this.game.selectedUnits.length) {
-                this.game.selectedUnits.map(function(unit){
-                    this.handler.do({
-                        type: "move",
-                        data : {
-                            id : unit.id,
-                            path: [controls.pointerPosition()]
-                        }
-                    });
-                }.bind(this));
+                movement.groupMoveToPoint(this.game.selectedUnits,
+                                          controls.pointerPosition());
             }
         },
 
+        /**
+         * Unselect an currently selected units
+         */
         clearSelection : function() {
             this.game.selectedUnits.map(function(unit){
                 unit.onUnselect();
             });
         },
 
+        /**
+         * Get the current pointer position with respect to the game world
+         *
+         * @param {bool} [relative=false] - If true, returns the position with respect to the window
+         * @returns An (x, y) pair representing the cursor position
+         */
         pointerPosition : function(relative) {
             var relative = relative || false;
             if (relative) {
@@ -84,6 +89,9 @@ function(config, Phaser, player){
             };
         },
 
+        /**
+         * Draws the box when dragging to select units
+         */
         drawSelectBox : function() {
             if (!this.selectBoxStart) {
                 this.selectBoxStart = this.pointerPosition();
@@ -98,6 +106,11 @@ function(config, Phaser, player){
             }
         },
 
+        /**
+         * Get the current bounds of the active selection box
+         *
+         * @returns {PIXI.Rectangle} A rectangle representing the current bounds
+         */
         getSelectBoxBounds : function(relative) {
             if (!this.selectBoxStart) return null;
             var pointerPosition = this.pointerPosition(relative);
@@ -116,7 +129,10 @@ function(config, Phaser, player){
             return new Phaser.Rectangle(x, y, width, height);
         },
 
-        releaseSelectBox : function(){
+        /**
+         * A callback executed when a group selection is made
+         */
+        onReleaseSelectBox : function(){
             var selected = [];
             var rect = this.getSelectBoxBounds();
 
@@ -127,7 +143,6 @@ function(config, Phaser, player){
                 }
                 if (rect.contains(point.x, point.y) &&
                     this.game.units[id].playerID == player.id) {
-                    console.log("selected");
                     selected.push(this.game.units[id]);
                 }
             }
@@ -142,6 +157,10 @@ function(config, Phaser, player){
             this.selectBoxStart = null;
         },
 
+        /**
+         * A function when should be executed by any unit/structure after it is
+         * selected
+         */
         unitSelected : function(unit) {
             this.clearSelection();
             this.game.selectedUnits = [unit];
@@ -151,6 +170,9 @@ function(config, Phaser, player){
             }.bind(this), 200);
         },
 
+        /**
+         * Method which pans the camera when the cursor is near the edges of the screen
+         */
         panCamera : function() {
             if (this.game.input.activePointer.position.x < 10) {
                 this.game.camera.x -= 3;
@@ -165,6 +187,10 @@ function(config, Phaser, player){
             }
         },
 
+        /**
+         * Main controls loop which invokes registered callbacks after the
+         * appropriate keys are pressed.
+         */
         update : function() {
             this.game.world.bringToTop(this.graphics);
             if (this.game.input.mouse.button == 2 && !this.mouseActive) {
@@ -177,7 +203,7 @@ function(config, Phaser, player){
             } else if (this.game.input.mouse.button == 0 && !this.recentSelection) {
                 this.drawSelectBox();
             } else if (this.selectBoxStart){
-                this.releaseSelectBox();
+                this.onReleaseSelectBox();
             }
 
             this.panCamera();
@@ -192,6 +218,7 @@ function(config, Phaser, player){
         }
     };
 
+    // TODO remove this
     controls.registerControl(Phaser.Keyboard.N, function(){
         require(["app/action"], function(action){
             action.do({

@@ -6,12 +6,28 @@ define(['app/config', 'app/network', 'app/player', 'app/utils', 'app/ship'],
 function(config, network, player, utils, Ship){
     "use strict"
 
+    /**
+     * An event handler, which records and performs requested actions
+     * @alias module:app/action
+     */
     var ActionHandler = function(){}
+
+    /**
+     * Initialize the action handler
+     *
+     * @param {Phaser.Game} game - A reference to the current game object
+     */
     ActionHandler.prototype.init = function(game) {
         this.game = game;
         this.actions = [];
+        return this;
     }
 
+    /**
+     * Function which dispatches an action to the appropriate handler
+     *
+     * @param {object} action - An action to perform
+     */
     ActionHandler.prototype.do = function(action) {
         // Clone the action, as acting on it, may destroy it
         var clone = utils.clone(action);
@@ -39,8 +55,9 @@ function(config, network, player, utils, Ship){
         }
 
         if (!clone.source) {
-            network.send(clone);
+            network.sendAction(clone);
         }
+        return this;
     }
 
     var handler = new ActionHandler();

@@ -7,7 +7,7 @@ function(config, io, player, utils){
     "use strict"
 
     /**
-     * Function which abstracts netwokr communication
+     * Type which abstracts network communication
      * @alias module:app/network
      */
     var Network = function() {
@@ -18,6 +18,12 @@ function(config, io, player, utils){
         }.bind(this));
     }
 
+    /**
+     * Initialize the network communication
+     *
+     * @param {Phaser.Game} game - A reference to the current game object
+     * @param {ActionHandler} handler - A reference the game action handler
+     */
     Network.prototype.init = function(game, handler) {
         this.game = game;
         this.handler = handler;
@@ -25,11 +31,18 @@ function(config, io, player, utils){
         this.socket.on("action", function(action){
             this.handler.do(action);
         }.bind(this));
+        return this;
     }
 
-    Network.prototype.send = function(action) {
+    /**
+     * Send an action to the server
+     *
+     * @param {object} action - The action to send
+     */
+    Network.prototype.sendAction = function(action) {
         action.source = player.id;
         this.socket.emit("action", action);
+        return this;
     }
 
     var network = new Network();

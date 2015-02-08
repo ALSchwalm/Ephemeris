@@ -11,6 +11,10 @@ function(config){
      * @alias module:app/player
      */
     var Player = function() {
+
+        /**
+         * The player id
+         */
         this.id = null;
     }
 
