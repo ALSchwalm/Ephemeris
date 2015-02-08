@@ -2,8 +2,8 @@
  * A module which handles networking
  * @module app/network
  */
-define(["app/config", "socketio", "app/player"],
-function(config, io, player){
+define(["app/config", "socketio", "app/player", "app/utils"],
+function(config, io, player, utils){
     "use strict"
 
     /**
@@ -14,6 +14,7 @@ function(config, io, player){
         this.socket = io();
         this.socket.on("connected", function(msg){
             player.id = this.socket.id;
+            utils.rngSeed = msg.rngSeed;
         }.bind(this));
     }
 
