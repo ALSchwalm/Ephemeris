@@ -17,6 +17,17 @@ define(function(){
         game : {
             width : window.innerWidth,
             height : window.innerHeight,
+            world : {
+                width : 4000,
+                height : 4000
+            }
+        },
+        assets : {
+            numPlanets : 8
+        },
+        map : {
+            planetFrequency : 0.1,
+            starFrequency : 0.001
         }
     };
 

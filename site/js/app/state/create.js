@@ -3,8 +3,8 @@
  * phase of Phaser js startup
  * @module app/state/create
  */
-define(["app/config", "app/action", "app/ship", "app/controls", "app/network"],
-function(config, handler, Ship, controls, network){
+define(["app/config", "app/action", "app/map", "app/controls", "app/network"],
+function(config, handler, map, controls, network){
     "use strict"
 
     /**
@@ -17,10 +17,12 @@ function(config, handler, Ship, controls, network){
         // Continue game after losing focus
         game.stage.disableVisibilityChange = true;
 
-        game.world.setBounds(0, 0, 2000, 2000);
+        game.world.setBounds(0, 0, config.game.world.width,
+                             config.game.world.height);
         controls.init(game, handler);
         handler.init(game);
         network.init(game, handler);
+        map.init(game);
     };
 
     return create;

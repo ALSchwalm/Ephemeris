@@ -57,10 +57,7 @@ function(config, Phaser, player){
                         type: "move",
                         data : {
                             id : unit.id,
-                            path: [{
-                                x: this.game.input.activePointer.position.x,
-                                y: this.game.input.activePointer.position.y
-                            }]
+                            path: [controls.pointerPosition()]
                         }
                     });
                 }.bind(this));
@@ -73,12 +70,23 @@ function(config, Phaser, player){
             });
         },
 
+        pointerPosition : function(relative) {
+            var relative = relative || false;
+            if (relative) {
+                return  {
+                    x: this.game.input.clientX,
+                    y: this.game.input.clientY
+                };
+            }
+            return  {
+                x: this.game.input.worldX,
+                y: this.game.input.worldY
+            };
+        },
+
         drawSelectBox : function() {
             if (!this.selectBoxStart) {
-                this.selectBoxStart = {
-                    x: this.game.input.activePointer.position.x,
-                    y: this.game.input.activePointer.position.y
-                };
+                this.selectBoxStart = this.pointerPosition();
             } else {
                 this.graphics.clear();
                 this.graphics.lineStyle(1, 0xEEEEEE, 0.2);
@@ -90,19 +98,20 @@ function(config, Phaser, player){
             }
         },
 
-        getSelectBoxBounds : function() {
+        getSelectBoxBounds : function(relative) {
             if (!this.selectBoxStart) return null;
+            var pointerPosition = this.pointerPosition(relative);
             var x = this.selectBoxStart.x;
             var y = this.selectBoxStart.y;
-            var width = Math.abs(this.game.input.activePointer.position.x - this.selectBoxStart.x);
-            var height = Math.abs(this.game.input.activePointer.position.y - this.selectBoxStart.y);
+            var width = Math.abs(pointerPosition.x - this.selectBoxStart.x);
+            var height = Math.abs(pointerPosition.y - this.selectBoxStart.y);
 
             // Phaser impliments Rectangle strangely, so always construct one
             // with (x, y) as the upper left hand corner and no negative width/height
-            if (this.selectBoxStart.x > this.game.input.activePointer.position.x) {
-                x = this.game.input.activePointer.position.x;
-            } if (this.selectBoxStart.y > this.game.input.activePointer.position.y) {
-                y = this.game.input.activePointer.position.y;
+            if (this.selectBoxStart.x > pointerPosition.x) {
+                x = pointerPosition.x;
+            } if (this.selectBoxStart.y > pointerPosition.y) {
+                y = pointerPosition.y;
             }
             return new Phaser.Rectangle(x, y, width, height);
         },
@@ -112,10 +121,13 @@ function(config, Phaser, player){
             var rect = this.getSelectBoxBounds();
 
             for (var id in this.game.units) {
-                var bounds = this.game.units[id].sprite.getBounds();
-
-                if (Phaser.Rectangle.intersects(rect, bounds) &&
+                var point = {
+                    x: this.game.units[id].sprite.x,
+                    y: this.game.units[id].sprite.y
+                }
+                if (rect.contains(point.x, point.y) &&
                     this.game.units[id].playerID == player.id) {
+                    console.log("selected");
                     selected.push(this.game.units[id]);
                 }
             }
