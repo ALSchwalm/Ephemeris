@@ -18,6 +18,7 @@ function(config, Phaser, player, movement, map, hud){
         mouseActive : false,
         recentSelection : false,
         selectBoxStart : null,
+        minimapActive : false,
         postMove : function() {},
         keys : [],
 
@@ -216,18 +217,25 @@ function(config, Phaser, player, movement, map, hud){
                 setTimeout(function(){
                     this.mouseActive = false
                 }.bind(this), 100);
-            } else if (this.game.input.mouse.button == 0&&
-                       hud.minimapBounds.contains(this.pointerPosition(true).x,
-                                                  this.pointerPosition(true).y)) {
+            } else if (this.game.input.mouse.button == 0 &&
+                       !this.selectBoxStart &&
+                       (hud.minimapBounds.contains(this.pointerPosition(true).x,
+                                                   this.pointerPosition(true).y) ||
+                        this.minimapActive)) {
                 var pointer = this.pointerPosition();
                 pointer.x -= hud.minimap.x;
                 pointer.y -= hud.minimap.y;
                 var position = hud.minimapToWorldCoord(pointer);
                 this.game.camera.x = position.x - this.game.camera.width/2;
                 this.game.camera.y = position.y -  this.game.camera.height/2;
-            } else if (this.game.input.mouse.button == 0 && !this.recentSelection) {
+                this.minimapActive = true;
+            } else if (this.game.input.mouse.button == 0 &&
+                       !this.recentSelection && !this.minimapActive) {
                 this.drawSelectBox();
-            } else if (this.selectBoxStart){
+            } else if (this.game.input.mouse.button != 0 &&
+                       !this.selectBoxStart && this.minimapActive) {
+                this.minimapActive = false;
+            } else if (this.game.input.mouse.button != 0 && this.selectBoxStart){
                 this.onReleaseSelectBox();
             }
 
