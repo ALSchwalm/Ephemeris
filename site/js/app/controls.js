@@ -1,5 +1,5 @@
-define(["app/config","Phaser", "app/player", "app/movement"],
-function(config, Phaser, player, movement){
+define(["app/config","Phaser", "app/player", "app/movement", "app/map"],
+function(config, Phaser, player, movement, map){
     "use strict"
 
     /**
@@ -174,15 +174,23 @@ function(config, Phaser, player, movement){
          * Method which pans the camera when the cursor is near the edges of the screen
          */
         panCamera : function() {
-            if (this.game.input.activePointer.position.x < 10) {
+            if (this.game.input.activePointer.position.x < 10 &&
+                this.game.camera.x >= 3) {
+                map.graphics.cameraOffset.x -= 1;
                 this.game.camera.x -= 3;
-            } else if (this.game.input.activePointer.position.x > config.game.width-10) {
+            } else if (this.game.input.activePointer.position.x > config.game.width-10 &&
+                       this.game.camera.x <= config.game.world.width - this.game.camera.width - 3) {
+                map.graphics.cameraOffset.x += 1;
                 this.game.camera.x += 3;
             }
 
-            if (this.game.input.activePointer.position.y < 10) {
+            if (this.game.input.activePointer.position.y < 10 &&
+                this.game.camera.y >= 3) {
+                map.graphics.cameraOffset.y -= 1;
                 this.game.camera.y -= 3;
-            } else if (this.game.input.activePointer.position.y > config.game.height-10) {
+            } else if (this.game.input.activePointer.position.y > config.game.height-10 &&
+                       this.game.camera.y <= config.game.world.height - this.game.camera.height - 3) {
+                map.graphics.cameraOffset.y += 1;
                 this.game.camera.y += 3;
             }
         },

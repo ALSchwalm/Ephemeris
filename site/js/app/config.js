@@ -27,7 +27,11 @@ define(function(){
         },
         map : {
             planetFrequency : 0.1,
-            starFrequency : 0.001
+            starFrequency : 0.001,
+            starColors : [
+                0xFFFFFF,
+                0xEEEEAA,
+            ]
         }
     };
 

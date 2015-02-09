@@ -18,17 +18,24 @@ define(["app/config", "app/utils"], function(config, utils){
      */
     Map.prototype.init = function(game) {
         this.game = game;
-        this.graphics = this.game.add.graphics(0, 0);
+        this.graphics = this.game.add.graphics(-config.game.world.width/2,
+                                               -config.game.world.height/2);
+        this.graphics.fixedToCamera = true;
 
         var worldSize = config.game.world.width*config.game.world.height;
 
-        this.graphics.beginFill(0xFFFFFF, 0.3);
         for (var i=0; i < worldSize*config.map.starFrequency; ++i) {
             var x = utils.seededRandom()*config.game.world.width;
             var y = utils.seededRandom()*config.game.world.height;
-            this.graphics.drawRect(x, y, 2, 2);
+            var size = utils.seededRandom()*2;
+            var colorIndex = Math.floor(utils.seededRandom()*
+                                        config.map.starColors.length);
+            var color = config.map.starColors[colorIndex];
+
+            this.graphics.beginFill(color, 0.3);
+            this.graphics.drawRect(x, y, size, size);
+            this.graphics.endFill();
         }
-        this.graphics.endFill();
         this.planets = [];
 
         this.availableImages = [];
