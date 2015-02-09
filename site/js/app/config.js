@@ -31,7 +31,14 @@ define(function(){
             starColors : [
                 0xFFFFFF,
                 0xEEEEAA,
-            ]
+            ],
+            parallaxFactor : 50
+        },
+        interface : {
+            minimap : {
+                scale : 0.07,
+                gridLines : 20
+            }
         }
     };
 

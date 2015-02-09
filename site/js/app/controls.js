@@ -1,5 +1,6 @@
-define(["app/config","Phaser", "app/player", "app/movement", "app/map"],
-function(config, Phaser, player, movement, map){
+define(["app/config","Phaser", "app/player", "app/movement",
+        "app/map", "app/interface"],
+function(config, Phaser, player, movement, map, hud){
     "use strict"
 
     /**
@@ -79,8 +80,8 @@ function(config, Phaser, player, movement, map){
             var relative = relative || false;
             if (relative) {
                 return  {
-                    x: this.game.input.clientX,
-                    y: this.game.input.clientY
+                    x: this.game.input.x,
+                    y: this.game.input.y
                 };
             }
             return  {
@@ -171,28 +172,35 @@ function(config, Phaser, player, movement, map){
         },
 
         /**
+         * Set the star parallax position based on the camara
+         */
+        updateParallax : function() {
+            map.graphics.cameraOffset.x = this.game.camera.x/config.map.parallaxFactor -
+                config.game.world.width/2;
+            map.graphics.cameraOffset.y = this.game.camera.y/config.map.parallaxFactor -
+                config.game.world.height/2;
+        },
+
+        /**
          * Method which pans the camera when the cursor is near the edges of the screen
          */
         panCamera : function() {
             if (this.game.input.activePointer.position.x < 10 &&
                 this.game.camera.x >= 3) {
-                map.graphics.cameraOffset.x -= 1;
                 this.game.camera.x -= 3;
             } else if (this.game.input.activePointer.position.x > config.game.width-10 &&
                        this.game.camera.x <= config.game.world.width - this.game.camera.width - 3) {
-                map.graphics.cameraOffset.x += 1;
                 this.game.camera.x += 3;
             }
 
             if (this.game.input.activePointer.position.y < 10 &&
                 this.game.camera.y >= 3) {
-                map.graphics.cameraOffset.y -= 1;
                 this.game.camera.y -= 3;
             } else if (this.game.input.activePointer.position.y > config.game.height-10 &&
                        this.game.camera.y <= config.game.world.height - this.game.camera.height - 3) {
-                map.graphics.cameraOffset.y += 1;
                 this.game.camera.y += 3;
             }
+            this.updateParallax();
         },
 
         /**
@@ -208,6 +216,15 @@ function(config, Phaser, player, movement, map){
                 setTimeout(function(){
                     this.mouseActive = false
                 }.bind(this), 100);
+            } else if (this.game.input.mouse.button == 0&&
+                       hud.minimapBounds.contains(this.pointerPosition(true).x,
+                                                  this.pointerPosition(true).y)) {
+                var pointer = this.pointerPosition();
+                pointer.x -= hud.minimap.x;
+                pointer.y -= hud.minimap.y;
+                var position = hud.minimapToWorldCoord(pointer);
+                this.game.camera.x = position.x - this.game.camera.width/2;
+                this.game.camera.y = position.y -  this.game.camera.height/2;
             } else if (this.game.input.mouse.button == 0 && !this.recentSelection) {
                 this.drawSelectBox();
             } else if (this.selectBoxStart){

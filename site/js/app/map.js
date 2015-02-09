@@ -18,8 +18,7 @@ define(["app/config", "app/utils"], function(config, utils){
      */
     Map.prototype.init = function(game) {
         this.game = game;
-        this.graphics = this.game.add.graphics(-config.game.world.width/2,
-                                               -config.game.world.height/2);
+        this.graphics = this.game.add.graphics(0, 0);
         this.graphics.fixedToCamera = true;
 
         var worldSize = config.game.world.width*config.game.world.height;

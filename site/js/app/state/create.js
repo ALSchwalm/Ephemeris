@@ -4,8 +4,9 @@
  * @module app/state/create
  */
 define(["app/config", "app/action", "app/map",
-        "app/controls", "app/network", "app/movement"],
-function(config, handler, map, controls, network, movement){
+        "app/controls", "app/network", "app/movement",
+        "app/interface"],
+function(config, handler, map, controls, network, movement, hud){
     "use strict"
 
     /**
@@ -25,6 +26,7 @@ function(config, handler, map, controls, network, movement){
         network.init(game, handler);
         movement.init(game, handler);
         map.init(game);
+        hud.init(game);
     };
 
     return create;

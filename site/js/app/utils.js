@@ -28,6 +28,13 @@ define(["seedrandom"], function(seedrandom){
                 this.rng = new Math.seedrandom(this.rngSeed);
             }
             return this.rng();
+        },
+
+        transform : function(oldMin, oldMax, newMin, newMax, value) {
+            var oldRange = oldMax - oldMin;
+	    var newRange = newMax - newMin;
+	    var newValue = (((value - oldMin) * newRange)/oldRange) + newMin;
+	    return newValue;
         }
     };
 

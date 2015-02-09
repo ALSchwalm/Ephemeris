@@ -1,0 +1,162 @@
+/**
+ * Module which displays the in-game interface
+ * @module app/interface
+ */
+define(["app/config", "Phaser", "app/utils", "app/player", "app/map"],
+function(config, Phaser, utils, player, map){
+    "use strict"
+
+    /**
+     * Singleton which displays the in-game interface
+     * @alias module:app/interface
+     */
+    var Interface = function() {}
+
+    /**
+     * Initialize the interface
+     *
+     * @param {Phaser.Game} game - A reference to the current game object
+     */
+    Interface.prototype.init = function(game) {
+        this.game = game;
+        this.minimapWidth = config.game.world.width*config.interface.minimap.scale;
+        this.minimapHeight = config.game.world.height*config.interface.minimap.scale;
+        this.minimapBack = this.game.add.graphics(0, config.game.height -
+                                                  this.minimapHeight);
+
+        this.minimapBounds = new Phaser.Rectangle(this.minimapBack.x,
+                                                  this.minimapBack.y,
+                                                  this.minimapWidth,
+                                                  this.minimapHeight);
+        // Draw backgound
+        this.minimapBack.lineStyle(2, 0xCCCCCC, 0.3);
+        this.minimapBack.beginFill(0x222222, 1);
+        this.minimapBack.drawRect(0, 0, this.minimapWidth, this.minimapHeight);
+        this.minimapBack.endFill();
+
+        // Draw regions
+        for (var i=0; i < map.planets.length; ++i) {
+            var planet = map.planets[i];
+            var transformed = this.worldToMinimapCoord(planet.position);
+            var minimapPlanet = this.game.add.image(transformed.x,
+                                                    transformed.y,
+                                                    planet.key);
+            minimapPlanet.scale = {
+                x: config.interface.minimap.scale,
+                y: config.interface.minimap.scale,
+            }
+            minimapPlanet.alpha = 0.4;
+
+            // Crop anything which would extend outside the minimap
+            if (minimapPlanet.x + minimapPlanet.width > this.minimapWidth) {
+                var cropWidth = (planet.x + planet.width) - config.game.world.width;
+                cropWidth = planet.width - cropWidth;
+                minimapPlanet.crop(new Phaser.Rectangle(0, 0, cropWidth, planet.height));
+            }
+
+            this.minimapBack.addChild(minimapPlanet);
+        }
+
+        // Draw grid
+        var cellSize = this.minimapWidth/config.interface.minimap.gridLines;
+        this.minimapBack.lineStyle(1, 0xCCCCCC, 0.1);
+        for (var i=0; i < config.interface.minimap.gridLines; ++i) {
+            for (var j=0; j < config.interface.minimap.gridLines; ++j) {
+                this.minimapBack.drawRect(i*cellSize, j*cellSize, cellSize, cellSize);
+            }
+        }
+        this.minimapBack.endFill();
+
+        this.minimap = this.game.add.graphics(0, config.game.height -
+                                              this.minimapHeight);
+        this.minimap.fixedToCamera = true;
+        this.minimapBack.fixedToCamera = true;
+        return this;
+    }
+
+    /**
+     * Update the interface
+     */
+    Interface.prototype.update = function() {
+        this.updateMinimap();
+        return this;
+    }
+
+    Interface.prototype.updateMinimap = function() {
+        this.minimap.clear();
+        this.game.world.bringToTop(this.minimapBack);
+        this.game.world.bringToTop(this.minimap);
+
+        // Draw units
+        for (var id in this.game.units) {
+            var unit = this.game.units[id];
+            var position = unit.position;
+            var transformed = this.worldToMinimapCoord(position);
+
+            if (unit.playerID == player.id) {
+                if (this.game.selectedUnits.indexOf(unit) == -1) {
+                    this.minimap.beginFill(0x0000FF, 0.5);
+                } else {
+                    this.minimap.beginFill(0xFFFFFF, 0.5);
+
+                }
+            } else {
+                this.minimap.beginFill(0xCC0000, 0.5);
+            }
+            this.minimap.drawRect(transformed.x, transformed.y, 4, 4);
+            this.minimap.endFill();
+        }
+
+        // Draw camera
+        this.minimap.lineStyle(1, 0xFFFFFF, 0.7);
+
+        // Phaser.Camera.position returns the center of the camera, so get
+        // upper left corner like this
+        var cameraPosition = this.worldToMinimapCoord({
+            x: this.game.camera.x,
+            y: this.game.camera.y
+        });
+        var cameraSize = this.worldToMinimapCoord({
+            x: this.game.camera.width,
+            y: this.game.camera.height
+        });
+
+        this.minimap.drawRect(cameraPosition.x, cameraPosition.y,
+                              cameraSize.x, cameraSize.y);
+        this.minimap.endFill();
+
+        return this;
+    }
+
+    /**
+     * Transform a world coordinate into minimap coordinates
+     */
+    Interface.prototype.worldToMinimapCoord = function(coord) {
+        return {
+            x: utils.transform(0, config.game.world.width,
+                               0, this.minimapWidth,
+                               coord.x),
+            y: utils.transform(0, config.game.world.height,
+                               0, this.minimapHeight,
+                               coord.y)
+        };
+    }
+
+    /**
+     * Transform a minimap coordinate into world coordinates
+     */
+    Interface.prototype.minimapToWorldCoord = function(coord) {
+        return {
+            x: utils.transform(0, this.minimapWidth,
+                               0, config.game.world.width,
+                               coord.x),
+            y: utils.transform(0, this.minimapHeight,
+                               0, config.game.world.height,
+                               coord.y)
+        };
+    }
+
+    var hud = new Interface();
+
+    return hud;
+});
