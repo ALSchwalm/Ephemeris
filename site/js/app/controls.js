@@ -15,8 +15,7 @@ function(config, Phaser, player, movement, map, hud){
             game.canvas.oncontextmenu = function(e) {e.preventDefault();}
         },
 
-        mouseActive : false,
-        recentSelection : false,
+        recentClick : false,
         selectBoxStart : null,
         minimapActive : false,
         postMove : function() {},
@@ -53,12 +52,19 @@ function(config, Phaser, player, movement, map, hud){
         },
 
         /**
-         * Callback executed when a right click occurs
+         * Move the selcted units to 'target'
          */
-        onRightClick : function() {
+        moveSelectedUnits : function() {
             if (this.game.selectedUnits.length) {
                 movement.groupMoveToPoint(this.game.selectedUnits,
                                           controls.pointerPosition());
+            }
+        },
+
+        attackUnit : function(unit) {
+            if (this.game.selectedUnits.length) {
+                movement.groupEngageTarget(this.game.selectedUnits,
+                                           unit);
             }
         },
 
@@ -205,23 +211,81 @@ function(config, Phaser, player, movement, map, hud){
         },
 
         /**
-         * Main controls loop which invokes registered callbacks after the
-         * appropriate keys are pressed.
+         * If the pointer is over a unit, returns that unit, otherwise null
          */
-        update : function() {
-            this.game.world.bringToTop(this.graphics);
-            if (this.game.input.mouse.button == 2 && !this.mouseActive) {
-                this.onRightClick();
-                this.mouseActive = true;
+        pointerOnUnit : function() {
+            for (var id in this.game.units) {
+                var unit = this.game.units[id];
+                if (unit.sprite.getBounds().contains(this.pointerPosition().x,
+                                                     this.pointerPosition().y))
+                    return unit;
+            }
+            return null;
+        },
 
-                setTimeout(function(){
-                    this.mouseActive = false
-                }.bind(this), 100);
-            } else if (this.game.input.mouse.button == 0 &&
-                       !this.selectBoxStart &&
-                       (hud.minimapBounds.contains(this.pointerPosition(true).x,
-                                                   this.pointerPosition(true).y) ||
-                        this.minimapActive)) {
+        /**
+         * Returns true if the pointer is over the minimap
+         */
+        pointerOverMinimap : function() {
+            return hud.minimapBounds.contains(this.pointerPosition(true).x,
+                                              this.pointerPosition(true).y);
+        },
+
+        /**
+         * Returns true if the left mouse button is pressed
+         */
+        leftPressed : function() {
+            return this.game.input.mouse.button == 0;
+        },
+
+        /**
+         * Returns true if the right mouse button is pressed
+         */
+        rightPressed : function() {
+            return this.game.input.mouse.button == 2;
+        },
+
+        /**
+         * Helper function which will prevent single clicks from being
+         * interpreted as multiple events
+         */
+        click : function() {
+            this.recentClick = true;
+            setTimeout(function(){
+                this.recentClick = false;
+            }.bind(this), 100);
+            return this;
+        },
+
+        /**
+         * Update the game state controlled by mouse movement or clicks
+         */
+        handleMouse : function() {
+            if (this.recentClick) return;
+
+            // Right click on empty space
+            if (this.rightPressed() && !this.pointerOnUnit()) {
+                this.moveSelectedUnits();
+                this.click();
+
+            // Targeting an enemy
+            } else if (this.rightPressed() && this.pointerOnUnit() &&
+                       this.pointerOnUnit().enemy) {
+                this.attackUnit(this.pointerOnUnit());
+                this.click();
+
+            // Select a unit
+            } else if (this.leftPressed() && this.pointerOnUnit() &&
+                       !this.pointerOnUnit().enemy) {
+                this.clearSelection();
+                var unit = this.pointerOnUnit();
+                unit.onSelect();
+                this.game.selectedUnits = [unit];
+                this.click();
+
+            // Move based on the minimap
+            } else if (this.leftPressed() && (this.pointerOverMinimap() ||
+                                              this.minimapActive)) {
                 var pointer = this.pointerPosition();
                 pointer.x -= hud.minimap.x;
                 pointer.y -= hud.minimap.y;
@@ -229,16 +293,30 @@ function(config, Phaser, player, movement, map, hud){
                 this.game.camera.x = position.x - this.game.camera.width/2;
                 this.game.camera.y = position.y -  this.game.camera.height/2;
                 this.minimapActive = true;
-            } else if (this.game.input.mouse.button == 0 &&
-                       !this.recentSelection && !this.minimapActive) {
-                this.drawSelectBox();
-            } else if (this.game.input.mouse.button != 0 &&
-                       !this.selectBoxStart && this.minimapActive) {
-                this.minimapActive = false;
-            } else if (this.game.input.mouse.button != 0 && this.selectBoxStart){
-                this.onReleaseSelectBox();
-            }
 
+            // If left is pressed and has not been 'dragged' from the minimap
+            } else if (this.leftPressed() && !this.minimapActive) {
+                this.drawSelectBox();
+
+            // End and active selection
+            } else if (!this.leftPressed() && this.selectBoxStart){
+                this.onReleaseSelectBox();
+
+            // End a minimap interaction
+            } else if (!this.leftPressed() && this.minimapActive) {
+                this.minimapActive = false;
+            }
+        },
+
+        /**
+         * Main controls loop which invokes registered callbacks after the
+         * appropriate keys are pressed.
+         */
+        update : function() {
+            // Show selection box on top
+            this.game.world.bringToTop(this.graphics);
+
+            this.handleMouse();
             this.panCamera();
 
             for (var i=0; i < this.keys.length; ++i) {

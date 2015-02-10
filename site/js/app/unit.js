@@ -14,7 +14,7 @@ function(config, Phaser, controls, utils, player){
             this[id] = config[id];
         }
 
-        this.destination = this.destination || null;
+        this._destination = this.destination || null;
         this.path = this.path || [];
         this.sprite = this.sprite || null;
         this.selectGraphic = this.selectGraphic || null;
@@ -22,6 +22,11 @@ function(config, Phaser, controls, utils, player){
         this.speed = this.speed || 1;
         this.id = this.id || utils.genUUID();
         this.playerID = this.playerID || player.id;
+        if (this.playerID == player.id) {
+            this.enemy = false;
+        } else {
+            this.enemy = true;
+        }
         this.game.registerUnit(this);
     }
 
@@ -34,13 +39,18 @@ function(config, Phaser, controls, utils, player){
         }
     });
 
-    Unit.prototype.onClick = function() {
-        if (this.game.input.mouse.button == 0 &&
-            this.playerID == player.id) {
-            controls.unitSelected(this);
-            this.onSelect();
+    Object.defineProperty(Unit.prototype, "destination", {
+        get : function() {
+            if (this._destination instanceof Unit) {
+                return this._destination.position;
+            } else {
+                return this._destination;
+            }
+        },
+        set : function(value) {
+            this._destination = value;
         }
-    }
+    });
 
     Unit.prototype.onSelect = function() {
         if (this.selectGraphic == null) {
@@ -55,12 +65,14 @@ function(config, Phaser, controls, utils, player){
         this.selectGraphic = null;
     }
 
-    Unit.prototype.moveTo = function(points) {
-        if (points instanceof Array) {
-            this.destination = points.shift();
-            this.path = points;
+    Unit.prototype.moveTo = function(target) {
+        if (typeof(target) === "string") {
+            this.destination = this.game.units[target];
+        } else if (target instanceof Array) {
+            this.destination = target.shift();
+            this.path = target;
         } else {
-            this.path = [points];
+            this.path = [target];
         }
     }
 

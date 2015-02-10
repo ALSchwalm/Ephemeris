@@ -38,6 +38,9 @@ function(config, network, player, utils, Ship){
         case "move":
             this.game.units[action.data.id].moveTo(action.data.path);
             break;
+        case "engage":
+            this.game.units[action.data.source].moveTo(action.data.target);
+            break;
         case "create":
             var type = eval(action.data.type);
             var newUnit = new type(this.game,

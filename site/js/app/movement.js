@@ -42,6 +42,25 @@ define(["app/config"], function(config){
         return this;
     }
 
+    /**
+     * Begin moving a group of units toward a target
+     *
+     * @param {Unit[]} units - A group of units
+     * @param {Unit} target - The target to engage
+     */
+    MovementHandler.prototype.groupEngageTarget = function(units, target) {
+        units.map(function(unit){
+            this.handler.do({
+                type: "engage",
+                data : {
+                    source : unit.id,
+                    target : target.id
+                }
+            });
+        }.bind(this));
+        return this;
+    }
+
     var movement = new MovementHandler();
     return movement;
 });
