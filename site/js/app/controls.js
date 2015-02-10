@@ -177,9 +177,9 @@ function(config, Phaser, player, movement, map, hud){
          */
         updateParallax : function() {
             map.graphics.cameraOffset.x = this.game.camera.x/config.map.parallaxFactor -
-                config.game.world.width/2;
+                map.width/2;
             map.graphics.cameraOffset.y = this.game.camera.y/config.map.parallaxFactor -
-                config.game.world.height/2;
+                map.height/2;
         },
 
         /**
@@ -190,7 +190,7 @@ function(config, Phaser, player, movement, map, hud){
                 this.game.camera.x >= 3) {
                 this.game.camera.x -= 3;
             } else if (this.game.input.activePointer.position.x > config.game.width-10 &&
-                       this.game.camera.x <= config.game.world.width - this.game.camera.width - 3) {
+                       this.game.camera.x <= map.width - this.game.camera.width - 3) {
                 this.game.camera.x += 3;
             }
 
@@ -198,7 +198,7 @@ function(config, Phaser, player, movement, map, hud){
                 this.game.camera.y >= 3) {
                 this.game.camera.y -= 3;
             } else if (this.game.input.activePointer.position.y > config.game.height-10 &&
-                       this.game.camera.y <= config.game.world.height - this.game.camera.height - 3) {
+                       this.game.camera.y <= map.height - this.game.camera.height - 3) {
                 this.game.camera.y += 3;
             }
             this.updateParallax();

@@ -19,8 +19,8 @@ function(config, Phaser, utils, player, map){
      */
     Interface.prototype.init = function(game) {
         this.game = game;
-        this.minimapWidth = config.game.world.width*config.interface.minimap.scale;
-        this.minimapHeight = config.game.world.height*config.interface.minimap.scale;
+        this.minimapWidth = map.width*config.interface.minimap.scale;
+        this.minimapHeight = map.height*config.interface.minimap.scale;
         this.minimapBack = this.game.add.graphics(0, config.game.height -
                                                   this.minimapHeight);
 
@@ -35,26 +35,26 @@ function(config, Phaser, utils, player, map){
         this.minimapBack.endFill();
 
         // Draw regions
-        for (var i=0; i < map.planets.length; ++i) {
-            var planet = map.planets[i];
-            var transformed = this.worldToMinimapCoord(planet.position);
-            var minimapPlanet = this.game.add.image(transformed.x,
+        for (var i=0; i < map.regions.length; ++i) {
+            var region = map.regions[i];
+            var transformed = this.worldToMinimapCoord(region.position);
+            var minimapRegion = this.game.add.image(transformed.x,
                                                     transformed.y,
-                                                    planet.key);
-            minimapPlanet.scale = {
+                                                    region.key);
+            minimapRegion.scale = {
                 x: config.interface.minimap.scale,
                 y: config.interface.minimap.scale,
             }
-            minimapPlanet.alpha = 0.4;
+            minimapRegion.alpha = 0.4;
 
             // Crop anything which would extend outside the minimap
-            if (minimapPlanet.x + minimapPlanet.width > this.minimapWidth) {
-                var cropWidth = (planet.x + planet.width) - config.game.world.width;
-                cropWidth = planet.width - cropWidth;
-                minimapPlanet.crop(new Phaser.Rectangle(0, 0, cropWidth, planet.height));
+            if (minimapRegion.x + minimapRegion.width > this.minimapWidth) {
+                var cropWidth = (region.x + region.width) - map.width;
+                cropWidth = region.width - cropWidth;
+                minimapRegion.crop(new Phaser.Rectangle(0, 0, cropWidth, region.height));
             }
 
-            this.minimapBack.addChild(minimapPlanet);
+            this.minimapBack.addChild(minimapRegion);
         }
 
         // Draw grid
@@ -133,10 +133,10 @@ function(config, Phaser, utils, player, map){
      */
     Interface.prototype.worldToMinimapCoord = function(coord) {
         return {
-            x: utils.transform(0, config.game.world.width,
+            x: utils.transform(0, map.width,
                                0, this.minimapWidth,
                                coord.x),
-            y: utils.transform(0, config.game.world.height,
+            y: utils.transform(0, map.height,
                                0, this.minimapHeight,
                                coord.y)
         };
@@ -148,10 +148,10 @@ function(config, Phaser, utils, player, map){
     Interface.prototype.minimapToWorldCoord = function(coord) {
         return {
             x: utils.transform(0, this.minimapWidth,
-                               0, config.game.world.width,
+                               0, map.width,
                                coord.x),
             y: utils.transform(0, this.minimapHeight,
-                               0, config.game.world.height,
+                               0, map.height,
                                coord.y)
         };
     }

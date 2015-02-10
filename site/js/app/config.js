@@ -16,17 +16,12 @@ define(function(){
     var config = {
         game : {
             width : window.innerWidth,
-            height : window.innerHeight,
-            world : {
-                width : 4000,
-                height : 4000
-            }
+            height : window.innerHeight
         },
         assets : {
             numPlanets : 8
         },
         map : {
-            planetFrequency : 0.1,
             starFrequency : 0.001,
             starColors : [
                 0xFFFFFF,

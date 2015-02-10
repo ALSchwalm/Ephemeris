@@ -12,9 +12,8 @@ function(config, io, player, utils){
      */
     var Network = function() {
         this.socket = io();
-        this.socket.on("connected", function(msg){
+        this.socket.on("connected", function(){
             player.id = this.socket.id;
-            utils.rngSeed = msg.rngSeed;
         }.bind(this));
     }
 

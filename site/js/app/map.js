@@ -15,17 +15,26 @@ define(["app/config", "app/utils"], function(config, utils){
      * Generate the map
      *
      * @param {Phaser.Game} game - A reference to the current game object
+     * @param {object} map - Configuration object for the map
      */
-    Map.prototype.init = function(game) {
+    Map.prototype.init = function(game, map) {
+        utils.rngSeed = map.seed;
         this.game = game;
         this.graphics = this.game.add.graphics(0, 0);
         this.graphics.fixedToCamera = true;
+        this.width = map.width;
+        this.height = map.height;
 
-        var worldSize = config.game.world.width*config.game.world.height;
+        // Continue game after losing focus
+        this.game.stage.disableVisibilityChange = true;
+
+        this.game.world.setBounds(0, 0, this.width, this.height);
+
+        var worldSize = this.width*this.height;
 
         for (var i=0; i < worldSize*config.map.starFrequency; ++i) {
-            var x = utils.seededRandom()*config.game.world.width;
-            var y = utils.seededRandom()*config.game.world.height;
+            var x = utils.seededRandom()*this.width;
+            var y = utils.seededRandom()*this.height;
             var size = utils.seededRandom()*2;
             var colorIndex = Math.floor(utils.seededRandom()*
                                         config.map.starColors.length);
@@ -35,61 +44,24 @@ define(["app/config", "app/utils"], function(config, utils){
             this.graphics.drawRect(x, y, size, size);
             this.graphics.endFill();
         }
-        this.planets = [];
+        this.regions = [];
 
-        this.availableImages = [];
-
-        // TODO find a good way to randomly generate these
-        this.availableLocations = [
-            { x: 300, y: 300 },
-            { x: 2300, y: 2300 },
-            { x: 3300, y: 3300 },
-            { x: -100, y: 2000 },
-        ];
-
-        for (var i=0; i < config.assets.numPlanets; ++i) {
-            this.availableImages.push(i);
+        for (var i=0; i < map.regions.length; ++i) {
+            this.regions.push(this.makeRegion(map.regions[i]));
         }
 
-        var initialPlanet = this.addPlanet();
-
-        this.planetWidth = initialPlanet.width;
-        this.planetHeight = initialPlanet.height;
-
-        var possible = worldSize/(this.planetWidth*this.planetHeight)*
-            config.map.planetFrequency;
-
-        for (var i=0; i < possible; ++i) {
-            this.planets.push(this.addPlanet());
-        }
         return this;
     }
 
     /**
-     * Generate a random planet and place it on the map
+     * Add a region to the map
      *
-     * @returns {Phaser.Image} - The images added to the game
+     * @returns {object} - The region added to the game
      */
-    Map.prototype.addPlanet = function() {
-        var index = Math.floor(utils.seededRandom()*this.availableImages.length);
-        var image = this.availableImages[index];
-        if (typeof(image) === "undefined") {
-            return null;
-        } else {
-            this.availableImages.splice(index, 1);
-        }
-
-        index = Math.floor(utils.seededRandom()*this.availableLocations.length);
-        var location = this.availableLocations[index];
-        if (typeof(location) === "undefined") {
-            return null;
-        } else {
-            this.availableLocations.splice(index, 1);
-        }
-
-        var planet = this.game.add.image(location.x, location.y, 'planet' + image);
-        this.planets.push(planet);
-        return planet
+    Map.prototype.makeRegion = function(regionConfig) {
+        var position = regionConfig.position;
+        var region = this.game.add.image(position.x, position.y, regionConfig.image);
+        return region
     }
 
     var map = new Map();

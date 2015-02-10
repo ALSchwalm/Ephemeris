@@ -16,16 +16,31 @@ function(config, handler, map, controls, network, movement, hud){
      * @param {Phaser.Game} game - The current game object
      */
     var create = function(game){
-        // Continue game after losing focus
-        game.stage.disableVisibilityChange = true;
-
-        game.world.setBounds(0, 0, config.game.world.width,
-                             config.game.world.height);
+        map.init(game, {
+            seed: "3.141597",
+            width: 4000,
+            height: 4000,
+            regions : [
+                {
+                    position : {
+                        x: 200,
+                        y: 300
+                    },
+                    image : "planet1"
+                },
+                {
+                    position : {
+                        x: 1000,
+                        y: 3000
+                    },
+                    image : "planet2"
+                }
+            ]
+        });
         controls.init(game, handler);
         handler.init(game);
         network.init(game, handler);
         movement.init(game, handler);
-        map.init(game);
         hud.init(game);
     };
 
