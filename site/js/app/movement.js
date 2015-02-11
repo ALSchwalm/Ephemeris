@@ -2,7 +2,7 @@
  * A module which handles pathing and movement
  * @module app/movement
  */
-define(["app/config"], function(config){
+define(["app/config", "app/utils"], function(config, utils){
     "use strict"
 
     /**
@@ -30,14 +30,36 @@ define(["app/config"], function(config){
      * @param {Phaser.Point} target - The destination point
      */
     MovementHandler.prototype.groupMoveToPoint = function(units, target) {
+        var dimension = Math.ceil(Math.sqrt(units.length));
+        var index = 0;
+        for (var i=0; i < dimension; ++i) {
+            for (var j=0; j < dimension; ++j) {
+                if (index > units.length-1) return this;
+
+                //TODO: Find a better way to determine offsets
+                var offsets = {
+                    x: i*50 - (dimension-1)*50/2,
+                    y: j*50 - (dimension-1)*50/2
+                };
+
+                var modifiedPoint = {
+                    x: target.x + offsets.x,
+                    y: target.y + offsets.y
+                };
+
+                this.handler.do({
+                    type: "move",
+                    data : {
+                        id : units[index].id,
+                        path: [modifiedPoint]
+                    }
+                });
+                index++;
+            }
+        }
+
         units.map(function(unit){
-            this.handler.do({
-                type: "move",
-                data : {
-                    id : unit.id,
-                    path: [target]
-                }
-            });
+
         }.bind(this));
         return this;
     }

@@ -28,12 +28,12 @@ function(config, Phaser, Unit, player){
     Ship.prototype = new Unit();
 
     Ship.prototype.update = function() {
+        this.unitUpdate();
         if (this.highlights.alpha < 0.1 ||
             this.highlights.alpha > 0.99){
             this.fadeDirection *= -1;
         }
         this.highlights.alpha += this.fadeDirection;
-        this.moveTowardDestination();
     }
 
     return Ship;

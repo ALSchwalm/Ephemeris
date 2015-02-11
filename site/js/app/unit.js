@@ -117,5 +117,34 @@ function(config, Phaser, controls, utils, player){
         }
     }
 
+    Unit.prototype.unitUpdate = function() {
+        this.moveTowardDestination();
+        var avoidDistance = (this.destination) ? 0 : 35;
+        for (var id in this.game.units) {
+            if (id == this.id) continue;
+            var unit = this.game.units[id];
+
+            //TODO: This should move the unit such that it is further away from
+            // the nearby unit, while remaining near its destination
+            if (!unit.destination &&
+                Phaser.Point.distance(this.position, unit.position) < avoidDistance) {
+                if (this.position.x < unit.position.x) {
+                    this.position.x -= 1;
+                } else {
+                    this.position.x += 1;
+                }
+
+                if (this.position.y < unit.position.y) {
+                    this.position.y -= 1;
+                } else {
+                    this.position.y += 1;
+                }
+                break;
+            }
+
+        }
+
+    }
+
     return Unit;
 });

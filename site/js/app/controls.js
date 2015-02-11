@@ -216,8 +216,8 @@ function(config, Phaser, player, movement, map, hud){
         pointerOnUnit : function() {
             for (var id in this.game.units) {
                 var unit = this.game.units[id];
-                if (unit.sprite.getBounds().contains(this.pointerPosition().x,
-                                                     this.pointerPosition().y))
+                if (unit.sprite.getBounds().contains(this.pointerPosition(true).x,
+                                                     this.pointerPosition(true).y))
                     return unit;
             }
             return null;
@@ -264,7 +264,8 @@ function(config, Phaser, player, movement, map, hud){
             if (this.recentClick) return;
 
             // Right click on empty space
-            if (this.rightPressed() && !this.pointerOnUnit()) {
+            if (this.rightPressed() && (!this.pointerOnUnit() ||
+                                        !this.pointerOnUnit().enemy)) {
                 this.moveSelectedUnits();
                 this.click();
 
@@ -276,7 +277,7 @@ function(config, Phaser, player, movement, map, hud){
 
             // Select a unit
             } else if (this.leftPressed() && this.pointerOnUnit() &&
-                       !this.pointerOnUnit().enemy) {
+                       !this.pointerOnUnit().enemy && !this.selectBoxStart) {
                 this.clearSelection();
                 var unit = this.pointerOnUnit();
                 unit.onSelect();
