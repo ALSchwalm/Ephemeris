@@ -6,9 +6,32 @@ define(["app/config", "Phaser", "app/controls", "app/utils", "app/player"],
 function(config, Phaser, controls, utils, player){
     "use strict"
 
+    /**
+     * The base class of all in-game units. Newly defined units should
+     * invoke Unit.init at the beginning of their constructors.
+     * @alias module:app/unit
+     */
     var Unit = function() {}
+
+    /**
+     * Initialize this unit
+     *
+     * @param {Phaser.Game} game - A reference to the current game object
+     * @param {ActionHandler} handler - A reference to this game's ActionHandler
+     * @param {object} config - Configuration for this unit
+     */
     Unit.prototype.init = function(game, handler, config) {
+
+        /**
+         * A reference to the current game
+         * @type {Phaser.Game}
+         */
         this.game = game;
+
+        /**
+         * A reference to this games ActionHandler
+         * @type {ActionHandler}
+         */
         this.handler = handler;
 
         for (var id in config) {
@@ -19,13 +42,39 @@ function(config, Phaser, controls, utils, player){
         this.path = this.path || [];
         this.sprite = this.sprite || null;
         this.selectGraphic = this.selectGraphic || null;
+
+        /**
+         * The speed of this unit
+         * @type {Number}
+         */
         this.speed = this.speed || 1;
+
+        /**
+         * Attack range of this unit
+         * @type {Number}
+         */
         this.range = this.range || 100;
+
+        /**
+         * How frequently this unit can attack in ms
+         * @type {Number}
+         */
+        this.attackRate = this.attackRate || 500;
+
+        /**
+         * A UUID for this unit
+         * @type {string}
+         */
+        this.id = this.id || utils.genUUID();
+
+        /**
+         * The ID of the player which controls this unit
+         * @type {string}
+         */
+        this.playerID = this.playerID || player.id;
+
         this.target = this.target || null;
         this.attacking = false;
-        this.attackRate = this.attackRate || 500;
-        this.id = this.id || utils.genUUID();
-        this.playerID = this.playerID || player.id;
 
         if (this.playerID == player.id) {
             this.enemy = false;
@@ -62,6 +111,9 @@ function(config, Phaser, controls, utils, player){
         }
     });
 
+    /**
+     * Callback executed when the unit is selected
+     */
     Unit.prototype.onSelect = function() {
         if (this.selectGraphic == null) {
             this.selectGraphic = this.game.add.sprite(0, 0, "20select");
@@ -70,11 +122,19 @@ function(config, Phaser, controls, utils, player){
         }
     }
 
+    /**
+     * Callback executed when the unit is unselected
+     */
     Unit.prototype.onUnselect = function() {
         this.selectGraphic.destroy();
         this.selectGraphic = null;
     }
 
+    /**
+     * Move the target toward a location
+     *
+     * @param {Phaser.Point|Unit} target - A point or unit to move toward
+     */
     Unit.prototype.moveTo = function(target) {
         if (typeof(target) === "string") {
             this.destination = this.game.units[target];
@@ -86,6 +146,9 @@ function(config, Phaser, controls, utils, player){
         }
     }
 
+    /**
+     * Find the angle between the unit and the target point
+     */
     Unit.prototype.getDirection = function(obj) {
         var target = obj || this.destination;
         if (!target) return 0;
@@ -116,6 +179,11 @@ function(config, Phaser, controls, utils, player){
         this.sprite.rotation = this.normalizeAngle(this.sprite.rotation);
     }
 
+    /**
+     * Show an attack from this unit to 'target'
+     *
+     * @param {Phaser.Point} [target=this.destination] - Target to attack
+     */
     Unit.prototype.attack = function(target) {
         var target = (target) ? target : this.destination;
 
@@ -185,6 +253,9 @@ function(config, Phaser, controls, utils, player){
         }
     }
 
+    /**
+     * General unit update. This should be invoked from every unit's update callback
+     */
     Unit.prototype.unitUpdate = function() {
         this.moveTowardDestination();
         var avoidDistance = (this.destination && !this.target) ? 0 : 35;
