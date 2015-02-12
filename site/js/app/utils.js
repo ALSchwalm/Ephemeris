@@ -35,6 +35,15 @@ define(["seedrandom"], function(seedrandom){
 	    var newRange = newMax - newMin;
 	    var newValue = (((value - oldMin) * newRange)/oldRange) + newMin;
 	    return newValue;
+        },
+
+        angleDifference : function(angle1, angle2) {
+            var diff = Math.abs(angle1 - angle2);
+
+            if (diff > Math.PI) {
+                diff = 2*Math.PI - diff;
+            }
+            return diff;
         }
     };
 

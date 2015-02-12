@@ -147,10 +147,13 @@ function(config, Phaser, controls, utils, player){
         }
 
         this.updateDirection();
+        var rads = this.getDirection(this.destination) + Math.PI/2;
+        var normalizedAngle = this.normalizeAngle(rads+Math.PI/2);
 
         if (Phaser.Point.distance(this.position, this.destination) < this.range &&
             this.target) {
-            if (!this.attacking) {
+            if (!this.attacking &&
+                utils.angleDifference(this.sprite.rotation, normalizedAngle) < 1) {
                 this.attacking = true;
 
                 this.handler.do({
@@ -170,7 +173,6 @@ function(config, Phaser, controls, utils, player){
             }
         }
 
-        var rads = this.getDirection(this.destination) + Math.PI/2;
         this.position.x += Math.cos(rads)*this.speed;
         this.position.y += Math.sin(rads)*this.speed;
 
