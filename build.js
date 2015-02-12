@@ -10,5 +10,5 @@
         app: '../app'
     },
     name : "../../app",
-    out : "ephemeris-built.js"
+    out : "site/ephemeris-built.js"
 })
