@@ -1,5 +1,5 @@
 {
-    "name": "rts",
+    "name": "ephemeris",
     "version": "0.0.1",
     "dependencies": {
         "connect": "3.x.x",
@@ -11,7 +11,7 @@
         "jsdoc": ">=3.3.0-beta1",
         "requirejs": "2.1.x"
     },
-    "subdomain": "rts",
+    "subdomain": "ephemeris",
     "scripts": {
         "start": "node server/server.js"
     },
