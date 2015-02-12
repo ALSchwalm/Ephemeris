@@ -54,10 +54,11 @@ function(config, Phaser, player, movement, map, hud){
         /**
          * Move the selcted units to 'target'
          */
-        moveSelectedUnits : function() {
+        moveSelectedUnits : function(target) {
+            var target = target || controls.pointerPosition();
             if (this.game.selectedUnits.length) {
                 movement.groupMoveToPoint(this.game.selectedUnits,
-                                          controls.pointerPosition());
+                                          target);
             }
         },
 
@@ -246,6 +247,19 @@ function(config, Phaser, player, movement, map, hud){
         },
 
         /**
+         * Returns the world position indicated by the current pointer
+         * position over the minimap, or null if the pointer is not over
+         * the minimap.
+         */
+        minimapToWorldCoord : function() {
+            if (!this.pointerOverMinimap()) return null;
+            var pointer = this.pointerPosition();
+            pointer.x -= hud.minimap.x;
+            pointer.y -= hud.minimap.y;
+            return hud.minimapToWorldCoord(pointer);
+        },
+
+        /**
          * Helper function which will prevent single clicks from being
          * interpreted as multiple events
          */
@@ -263,10 +277,15 @@ function(config, Phaser, player, movement, map, hud){
         handleMouse : function() {
             if (this.recentClick) return;
 
+            // Right clock on minimap
+            if (this.rightPressed() && this.pointerOverMinimap()) {
+                this.moveSelectedUnits(this.minimapToWorldCoord());
+                this.click();
+
             // Right click on empty space
-            if (this.rightPressed() && (!this.pointerOnUnit() ||
-                                        !this.pointerOnUnit().enemy)) {
-                this.moveSelectedUnits();
+            } else if (this.rightPressed() && (!this.pointerOnUnit() ||
+                                               !this.pointerOnUnit().enemy)) {
+                this.moveSelectedUnits(this.pointerToWorld);
                 this.click();
 
             // Targeting an enemy
@@ -287,10 +306,7 @@ function(config, Phaser, player, movement, map, hud){
             // Move based on the minimap
             } else if (this.leftPressed() && (this.pointerOverMinimap() ||
                                               this.minimapActive)) {
-                var pointer = this.pointerPosition();
-                pointer.x -= hud.minimap.x;
-                pointer.y -= hud.minimap.y;
-                var position = hud.minimapToWorldCoord(pointer);
+                var position = this.minimapToWorldCoord();
                 this.game.camera.x = position.x - this.game.camera.width/2;
                 this.game.camera.y = position.y -  this.game.camera.height/2;
                 this.minimapActive = true;
