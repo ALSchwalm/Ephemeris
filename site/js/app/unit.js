@@ -56,6 +56,12 @@ function(config, Phaser, controls, utils, player){
         this.range = this.range || 100;
 
         /**
+         * The vision range of the unit (in pixels)
+         * @type {Number}
+         */
+        this.view = this.view || 300;
+
+        /**
          * How frequently this unit can attack in ms
          * @type {Number}
          */

@@ -33,7 +33,8 @@ define(function(){
             minimap : {
                 scale : 0.07,
                 gridLines : 20
-            }
+            },
+            fogOfWarSize : 20,
         }
     };
 

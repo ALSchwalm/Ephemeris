@@ -8,7 +8,8 @@ function(config, Phaser, Unit, player){
         this.sprite = game.add.sprite(x, y, "ship");
         this.sprite.anchor = {x: 0.5, y:0.5};
         this.speed = 2;
-        this.range = 150;
+        this.range = 180;
+        this.view = 300;
         this.attackRate = 400;
         this.sprite.update = this.update.bind(this);
 

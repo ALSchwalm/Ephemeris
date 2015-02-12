@@ -307,9 +307,11 @@ function(config, Phaser, player, movement, map, hud){
             } else if (this.leftPressed() && (this.pointerOverMinimap() ||
                                               this.minimapActive)) {
                 var position = this.minimapToWorldCoord();
-                this.game.camera.x = position.x - this.game.camera.width/2;
-                this.game.camera.y = position.y -  this.game.camera.height/2;
-                this.minimapActive = true;
+                if (position) {
+                    this.game.camera.x = position.x - this.game.camera.width/2;
+                    this.game.camera.y = position.y -  this.game.camera.height/2;
+                    this.minimapActive = true;
+                }
 
             // If left is pressed and has not been 'dragged' from the minimap
             } else if (this.leftPressed() && !this.minimapActive) {
