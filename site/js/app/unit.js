@@ -189,7 +189,8 @@ function(config, Phaser, controls, utils, player){
         this.moveTowardDestination();
         var avoidDistance = (this.destination && !this.target) ? 0 : 35;
         for (var id in this.game.units) {
-            if (id == this.id) continue;
+            if (id == this.id || this.game.units[id].playerID != this.playerID)
+                continue;
             var unit = this.game.units[id];
 
             //TODO: This should move the unit such that it is further away from

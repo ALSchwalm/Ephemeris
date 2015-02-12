@@ -353,8 +353,8 @@ function(config, Phaser, player, movement, map, hud){
                 type: "create",
                 data: {
                     type: "Ship",
-                    x: Math.random()*200,
-                    y: Math.random()*200,
+                    x: Math.random()*200+100,
+                    y: Math.random()*200+100,
                 }
             });
         })
@@ -366,8 +366,8 @@ function(config, Phaser, player, movement, map, hud){
                 type: "create",
                 data: {
                     type: "Ship",
-                    x: Math.random()*200,
-                    y: Math.random()*200,
+                    x: Math.random()*200+100,
+                    y: Math.random()*200+100,
                     config : {
                         playerID : "some other id"
                     }
