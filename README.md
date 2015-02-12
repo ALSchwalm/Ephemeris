@@ -10,3 +10,18 @@ followed by `npm start` from the project root.
 [live]: http://ephemeris.jit.su/
 [nodejitsu]: https://www.nodejitsu.com/
 [nodejs]: http://nodejs.org/
+
+TODO
+====
+
+- [x] Creation of units
+- [x] Allow units to move around the map
+- [ ] Hud (other than the minimap)
+- [ ] Sound effects
+- [ ] More animations (explosions on hit, glow on right click, etc.)
+- [ ] Home page
+- [ ] Tutorial
+- [ ] Server support for multiple games
+- [ ] Effects for regions
+- [ ] Advanced controls (Ctrl-click, shift-click, hotkeys)
+- [ ] Add control points
