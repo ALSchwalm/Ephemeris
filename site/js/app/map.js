@@ -47,7 +47,10 @@ define(["app/config", "app/utils"], function(config, utils){
         this.regions = [];
 
         for (var i=0; i < map.regions.length; ++i) {
-            this.regions.push(this.makeRegion(map.regions[i]));
+            var newRegion = this.makeRegion(map.regions[i]);
+            if (newRegion) {
+                this.regions.push(newRegion);
+            }
         }
 
         return this;
@@ -60,8 +63,23 @@ define(["app/config", "app/utils"], function(config, utils){
      */
     Map.prototype.makeRegion = function(regionConfig) {
         var position = regionConfig.position;
-        var region = this.game.add.image(position.x, position.y, regionConfig.image);
-        return region
+
+        var loaded = this.game.cache.checkImageKey(regionConfig.image);
+        if (loaded) {
+            var region = this.game.add.image(position.x, position.y, regionConfig.image);
+        } else {
+            this.game.load.image(regionConfig.image, 'assets/images/' + regionConfig.image);
+            this.game.load.onFileComplete.add(function(p, name){
+                if (name == regionConfig.image) {
+                    var region = this.game.add.image(position.x, position.y,
+                                                     regionConfig.image);
+                    this.regions.push(region);
+
+                }
+            }.bind(this));
+        }
+
+        return null;
     }
 
     var map = new Map();
