@@ -35,6 +35,11 @@ function(config, network, player, utils, Ship){
         this.actions.push(clone);
 
         switch(action.type.toLowerCase()) {
+        case "attack":
+            this.game.units[action.data.source].attack(
+                this.game.units[action.data.target].position
+            );
+            break;
         case "move":
             this.game.units[action.data.id].moveTo(action.data.path);
             break;
@@ -44,6 +49,7 @@ function(config, network, player, utils, Ship){
         case "create":
             var type = eval(action.data.type);
             var newUnit = new type(this.game,
+                                   this,
                                    action.data.x,
                                    action.data.y,
                                    action.data.config);

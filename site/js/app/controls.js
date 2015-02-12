@@ -344,6 +344,22 @@ function(config, Phaser, player, movement, map, hud){
         })
     });
 
+    controls.registerControl(Phaser.Keyboard.E, function(){
+        require(["app/action"], function(action){
+            action.do({
+                type: "create",
+                data: {
+                    type: "Ship",
+                    x: Math.random()*200,
+                    y: Math.random()*200,
+                    config : {
+                        playerID : "some other id"
+                    }
+                },
+            });
+        })
+    });
+
     // Prevent the browser from taking the normal action (scrolling, etc)
     window.addEventListener("keydown", function(e) {
         var codes = [];

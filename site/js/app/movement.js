@@ -36,7 +36,6 @@ define(["app/config", "app/utils"], function(config, utils){
             for (var j=0; j < dimension; ++j) {
                 if (index > units.length-1) return this;
 
-                //TODO: Find a better way to determine offsets
                 var offsets = {
                     x: i*50 - (dimension-1)*50/2,
                     y: j*50 - (dimension-1)*50/2
@@ -57,10 +56,6 @@ define(["app/config", "app/utils"], function(config, utils){
                 index++;
             }
         }
-
-        units.map(function(unit){
-
-        }.bind(this));
         return this;
     }
 
