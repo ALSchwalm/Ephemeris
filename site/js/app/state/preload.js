@@ -39,6 +39,7 @@ function(config, map){
         game.load.image('shipOverlay', 'assets/images/units/MercenaryFighter_overlay.png');
         game.load.image('20select', 'assets/images/20select.png');
         game.load.image('20empty', 'assets/images/20empty.png');
+        game.load.image('10fill', 'assets/images/10fill.png');
         game.load.image('flare2', 'assets/images/flare2.png');
     };
 

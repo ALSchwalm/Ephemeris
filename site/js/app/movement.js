@@ -53,6 +53,19 @@ define(["app/config", "app/utils"], function(config, utils){
                         path: [modifiedPoint]
                     }
                 });
+
+                var moveGraphic = this.game.add.image(modifiedPoint.x,
+                                                      modifiedPoint.y,
+                                                      "10fill");
+                moveGraphic.anchor = {x:0.5, y:0.5};
+                moveGraphic.tint = 0x00DD00;
+                this.game.add.tween(moveGraphic.scale).to({
+                    x: 0,
+                    y: 0
+                }, 200).start().onComplete.add(function(){
+                    moveGraphic.destroy();
+                });
+
                 index++;
             }
         }
