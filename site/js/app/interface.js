@@ -100,7 +100,7 @@ function(config, Phaser, utils, player, map){
                     this.minimap.beginFill(0xFFFFFF, 0.5);
 
                 }
-            } else {
+            } else if (unit.sprite.visible){
                 this.minimap.beginFill(0xCC0000, 0.5);
             }
             this.minimap.drawRect(transformed.x, transformed.y, 4, 4);

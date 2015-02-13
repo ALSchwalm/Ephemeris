@@ -67,10 +67,26 @@ function(config, Phaser, map, player){
                 }
             }
         }
+
+        for (var id in this.game.units) {
+            var unit = this.game.units[id];
+            if (unit.playerID != player.id){
+                var x = Math.floor(unit.position.x/this.fowSize);
+                var y = Math.floor(unit.position.y/this.fowSize);
+
+                if (this.fog[x][y]) {
+                    unit.sprite.exists = false;
+                } else {
+                    unit.sprite.exists = true;
+                }
+            }
+        }
+
         this.drawFog();
     }
 
     Fog.prototype.drawFog = function() {
+        this.game.world.bringToTop(this.graphics);
         this.graphics.clear();
         this.graphics.beginFill(0x000000, 0.4);
 
