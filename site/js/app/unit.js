@@ -250,7 +250,7 @@ function(config, Phaser, controls, utils, player){
         this.position.x += Math.cos(rads)*this.speed;
         this.position.y += Math.sin(rads)*this.speed;
 
-        if (Phaser.Point.distance(this.position, this.destination) < 1) {
+        if (Phaser.Point.distance(this.position, this.destination) < this.speed) {
             if (this.path.length) {
                 this.destination = this.path.shift();
             } else {

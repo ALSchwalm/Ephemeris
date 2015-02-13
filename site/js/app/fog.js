@@ -29,6 +29,9 @@ function(config, Phaser, map, player){
         }
 
         this.graphics = this.game.add.graphics(0, 0);
+
+        this.fowHeight = Math.ceil(this.game.camera.height/this.fowSize);
+        this.fowWidth = Math.ceil(this.game.camera.width/this.fowSize);
     }
 
     Fog.prototype.resetFog = function() {
@@ -71,10 +74,10 @@ function(config, Phaser, map, player){
         this.graphics.clear();
         this.graphics.beginFill(0x000000, 0.4);
 
-        var offsetX = Math.ceil(this.game.camera.x/this.fowSize);
-        var offsetY = Math.ceil(this.game.camera.y/this.fowSize);
+        var offsetX = Math.floor(this.game.camera.x/this.fowSize);
+        var offsetY = Math.floor(this.game.camera.y/this.fowSize);
 
-        for (var i=-1; i < this.game.camera.width/this.fowSize; ++i) {
+        for (var i=0; i <= this.fowWidth; ++i) {
             var x = (i+offsetX)*this.fowSize;
             if (i >= 0 && this.fog[i+offsetX].every(function(fog){ return fog; })) {
                 this.graphics.drawRect(x, this.game.camera.y,
@@ -83,9 +86,9 @@ function(config, Phaser, map, player){
                 continue;
             }
 
-            for (var j=-1; j < this.game.camera.height/this.fowSize; ++j) {
-                if (i+offsetX < 0 || i+offsetX > this.fog.length ||
-                    j+offsetY < 0 || j+offsetY > this.fog[0].length)
+            for (var j=0; j <= this.fowHeight; ++j) {
+                if (i+offsetX > this.fog.length ||
+                    j+offsetY > this.fog[0].length)
                     continue;
                 var y = (j+offsetY)*this.fowSize;
                 if (this.fog[i+offsetX][j+offsetY]) {
