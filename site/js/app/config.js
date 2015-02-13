@@ -32,7 +32,8 @@ define(function(){
         interface : {
             minimap : {
                 scale : 0.07,
-                gridLines : 20
+                gridLines : 20,
+                fogOfWarResolution : 6
             },
             fogOfWarSize : 20,
         }

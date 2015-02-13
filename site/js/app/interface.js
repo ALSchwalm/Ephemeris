@@ -2,8 +2,8 @@
  * Module which displays the in-game interface
  * @module app/interface
  */
-define(["app/config", "Phaser", "app/utils", "app/player", "app/map"],
-function(config, Phaser, utils, player, map){
+define(["app/config", "Phaser", "app/utils", "app/player", "app/map", "app/fog"],
+function(config, Phaser, utils, player, map, fog){
     "use strict"
 
     /**
@@ -82,10 +82,36 @@ function(config, Phaser, utils, player, map){
         return this;
     }
 
+    Interface.prototype.updateMinimapFoW = function() {
+        var fowRes = config.interface.minimap.fogOfWarResolution;
+        var fowWidth = this.minimapWidth/fowRes;
+        var fowHeight = this.minimapHeight/fowRes;
+
+        this.minimap.beginFill(0x000000, 0.4);
+        for (var i=0; i < fowWidth; ++i) {
+            var fogX = Math.floor(i*fowRes/fog.fowSize/config.interface.minimap.scale);
+            if (fog.fog[fogX].every(function(fog){ return fog; })) {
+                this.minimap.drawRect(i*fowRes, 0, fowRes, this.minimapHeight);
+                continue;
+            }
+
+            for (var j=0; j < fowHeight; ++j) {
+                var fogY = Math.floor(j*fowRes/fog.fowSize/config.interface.minimap.scale);
+                if (fog.fog[fogX][fogY]) {
+                    this.minimap.drawRect(i*fowRes, j*fowRes,
+                                          fowRes, fowRes);
+                }
+            }
+        }
+        this.minimap.endFill();
+    }
+
     Interface.prototype.updateMinimap = function() {
         this.minimap.clear();
         this.game.world.bringToTop(this.minimapBack);
         this.game.world.bringToTop(this.minimap);
+
+        this.updateMinimapFoW();
 
         // Draw units
         for (var id in this.game.units) {

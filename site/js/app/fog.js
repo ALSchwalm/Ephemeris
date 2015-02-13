@@ -95,7 +95,9 @@ function(config, Phaser, map, player){
 
         for (var i=0; i <= this.fowWidth; ++i) {
             var x = (i+offsetX)*this.fowSize;
-            if (i >= 0 && this.fog[i+offsetX].every(function(fog){ return fog; })) {
+            if (i+offsetX < this.fog.length &&
+                this.fog[i+offsetX].every(function(fog){ return fog; })) {
+
                 this.graphics.drawRect(x, this.game.camera.y,
                                        this.fowSize,
                                        this.game.camera.height);
@@ -103,8 +105,8 @@ function(config, Phaser, map, player){
             }
 
             for (var j=0; j <= this.fowHeight; ++j) {
-                if (i+offsetX > this.fog.length ||
-                    j+offsetY > this.fog[0].length)
+                if (i+offsetX >= this.fog.length ||
+                    j+offsetY >= this.fog[0].length)
                     continue;
                 var y = (j+offsetY)*this.fowSize;
                 if (this.fog[i+offsetX][j+offsetY]) {
