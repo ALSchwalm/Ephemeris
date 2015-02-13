@@ -177,10 +177,13 @@ function(config, Phaser, controls, utils, player){
 
         var diff = Math.abs(this.sprite.rotation - direction);
         diff = this.normalizeAngle(diff);
-        if (diff > Math.PI) {
-            this.sprite.rotation -= 0.1;
-        } else {
-            this.sprite.rotation += 0.1;
+
+        if (!Phaser.Math.fuzzyEqual(diff, Math.PI, 0.1)) {
+            if (diff > Math.PI) {
+                this.sprite.rotation -= 0.1;
+            } else {
+                this.sprite.rotation += 0.1;
+            }
         }
         this.sprite.rotation = this.normalizeAngle(this.sprite.rotation);
     }
