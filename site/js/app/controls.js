@@ -252,7 +252,6 @@ function(config, Phaser, player, movement, map, hud){
          * the minimap.
          */
         minimapToWorldCoord : function() {
-            if (!this.pointerOverMinimap()) return null;
             var pointer = this.pointerPosition();
             pointer.x -= hud.minimap.x;
             pointer.y -= hud.minimap.y;
@@ -277,7 +276,7 @@ function(config, Phaser, player, movement, map, hud){
         handleMouse : function() {
             if (this.recentClick) return;
 
-            // Right clock on minimap
+            // Right click on minimap
             if (this.rightPressed() && this.pointerOverMinimap()) {
                 this.moveSelectedUnits(this.minimapToWorldCoord());
                 this.click();
@@ -304,8 +303,8 @@ function(config, Phaser, player, movement, map, hud){
                 this.click();
 
             // Move based on the minimap
-            } else if (this.leftPressed() && (this.pointerOverMinimap() ||
-                                              this.minimapActive)) {
+            } else if (this.leftPressed() && !this.selectBoxStart &&
+                       (this.pointerOverMinimap() || this.minimapActive)) {
                 var position = this.minimapToWorldCoord();
                 if (position) {
                     this.game.camera.x = position.x - this.game.camera.width/2;
