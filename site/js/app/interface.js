@@ -29,7 +29,6 @@ function(config, Phaser, utils, player, map, fog){
                                                   this.minimapWidth,
                                                   this.minimapHeight);
         // Draw backgound
-        this.minimapBack.lineStyle(2, 0xCCCCCC, 0.3);
         this.minimapBack.beginFill(0x222222, 1);
         this.minimapBack.drawRect(0, 0, this.minimapWidth, this.minimapHeight);
         this.minimapBack.endFill();
@@ -69,6 +68,20 @@ function(config, Phaser, utils, player, map, fog){
 
         this.minimap = this.game.add.graphics(0, config.game.height -
                                               this.minimapHeight);
+
+        this.fogGraphics = this.game.add.graphics(0, config.game.height -
+                                                  this.minimapHeight);
+        this.fogData = this.game.add.bitmapData(this.minimapWidth,
+                                                this.minimapHeight);
+        this.fogData.context.fillStyle = 'rgba(0,0,0,0.4)';
+        this.fogData.context.fillRect(0, 0, this.minimapWidth,
+                                      this.minimapHeight);
+        this.fogSprite = this.game.add.sprite(0, config.game.height-this.minimapHeight,
+                                              this.fogData);
+        this.fogSprite.mask = this.fogGraphics;
+
+        this.fogGraphics.fixedToCamera = true;
+        this.fogSprite.fixedToCamera = true;
         this.minimap.fixedToCamera = true;
         this.minimapBack.fixedToCamera = true;
         return this;
@@ -83,35 +96,31 @@ function(config, Phaser, utils, player, map, fog){
     }
 
     Interface.prototype.updateMinimapFoW = function() {
-        var fowRes = config.interface.minimap.fogOfWarResolution;
-        var fowWidth = this.minimapWidth/fowRes;
-        var fowHeight = this.minimapHeight/fowRes;
+        this.fogGraphics.clear();
 
-        this.minimap.beginFill(0x000000, 0.4);
-        for (var i=0; i < fowWidth; ++i) {
-            var fogX = Math.floor(i*fowRes/fog.fowSize/config.interface.minimap.scale);
-            if (fog.fog[fogX].every(function(fog){ return fog; })) {
-                this.minimap.drawRect(i*fowRes, 0, fowRes, this.minimapHeight);
-                continue;
-            }
+        this.fogGraphics.beginFill(0x000000, 1);
+        for (var id in this.game.units) {
+            var unit = this.game.units[id];
 
-            for (var j=0; j < fowHeight; ++j) {
-                var fogY = Math.floor(j*fowRes/fog.fowSize/config.interface.minimap.scale);
-                if (fog.fog[fogX][fogY]) {
-                    this.minimap.drawRect(i*fowRes, j*fowRes,
-                                          fowRes, fowRes);
-                }
-            }
+            if (unit.playerID != player.id) continue;
+            this.fogGraphics.drawCircle(unit.position.x*config.interface.minimap.scale,
+                                        unit.position.y*config.interface.minimap.scale,
+                                        unit.view*2*config.interface.minimap.scale);
         }
-        this.minimap.endFill();
+        this.fogGraphics.endFill();
     }
 
     Interface.prototype.updateMinimap = function() {
         this.minimap.clear();
         this.game.world.bringToTop(this.minimapBack);
+        this.game.world.bringToTop(this.fogSprite);
         this.game.world.bringToTop(this.minimap);
 
         this.updateMinimapFoW();
+
+        this.minimap.lineStyle(2, 0x444444, 1);
+        this.minimap.drawRect(0, 0, this.minimapWidth, this.minimapHeight);
+        this.minimap.lineStyle();
 
         // Draw units
         for (var id in this.game.units) {

@@ -16,105 +16,49 @@ function(config, Phaser, map, player){
     Fog.prototype.init = function(game) {
         this.game = game;
 
-        this.fowSize = config.interface.fogOfWarSize;
-
-        /**
-         * Array representing which parts of the map are obscured by the fog of war
-         *
-         * @type {boolean[][]}
-         */
-        this.fog = new Array(Math.ceil(map.width/this.fowSize));
-        for (var i=0; i < this.fog.length; ++i) {
-            this.fog[i] = new Array(Math.ceil(map.height/this.fowSize));
-        }
-
         this.graphics = this.game.add.graphics(0, 0);
-
-        this.fowHeight = Math.ceil(this.game.camera.height/this.fowSize);
-        this.fowWidth = Math.ceil(this.game.camera.width/this.fowSize);
-    }
-
-    Fog.prototype.resetFog = function() {
-        for (var i=0; i < this.fog.length; ++i) {
-            for (var j=0; j < this.fog[i].length; ++j) {
-                this.fog[i][j] = true;
-            }
-        }
+        this.fogData = this.game.add.bitmapData(config.game.width,
+                                                config.game.height);
+        this.fogData.context.fillStyle = 'rgba(0,0,0,0.4)';
+        this.fogData.context.fillRect(0, 0, config.game.width,
+                                      config.game.height);
+        this.fogSprite = this.game.add.sprite(0, 0, this.fogData);
+        this.fogSprite.fixedToCamera = true;
+        this.fogSprite.mask = this.graphics;
     }
 
     Fog.prototype.update = function() {
-        this.resetFog();
-
         for (var id in this.game.units) {
             var unit = this.game.units[id];
 
-            if (unit.playerID != player.id) continue;
+            if (unit.playerID != player.id){
+                unit.sprite.exists = false;
+                for (var otherID in this.game.units) {
+                    var friendlyUnit = this.game.units[otherID];
+                    if (friendlyUnit.playerID != player.id)
+                        continue;
 
-            var x = Math.ceil(unit.position.x/this.fowSize);
-            var y = Math.ceil(unit.position.y/this.fowSize);
-            var r = Math.ceil(unit.view/this.fowSize);
-
-            for (var i=-r; i < r; ++i) {
-                for (var j=-r; j < r; ++j) {
-                    if (x+i >= 0 && x+i < this.fog.length &&
-                        y+j >= 0 && y+j < this.fog.length &&
-                        Phaser.Math.distance(unit.position.x,
-                                             unit.position.y,
-                                             (x+i)*this.fowSize,
-                                             (y+j)*this.fowSize) <= unit.view) {
-                        this.fog[x+i][y+j] = false;
+                    if (Phaser.Point.distance(unit.position,
+                                             friendlyUnit.position) < friendlyUnit.view) {
+                        unit.sprite.exists = true;
                     }
                 }
             }
         }
-
-        for (var id in this.game.units) {
-            var unit = this.game.units[id];
-            if (unit.playerID != player.id){
-                var x = Math.floor(unit.position.x/this.fowSize);
-                var y = Math.floor(unit.position.y/this.fowSize);
-
-                if (this.fog[x][y]) {
-                    unit.sprite.exists = false;
-                } else {
-                    unit.sprite.exists = true;
-                }
-            }
-        }
-
         this.drawFog();
     }
 
     Fog.prototype.drawFog = function() {
-        this.game.world.bringToTop(this.graphics);
         this.graphics.clear();
-        this.graphics.beginFill(0x000000, 0.4);
 
-        var offsetX = Math.floor(this.game.camera.x/this.fowSize);
-        var offsetY = Math.floor(this.game.camera.y/this.fowSize);
+        this.graphics.beginFill(0x000000, 1);
+        for (var id in this.game.units) {
+            var unit = this.game.units[id];
 
-        for (var i=0; i <= this.fowWidth; ++i) {
-            var x = (i+offsetX)*this.fowSize;
-            if (i+offsetX < this.fog.length &&
-                this.fog[i+offsetX].every(function(fog){ return fog; })) {
-
-                this.graphics.drawRect(x, this.game.camera.y,
-                                       this.fowSize,
-                                       this.game.camera.height);
-                continue;
-            }
-
-            for (var j=0; j <= this.fowHeight; ++j) {
-                if (i+offsetX >= this.fog.length ||
-                    j+offsetY >= this.fog[0].length)
-                    continue;
-                var y = (j+offsetY)*this.fowSize;
-                if (this.fog[i+offsetX][j+offsetY]) {
-                    this.graphics.drawRect(x, y,
-                                           this.fowSize,
-                                           this.fowSize);
-                }
-            }
+            if (unit.playerID != player.id) continue;
+            this.graphics.drawCircle(unit.position.x,
+                                     unit.position.y,
+                                     unit.view*2);
         }
         this.graphics.endFill();
     }
