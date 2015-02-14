@@ -64,17 +64,34 @@ define(["app/config", "app/utils"], function(config, utils){
     Map.prototype.makeRegion = function(regionConfig) {
         var position = regionConfig.position;
 
-        var loaded = this.game.cache.checkImageKey(regionConfig.image);
-        if (loaded) {
-            var region = this.game.add.image(position.x, position.y, regionConfig.image);
-        } else {
-            this.game.load.image(regionConfig.image, 'assets/images/' + regionConfig.image);
-            this.game.load.onFileComplete.add(function(p, name){
-                if (name == regionConfig.image) {
-                    var region = this.game.add.image(position.x, position.y,
-                                                     regionConfig.image);
-                    this.regions.push(region);
+        var region = regionConfig;
 
+        var loaded = this.game.cache.checkImageKey(regionConfig.asset);
+        if (loaded) {
+            region.image = this.game.add.image(position.x, position.y,
+                                               regionConfig.asset);
+            region.image.anchor.set(0.5, 0.5);
+
+            if (regionConfig.tint) {
+                region.image.tint = regionConfig.tint;
+            }
+
+            if (regionConfig.scale) {
+                region.image.scale = regionConfig.scale;
+            }
+
+            this.regions.push(region);
+
+            if (regionConfig.type == "planet") {
+                setInterval(function(){
+                    region.image.angle += 0.1;
+                }, 100);
+            }
+        } else {
+            this.game.load.image(regionConfig.asset, 'assets/images/' + regionConfig.asset);
+            this.game.load.onFileComplete.add(function(p, name){
+                if (name == regionConfig.asset) {
+                    this.makeRegion(regionConfig);
                 }
             }.bind(this));
         }

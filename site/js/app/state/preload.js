@@ -19,18 +19,41 @@ function(config, map){
             height: 4000,
             regions : [
                 {
+                    type: "planet",
                     position : {
-                        x: 200,
-                        y: 300
+                        x: 500,
+                        y: 700
                     },
-                    image : "planets/planet1.png"
+                    asset : "planets/1.png"
                 },
                 {
+                    type: "nebula",
                     position : {
-                        x: 1000,
+                        x: 2700,
+                        y: 1500
+                    },
+                    asset : "nebulas/0.png",
+                    tint : 0x00FF00,
+                    scale : {
+                        x : 3,
+                        y : 3
+                    }
+                },
+                {
+                    type: "planet",
+                    position : {
+                        x: 200,
+                        y: 3700
+                    },
+                    asset : "planets/2.png"
+                },
+                {
+                    type: "planet",
+                    position : {
+                        x: 3200,
                         y: 3000
                     },
-                    image : "planets/planet2.png"
+                    asset : "planets/4.png"
                 }
             ]
         });

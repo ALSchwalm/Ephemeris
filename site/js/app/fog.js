@@ -19,7 +19,7 @@ function(config, Phaser, map, player){
         this.graphics = this.game.add.graphics(0, 0);
         this.fogData = this.game.add.bitmapData(config.game.width,
                                                 config.game.height);
-        this.fogData.context.fillStyle = 'rgba(0,0,0,0.4)';
+        this.fogData.context.fillStyle = 'rgba(0,0,0,0.45)';
         this.fogData.context.fillRect(0, 0, config.game.width,
                                       config.game.height);
         this.fogSprite = this.game.add.sprite(0, 0, this.fogData);

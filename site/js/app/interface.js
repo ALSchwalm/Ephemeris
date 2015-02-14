@@ -39,19 +39,15 @@ function(config, Phaser, utils, player, map, fog){
             var transformed = this.worldToMinimapCoord(region.position);
             var minimapRegion = this.game.add.image(transformed.x,
                                                     transformed.y,
-                                                    region.key);
+                                                    region.image.key);
+            minimapRegion.anchor.set(0.5, 0.5);
+            minimapRegion.tint = region.tint || 0xFFFFFF;
+            var scale = region.scale || {x: 1, y: 1};
             minimapRegion.scale = {
-                x: config.interface.minimap.scale,
-                y: config.interface.minimap.scale,
+                x: config.interface.minimap.scale*scale.x,
+                y: config.interface.minimap.scale*scale.y
             }
             minimapRegion.alpha = 0.4;
-
-            // Crop anything which would extend outside the minimap
-            if (minimapRegion.x + minimapRegion.width > this.minimapWidth) {
-                var cropWidth = (region.x + region.width) - map.width;
-                cropWidth = region.width - cropWidth;
-                minimapRegion.crop(new Phaser.Rectangle(0, 0, cropWidth, region.height));
-            }
 
             this.minimapBack.addChild(minimapRegion);
         }
