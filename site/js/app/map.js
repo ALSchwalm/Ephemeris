@@ -72,6 +72,7 @@ define(["app/config", "app/utils"], function(config, utils){
                                                regionConfig.asset);
             region.image.anchor.set(0.5, 0.5);
 
+            region.image.angle = regionConfig.angle || 0;
             if (regionConfig.tint) {
                 region.image.tint = regionConfig.tint;
             }

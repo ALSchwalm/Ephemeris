@@ -3,10 +3,21 @@
   <head>
     <meta charset="utf-8" />
     <title>Ephemeris</title>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="css/style.css">
     <script data-main="app" src="js/lib/require.js"></script>
   </head>
   <body>
+    <div id="loading-screen" class="jumbotron vertical-center">
+      <div class="container">
+        <h1>Ephemeris</h1>
+        <p class="loading-text">Loading: 0%<p>
+        <div class="progress">
+          <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+          </div>
+        </div>
+      </div>
+    </div>
     <div id="phaser-container">
       <div id="phaser-body"></div>
     </div>

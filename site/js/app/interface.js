@@ -42,6 +42,7 @@ function(config, Phaser, utils, player, map, fog){
                                                     region.image.key);
             minimapRegion.anchor.set(0.5, 0.5);
             minimapRegion.tint = region.tint || 0xFFFFFF;
+            minimapRegion.angle = region.angle || 0;
             var scale = region.scale || {x: 1, y: 1};
             minimapRegion.scale = {
                 x: config.interface.minimap.scale*scale.x,
