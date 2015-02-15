@@ -15,9 +15,19 @@ function(config, io, player, utils){
         this.socket = io(location.host, {
             query : "gameID=" + gameID
         });
+
+        /**
+         * Callbacks to be executed when the network connection is established
+         */
+        this.connectedCallbacks = [];
+
         this.socket.on("connected", function(msg){
             player.id = this.socket.id;
             player.number = msg.playerNumber;
+
+            for (var i=0; i < this.connectedCallbacks.length; ++i) {
+                this.connectedCallbacks[i](msg);
+            }
 
             //TODO show invalid game id error when player.number is null
         }.bind(this));

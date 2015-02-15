@@ -8,26 +8,27 @@ define(['app/config',
         'Phaser',
         'app/state/preload',
         'app/state/update',
-        'app/state/create'],
-function(config, Phaser, preload, update, create){
+        'app/state/create',
+        'app/network'],
+function(config, Phaser, preload, update, create, network){
     "use strict"
 
-    /**
-     * The game singleton
-     * @type {Phaser.Game}
-     */
-    var game = new Phaser.Game(config.game.width, config.game.height,
-                               Phaser.AUTO, 'phaser-body', {
-        preload : preload,
-        update  : update,
-        create  : create,
-    }, true);
-    game.units = {};
-    game.selectedUnits = [];
+    network.connectedCallbacks.push(function(){
+        /**
+         * The game singleton
+         * @type {Phaser.Game}
+         */
+        var game = new Phaser.Game(config.game.width, config.game.height,
+                                   Phaser.AUTO, 'phaser-body', {
+                                       preload : preload,
+                                       update  : update,
+                                       create  : create,
+                                   }, true);
+        game.units = {};
+        game.selectedUnits = [];
 
-    game.registerUnit = function(unit) {
-        game.units[unit.id] = unit;
-    }
-
-    return game;
+        game.registerUnit = function(unit) {
+            game.units[unit.id] = unit;
+        }
+    });
 });

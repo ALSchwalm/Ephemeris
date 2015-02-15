@@ -28,6 +28,10 @@ function(config, map, jQuery){
             seed: "3.141597",
             width: 4000,
             height: 4000,
+            startingPoints : [
+                {x: 50, y: 50},
+                {x: 3950, y: 3950},
+            ],
             regions : [
                 {
                     type: "planet",

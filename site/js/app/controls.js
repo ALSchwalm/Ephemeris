@@ -13,6 +13,8 @@ function(config, Phaser, player, movement, map, hud){
             this.handler = handler;
             this.graphics = this.game.add.graphics(0, 0);
             game.canvas.oncontextmenu = function(e) {e.preventDefault();}
+            this.game.input.activePointer.position =
+                new Phaser.Point(game.camera.position.x, game.camera.position.y);
         },
 
         recentClick : false,

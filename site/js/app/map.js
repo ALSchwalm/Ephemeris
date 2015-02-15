@@ -2,7 +2,8 @@
  * Module which generates a random map
  * @module app/map
  */
-define(["app/config", "app/utils"], function(config, utils){
+define(["app/config", "app/utils", "app/player"],
+function(config, utils, player){
     "use strict"
 
     /**
@@ -32,6 +33,7 @@ define(["app/config", "app/utils"], function(config, utils){
 
         var worldSize = this.width*this.height;
 
+        // Generate some stars
         for (var i=0; i < worldSize*config.map.starFrequency; ++i) {
             var x = utils.seededRandom()*this.width;
             var y = utils.seededRandom()*this.height;
@@ -44,14 +46,18 @@ define(["app/config", "app/utils"], function(config, utils){
             this.graphics.drawRect(x, y, size, size);
             this.graphics.endFill();
         }
-        this.regions = [];
 
+        // Add regions
+        this.regions = [];
         for (var i=0; i < map.regions.length; ++i) {
             var newRegion = this.makeRegion(map.regions[i]);
             if (newRegion) {
                 this.regions.push(newRegion);
             }
         }
+
+        // Place camera over this player's starting position
+        this.game.camera.position = map.startingPoints[player.number];
 
         return this;
     }
