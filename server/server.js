@@ -1,16 +1,64 @@
-var connect = require('connect');
-var serveStatic = require('serve-static');
+var express = require('express');
+var path = require('path');
+var compress = require('compression');
+var uuid = require("node-uuid");
 
-var app = connect();
-app.use(serveStatic(__dirname + "/../site"));
+var sitePath = path.join(__dirname, "/../site");
+
+var app = express();
+app.use(compress());
+app.use("/", express.static(sitePath));
+
+var createGame = function() {
+    var id = uuid.v4();
+    games[id] = [];
+    return id;
+}
+
+// For the time being, just redirect from index to a game
+app.use(["/", "/index", "/index.html"], function(req, res){
+    res.redirect("/game.html?id=" + createGame());
+});
+
 var server = app.listen(3000);
 
 var io = require('socket.io').listen(server);
 
+var games = {};
 io.on('connection', function(socket){
-    socket.emit("connected", {});
+    try {
+        var gameID = socket.handshake.query.gameID;
 
-    socket.on("action", function(msg){
-        socket.broadcast.emit("action", msg);
-    });
+        var playerNumber = null;
+        if (typeof(games[gameID]) !== "undefined") {
+            playerNumber = games[gameID].length;
+            games[gameID].push(socket);
+        }
+
+        socket.emit("connected", {
+            playerNumber : playerNumber
+        });
+
+        socket.on("action", function(msg){
+            games[gameID].map(function(s){
+                if (s != socket) {
+                    s.emit("action", msg);
+                }
+            });
+        });
+
+        socket.on('disconnect', function () {
+            if (games[gameID] && games[gameID][playerNumber]) {
+                games[gameID].splice(playerNumber, 1);
+
+                games[gameID].map(function(s){
+                    s.emit("disconnected", {
+                        playerNumber : playerNumber
+                    });
+                });
+            }
+        });
+    } catch (err) {
+        console.log(err);
+    }
 });

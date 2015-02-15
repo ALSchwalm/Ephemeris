@@ -11,9 +11,15 @@ function(config, io, player, utils){
      * @alias module:app/network
      */
     var Network = function() {
-        this.socket = io();
-        this.socket.on("connected", function(){
+        var gameID = document.URL.match(/id=(.*)$/)[1];
+        this.socket = io(location.host, {
+            query : "gameID=" + gameID
+        });
+        this.socket.on("connected", function(msg){
             player.id = this.socket.id;
+            player.number = msg.playerNumber;
+
+            //TODO show invalid game id error when player.number is null
         }.bind(this));
     }
 
@@ -30,6 +36,10 @@ function(config, io, player, utils){
         this.socket.on("action", function(action){
             this.handler.do(action);
         }.bind(this));
+
+        this.socket.on("disconnected", function(msg){
+            //TODO show screen indicating a player has left
+        });
         return this;
     }
 
