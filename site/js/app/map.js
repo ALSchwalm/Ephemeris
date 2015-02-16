@@ -19,8 +19,8 @@ function(config, utils, player){
      * @param {object} map - Configuration object for the map
      */
     Map.prototype.init = function(game, map) {
-        utils.rngSeed = map.seed;
         this.game = game;
+        this.game.rnd.sow([map.seed]);
         this.graphics = this.game.add.graphics(0, 0);
         this.graphics.fixedToCamera = true;
         this.width = map.width;
@@ -35,10 +35,10 @@ function(config, utils, player){
 
         // Generate some stars
         for (var i=0; i < worldSize*config.map.starFrequency; ++i) {
-            var x = utils.seededRandom()*this.width;
-            var y = utils.seededRandom()*this.height;
-            var size = utils.seededRandom()*2;
-            var colorIndex = Math.floor(utils.seededRandom()*
+            var x = this.game.rnd.frac()*this.width;
+            var y = this.game.rnd.frac()*this.height;
+            var size = this.game.rnd.frac()*2;
+            var colorIndex = Math.floor(this.game.rnd.frac()*
                                         config.map.starColors.length);
             var color = config.map.starColors[colorIndex];
 
