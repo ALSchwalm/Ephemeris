@@ -8,7 +8,7 @@ function(config, utils, player){
 
     /**
      * Singleton which generates a random map (as seeded by the server)
-     * @alias module:app/network
+     * @alias module:app/map
      */
     var Map = function() {}
 

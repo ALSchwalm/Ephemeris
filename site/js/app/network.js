@@ -10,24 +10,28 @@ function(config, io, player, utils){
      * Type which abstracts network communication
      * @alias module:app/network
      */
-    var Network = function() {
+    var Network = function() {}
+
+    /**
+     * Connect the underlying web socket and execute 'callback' when complete
+     *
+     * @param {function} callback - Callback to be executed when the network
+     *                              connection is established
+     */
+    Network.prototype.connect = function(callback) {
         var gameID = document.URL.match(/id=(.*)$/)[1];
+
+        /**
+         * The underlying socket object
+         */
         this.socket = io(location.host, {
             query : "gameID=" + gameID
         });
 
-        /**
-         * Callbacks to be executed when the network connection is established
-         */
-        this.connectedCallbacks = [];
-
         this.socket.on("connected", function(msg){
             player.id = this.socket.id;
             player.number = msg.playerNumber;
-
-            for (var i=0; i < this.connectedCallbacks.length; ++i) {
-                this.connectedCallbacks[i](msg);
-            }
+            callback();
 
             //TODO show invalid game id error when player.number is null
         }.bind(this));

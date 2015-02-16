@@ -13,7 +13,7 @@ define(['app/config',
 function(config, Phaser, preload, update, create, network){
     "use strict"
 
-    network.connectedCallbacks.push(function(){
+    network.connect(function(){
         /**
          * The game singleton
          * @type {Phaser.Game}
