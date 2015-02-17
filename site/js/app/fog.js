@@ -27,12 +27,28 @@ function(config, Phaser, map, player){
         this.fogSprite.mask = this.graphics;
     }
 
+    Fog.prototype.hideUnit = function(unit, hide) {
+        if (hide == unit.graphics.visible && !unit._animating) {
+            unit._animating = true;
+            if (!hide) {
+                unit.graphics.visible = true;
+            }
+            var tween = this.game.add.tween(unit.graphics)
+                .to({alpha: !hide}, 100).start().onComplete.add(function(){
+                    if (hide) {
+                        unit.graphics.visible = false;
+                    }
+                    unit._animating = false;
+                });
+        }
+    }
+
     Fog.prototype.update = function() {
         for (var id in this.game.units) {
             var unit = this.game.units[id];
 
             if (unit.playerID != player.id){
-                unit.graphics.visible = false;
+                var hide = true;
                 for (var otherID in this.game.units) {
                     var friendlyUnit = this.game.units[otherID];
                     if (friendlyUnit.playerID != player.id)
@@ -40,15 +56,19 @@ function(config, Phaser, map, player){
 
                     if (Phaser.Point.distance(unit.position,
                                              friendlyUnit.position) < friendlyUnit.view) {
-                        unit.graphics.visible = true;
+                        hide = false;
                     }
                 }
+
+                this.hideUnit(unit, hide);
+
             }
         }
         this.drawFog();
     }
 
     Fog.prototype.drawFog = function() {
+        this.game.world.bringToTop(this.fogSprite);
         this.graphics.clear();
 
         this.graphics.beginFill(0x000000, 1);
