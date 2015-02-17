@@ -37,7 +37,7 @@ function(config, network, player, utils, Ship){
         switch(action.type.toLowerCase()) {
         case "attack":
             this.game.units[action.data.source].attack(
-                this.game.units[action.data.target].position
+                this.game.units[action.data.target]
             );
             break;
         case "move":

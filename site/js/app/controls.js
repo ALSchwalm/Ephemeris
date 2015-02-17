@@ -149,11 +149,12 @@ function(config, Phaser, player, movement, map, hud){
 
             for (var id in this.game.units) {
                 var point = {
-                    x: this.game.units[id].sprite.x,
-                    y: this.game.units[id].sprite.y
+                    x: this.game.units[id].graphics.x,
+                    y: this.game.units[id].graphics.y
                 }
-                if (rect.contains(point.x, point.y) &&
-                    this.game.units[id].playerID == player.id) {
+                if (this.game.units[id].playerID == player.id &&
+                    this.game.units[id].health > 0 &&
+                    rect.contains(point.x, point.y)) {
                     selected.push(this.game.units[id]);
                 }
             }

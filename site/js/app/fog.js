@@ -32,7 +32,7 @@ function(config, Phaser, map, player){
             var unit = this.game.units[id];
 
             if (unit.playerID != player.id){
-                unit.sprite.exists = false;
+                unit.graphics.visible = false;
                 for (var otherID in this.game.units) {
                     var friendlyUnit = this.game.units[otherID];
                     if (friendlyUnit.playerID != player.id)
@@ -40,7 +40,7 @@ function(config, Phaser, map, player){
 
                     if (Phaser.Point.distance(unit.position,
                                              friendlyUnit.position) < friendlyUnit.view) {
-                        unit.sprite.exists = true;
+                        unit.graphics.visible = true;
                     }
                 }
             }

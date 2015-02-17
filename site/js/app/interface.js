@@ -125,15 +125,17 @@ function(config, Phaser, utils, player, map, fog){
             var position = unit.position;
             var transformed = this.worldToMinimapCoord(position);
 
-            if (unit.playerID == player.id) {
-                if (this.game.selectedUnits.indexOf(unit) == -1) {
-                    this.minimap.beginFill(0x0000FF, 0.5);
-                } else {
-                    this.minimap.beginFill(0xFFFFFF, 0.5);
+            if (unit.health > 0) {
+                if (unit.playerID == player.id) {
+                    if (this.game.selectedUnits.indexOf(unit) == -1) {
+                        this.minimap.beginFill(0x0000FF, 0.5);
+                    } else {
+                        this.minimap.beginFill(0xFFFFFF, 0.5);
 
+                    }
+                } else if (unit.sprite.visible){
+                    this.minimap.beginFill(0xCC0000, 0.5);
                 }
-            } else if (unit.sprite.visible){
-                this.minimap.beginFill(0xCC0000, 0.5);
             }
             this.minimap.drawRect(transformed.x, transformed.y, 4, 4);
             this.minimap.endFill();

@@ -18,9 +18,11 @@ function(config, Phaser, controls, utils, player){
      *
      * @param {Phaser.Game} game - A reference to the current game object
      * @param {ActionHandler} handler - A reference to this game's ActionHandler
+     * @param {Number} x - Unit spawn x position
+     * @param {Number} y - Unit spawn x position
      * @param {object} config - Configuration for this unit
      */
-    Unit.prototype.init = function(game, handler, config) {
+    Unit.prototype.init = function(game, handler, x, y, config) {
 
         /**
          * A reference to the current game
@@ -34,14 +36,33 @@ function(config, Phaser, controls, utils, player){
          */
         this.handler = handler;
 
+        this.graphics = this.game.add.group();
+        this.graphics.position = new Phaser.Point(x, y);
+
         for (var id in config) {
             this[id] = config[id];
         }
 
+        this.sprite = this.graphics.create(0, 0, this.spriteKey);
+        this.sprite.anchor.set(0.5, 0.5);
+        this.sprite.update = this.update.bind(this);
+
+        this.selectGraphic = null;
+
+        this.healthGraphic = this.game.add.graphics(0, 0);
+        this.graphics.addChild(this.healthGraphic);
+
+        this.highlights = this.game.add.sprite(0, 0, this.overlayKey);
+        this.highlights.anchor.set(0.5, 0.5);
+        this.highlights.alpha = 0.7;
+        this.sprite.addChild(this.highlights);
+
+        this.background = this.game.add.sprite(0, 0, this.backgroundKey);
+        this.background.anchor.set(0.5, 0.5);
+        this.sprite.addChild(this.background);
+
         this._destination = this.destination || null;
         this.path = this.path || [];
-        this.sprite = this.sprite || null;
-        this.selectGraphic = this.selectGraphic || null;
 
         /**
          * The speed of this unit
@@ -79,23 +100,55 @@ function(config, Phaser, controls, utils, player){
          */
         this.playerID = this.playerID || player.id;
 
+        /**
+         * The current health of this unit
+         * @type {Number}
+         */
+        this.health = this.health || 100;
+
+        /**
+         * The maximum health of this unit
+         * @type {Number}
+         */
+        this.maxHealth = this.health || 100;
+
+        /**
+         * The base damage done by this unit during an attack
+         * @type {Number}
+         */
+        this.attackPower = this.attackPower || 10;
+
         this.target = this.target || null;
         this.attacking = false;
 
         if (this.playerID == player.id) {
             this.enemy = false;
+            this.highlights.tint = 0x0000FF;
+            this.sprite.tint = 0xAAAAFF;
         } else {
             this.enemy = true;
+            this.highlights.tint = 0xCC0000;
+            this.sprite.tint = 0xFFAAAA;
         }
         this.game.registerUnit(this);
     }
 
     Object.defineProperty(Unit.prototype, "position", {
         get : function() {
-            return this.sprite.position;
+            return this.graphics.position;
         },
         set : function(value) {
-            this.sprite.position = value;
+            this.graphics.position = value;
+        }
+    });
+
+    Object.defineProperty(Unit.prototype, "health", {
+        get : function() {
+            return this._health;
+        },
+        set : function(value) {
+            this._health = value;
+            this.drawHealthBar();
         }
     });
 
@@ -118,13 +171,39 @@ function(config, Phaser, controls, utils, player){
     });
 
     /**
+     * Update this unit's health bar
+     */
+    Unit.prototype.drawHealthBar = function() {
+        var percent = this.health / this.maxHealth;
+        var color = (percent < 0.25) ? 0xCC0000 :
+            (percent < 0.6) ? 0xFFFF00 : 0x00CC00;
+
+        this.healthGraphic.clear();
+
+        // Health background
+        this.healthGraphic.lineStyle(1, 0xCCCCCC, 1);
+        this.healthGraphic.beginFill(0x333333, 0.8);
+        this.healthGraphic.drawRect(-this.sprite.width/2,
+                                    this.sprite.height,
+                                    this.sprite.width, 4);
+        this.healthGraphic.endFill();
+
+        // Current health level
+        this.healthGraphic.beginFill(color, 0.8);
+        this.healthGraphic.drawRect(-this.sprite.width/2,
+                                    this.sprite.height,
+                                    this.sprite.width*percent, 4);
+        this.healthGraphic.endFill();
+    }
+
+    /**
      * Callback executed when the unit is selected
      */
     Unit.prototype.onSelect = function() {
         if (this.selectGraphic == null) {
-            this.selectGraphic = this.game.add.sprite(0, 0, "20select");
-            this.selectGraphic.anchor = {x: 0.5, y:0.5};
-            this.sprite.addChild(this.selectGraphic);
+            this.selectGraphic = this.game.add.sprite(0, 0, this.selectKey);
+            this.selectGraphic.anchor.set(0.5, 0.5);
+            this.graphics.addChild(this.selectGraphic);
         }
     }
 
@@ -189,20 +268,30 @@ function(config, Phaser, controls, utils, player){
     }
 
     /**
+     * Remove this unit from the game
+     */
+    Unit.prototype.destroy = function() {
+        this.graphics.destroy();
+        var index = this.game.selectedUnits.indexOf(this);
+        if (index != -1) {
+            this.game.selectedUnits.splice(index, 1);
+            this.onUnselect();
+        }
+    }
+
+    /**
      * Show an attack from this unit to 'target'
      *
-     * @param {Phaser.Point} [target=this.destination] - Target to attack
+     * @param {Unit} target - Target to attack
      */
     Unit.prototype.attack = function(target) {
-        var target = (target) ? target : this.destination;
-
         var shot = this.game.add.sprite(this.position.x,
                                         this.position.y, "flare2");
         shot.anchor = {x:0.5, y:0.5};
         var tween = this.game.add.tween(shot);
         tween.to({
-            x: target.x,
-            y: target.y
+            x: target.position.x,
+            y: target.position.y
         }, 200).start();
 
         tween.onComplete.add(function(){
@@ -211,6 +300,13 @@ function(config, Phaser, controls, utils, player){
                 x: 0,
                 y: 0
             }, 100).start();
+
+            target.health -= this.attackPower;
+            if (target.health <= 0) {
+                target.destroy();
+                this.target = null;
+                this.destination = null;
+            }
         }.bind(this));
     }
 
@@ -269,7 +365,8 @@ function(config, Phaser, controls, utils, player){
         this.moveTowardDestination();
         var avoidDistance = (this.destination && !this.target) ? 0 : 35;
         for (var id in this.game.units) {
-            if (id == this.id || this.game.units[id].playerID != this.playerID)
+            if (id == this.id || this.game.units[id].playerID != this.playerID ||
+                this.game.units[id].health <= 0)
                 continue;
             var unit = this.game.units[id];
 
