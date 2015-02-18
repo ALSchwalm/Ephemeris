@@ -18,7 +18,7 @@ function(config, io, player, utils){
      * @param {function} callback - Callback to be executed when the network
      *                              connection is established
      */
-    Network.prototype.connect = function(callback) {
+    Network.prototype.connect = function(connected, started) {
         var gameID = document.URL.match(/id=(.*)$/)[1];
 
         /**
@@ -29,9 +29,26 @@ function(config, io, player, utils){
         });
 
         this.socket.on("connected", function(msg){
-            player.id = this.socket.id;
-            player.number = msg.playerNumber;
-            callback();
+            player.init(this.socket.id, msg.playerNumber)
+            var game = connected();
+            game.state.afterCreate = function(){
+                game.loaded = true;
+            }
+            this.socket.on("start", function(msg){
+                msg.players.map(function(playerConfig) {
+                    if (playerConfig.id != player.id)
+                        player.registerOpponent(playerConfig.id,
+                                                playerConfig.number);
+                });
+
+                if (!game.loaded) {
+                    game.state.afterCreate = function(){
+                        started && started();
+                    }
+                } else {
+                    started && started();
+                }
+            })
 
             //TODO show invalid game id error when player.number is null
         }.bind(this));

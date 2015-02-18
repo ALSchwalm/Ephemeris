@@ -152,7 +152,7 @@ function(config, Phaser, player, movement, map, hud){
                     x: this.game.units[id].graphics.x,
                     y: this.game.units[id].graphics.y
                 }
-                if (this.game.units[id].playerID == player.id &&
+                if (this.game.units[id].player.id == player.id &&
                     this.game.units[id].health > 0 &&
                     rect.contains(point.x, point.y)) {
                     selected.push(this.game.units[id]);

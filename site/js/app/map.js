@@ -2,8 +2,8 @@
  * Module which generates a random map
  * @module app/map
  */
-define(["app/config", "app/utils", "app/player"],
-function(config, utils, player){
+define(["app/config", "app/utils", "app/player", "app/controlpoint"],
+function(config, utils, player, ControlPoint){
     "use strict"
 
     /**
@@ -18,11 +18,17 @@ function(config, utils, player){
      * @param {Phaser.Game} game - A reference to the current game object
      * @param {object} map - Configuration object for the map
      */
-    Map.prototype.init = function(game, map) {
+    Map.prototype.init = function(game, handler, map) {
         this.game = game;
+        this.handler = handler
+        this.configuration = map;
         this.game.rnd.sow([map.seed]);
-        this.graphics = this.game.add.graphics(0, 0);
-        this.graphics.fixedToCamera = true;
+        this.graphics = this.game.add.group();
+
+        this.stars = this.game.add.graphics(0, 0);
+        this.stars.fixedToCamera = true;
+        this.graphics.addChild(this.stars);
+
         this.width = map.width;
         this.height = map.height;
 
@@ -42,10 +48,12 @@ function(config, utils, player){
                                         config.map.starColors.length);
             var color = config.map.starColors[colorIndex];
 
-            this.graphics.beginFill(color, 0.3);
-            this.graphics.drawRect(x, y, size, size);
-            this.graphics.endFill();
+            this.stars.beginFill(color, 0.3);
+            this.stars.drawRect(x, y, size, size);
+            this.stars.endFill();
         }
+
+        this.controlPoints = [];
 
         // Add regions
         this.regions = [];
@@ -63,6 +71,34 @@ function(config, utils, player){
     }
 
     /**
+     * Add control points to the map.
+     *
+     * @note This must not be called until after "start" has been received
+     */
+    Map.prototype.addControlPoints = function() {
+        for (var i=0; i < this.configuration.controlPoints.length; ++i) {
+            var point = this.configuration.controlPoints[i];
+
+            var owner = null;
+            if (player.number == point.owner-1) {
+                owner = player;
+            } else {
+                for (var id in player.opponents) {
+                    if (player.opponents[id].number == point.owner-1) {
+                        owner = player.opponents[id];
+                        break;
+                    }
+                }
+            }
+
+            this.controlPoints.push(new ControlPoint(this.game,
+                                                     this.handler,
+                                                     point.x, point.y,
+                                                     owner));
+        }
+    }
+
+    /**
      * Add a region to the map
      *
      * @returns {object} - The region added to the game
@@ -76,6 +112,7 @@ function(config, utils, player){
         if (loaded) {
             region.image = this.game.add.image(position.x, position.y,
                                                regionConfig.asset);
+            this.graphics.addChild(region.image);
             region.image.anchor.set(0.5, 0.5);
 
             region.image.angle = regionConfig.angle || 0;

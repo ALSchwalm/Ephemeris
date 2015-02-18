@@ -39,6 +39,22 @@ io.on('connection', function(socket){
             playerNumber : playerNumber
         });
 
+        // TODO support for arbitrary numbers of players
+        if (games[gameID].length == 2) {
+            var startMessage = {
+                players : []
+            };
+            games[gameID].map(function(s, i){
+                startMessage.players.push({
+                    id : s.id,
+                    number : i
+                });
+            });
+            games[gameID].map(function(s){
+                s.emit("start", startMessage);
+            });
+        }
+
         socket.on("action", function(msg){
             games[gameID].map(function(s){
                 if (s != socket) {

@@ -9,8 +9,9 @@ define(['app/config',
         'app/state/preload',
         'app/state/update',
         'app/state/create',
+        'app/state/start',
         'app/network'],
-function(config, Phaser, preload, update, create, network){
+function(config, Phaser, preload, update, create, start, network){
     "use strict"
 
     network.connect(function(){
@@ -30,5 +31,6 @@ function(config, Phaser, preload, update, create, network){
         game.registerUnit = function(unit) {
             game.units[unit.id] = unit;
         }
-    });
+        return game;
+    }, start);
 });

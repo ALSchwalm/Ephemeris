@@ -2,8 +2,8 @@
  * A module returning a function which will be executed to load game assets
  * @module app/state/preload
  */
-define(["app/config", "app/map", "jquery"],
-function(config, map, jQuery){
+define(["app/config", "app/map", "app/action", "jquery"],
+function(config, map, handler, jQuery){
     "use strict"
 
     /**
@@ -24,13 +24,18 @@ function(config, map, jQuery){
             }
         });
 
-        map.init(game, {
+        map.init(game, handler, {
             seed: "3.141597",
             width: 4000,
             height: 4000,
             startingPoints : [
                 {x: 50, y: 50},
                 {x: 3950, y: 3950},
+            ],
+            controlPoints : [
+                {x: 500,  y: 700,  owner: 1},
+                {x: 3200, y: 3000, owner: 2},
+                {x: 2800, y: 1000, owner: null},
             ],
             regions : [
                 {
@@ -78,9 +83,10 @@ function(config, map, jQuery){
         game.load.image('shipOverlay', 'assets/images/units/MercenaryFighter_overlay.png');
         game.load.image('20select', 'assets/images/20select.png');
         game.load.image('20empty', 'assets/images/20empty.png');
+        game.load.image('384empty', 'assets/images/384empty.png');
         game.load.image('10fill', 'assets/images/10fill.png');
         game.load.image('flare2', 'assets/images/flare2.png');
-    };
+    }
 
     return preload;
 });

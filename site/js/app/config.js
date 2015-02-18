@@ -21,13 +21,18 @@ define(function(){
         assets : {
             numPlanets : 8
         },
+        player : {
+            colors : [0x0000FF, 0xFF0000],
+            mutedColors : [0xAAAAFF, 0xFFAAAA],
+        },
         map : {
             starFrequency : 0.001,
             starColors : [
                 0xFFFFFF,
                 0xEEEEAA,
             ],
-            parallaxFactor : 50
+            parallaxFactor : 50,
+            controlPointConvertRate : 1/50
         },
         interface : {
             minimap : {

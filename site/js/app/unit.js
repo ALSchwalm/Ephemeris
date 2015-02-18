@@ -22,7 +22,7 @@ function(config, Phaser, controls, utils, player){
      * @param {Number} y - Unit spawn x position
      * @param {object} config - Configuration for this unit
      */
-    Unit.prototype.init = function(game, handler, x, y, config) {
+    Unit.prototype.init = function(game, handler, x, y, configuration) {
 
         /**
          * A reference to the current game
@@ -39,8 +39,8 @@ function(config, Phaser, controls, utils, player){
         this.graphics = this.game.add.group();
         this.graphics.position = new Phaser.Point(x, y);
 
-        for (var id in config) {
-            this[id] = config[id];
+        for (var id in configuration) {
+            this[id] = configuration[id];
         }
 
         this.sprite = this.graphics.create(0, 0, this.spriteKey);
@@ -95,10 +95,15 @@ function(config, Phaser, controls, utils, player){
         this.id = this.id || utils.genUUID();
 
         /**
-         * The ID of the player which controls this unit
-         * @type {string}
+         * A reference to the owner of this unit
+         * @type {Player}
          */
-        this.playerID = this.playerID || player.id;
+        this.player = null;
+        if (this.playerID) {
+            this.player = player.opponents[this.playerID];
+        } else {
+            this.player = player;
+        }
 
         /**
          * The current health of this unit
@@ -121,15 +126,9 @@ function(config, Phaser, controls, utils, player){
         this.target = this.target || null;
         this.attacking = false;
 
-        if (this.playerID == player.id) {
-            this.enemy = false;
-            this.highlights.tint = 0x0000FF;
-            this.sprite.tint = 0xAAAAFF;
-        } else {
-            this.enemy = true;
-            this.highlights.tint = 0xCC0000;
-            this.sprite.tint = 0xFFAAAA;
-        }
+        this.highlights.tint = this.player.color;
+        this.sprite.tint = config.player.mutedColors[this.player.number]
+        this.enemy = (this.player != player);
         this.game.registerUnit(this);
     }
 

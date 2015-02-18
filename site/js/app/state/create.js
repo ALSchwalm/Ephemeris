@@ -21,7 +21,7 @@ function(config, handler, controls, network, movement, hud, fog){
         movement.init(game, handler);
         hud.init(game);
         fog.init(game);
-    };
-
+        game.state.afterCreate();
+    }
     return create;
 });

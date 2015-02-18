@@ -47,11 +47,11 @@ function(config, Phaser, map, player){
         for (var id in this.game.units) {
             var unit = this.game.units[id];
 
-            if (unit.playerID != player.id){
+            if (unit.player != player){
                 var hide = true;
                 for (var otherID in this.game.units) {
                     var friendlyUnit = this.game.units[otherID];
-                    if (friendlyUnit.playerID != player.id)
+                    if (friendlyUnit.player != player)
                         continue;
 
                     if (Phaser.Point.distance(unit.position,
@@ -75,11 +75,20 @@ function(config, Phaser, map, player){
         for (var id in this.game.units) {
             var unit = this.game.units[id];
 
-            if (unit.playerID != player.id) continue;
+            if (unit.player.id != player.id) continue;
             this.graphics.drawCircle(unit.position.x,
                                      unit.position.y,
                                      unit.view*2);
         }
+
+        map.controlPoints.map(function(point){
+            if (point.owner == player.number) {
+                this.graphics.drawCircle(point.position.x,
+                                         point.position.y,
+                                         point.radius*2);
+            }
+        }.bind(this));
+
         this.graphics.endFill();
     }
 

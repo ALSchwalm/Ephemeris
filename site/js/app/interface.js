@@ -34,8 +34,7 @@ function(config, Phaser, utils, player, map, fog){
         this.minimapBack.endFill();
 
         // Draw regions
-        for (var i=0; i < map.regions.length; ++i) {
-            var region = map.regions[i];
+        map.regions.map(function(region){
             var transformed = this.worldToMinimapCoord(region.position);
             var minimapRegion = this.game.add.image(transformed.x,
                                                     transformed.y,
@@ -51,7 +50,11 @@ function(config, Phaser, utils, player, map, fog){
             minimapRegion.alpha = 0.4;
 
             this.minimapBack.addChild(minimapRegion);
-        }
+        }.bind(this));
+
+        this.controlPointsGraphics = this.game.add.graphics();
+        this.minimapBack.addChild(this.controlPointsGraphics);
+        this.displayControlPoints();
 
         // Draw grid
         var cellSize = this.minimapWidth/config.interface.minimap.gridLines;
@@ -84,6 +87,18 @@ function(config, Phaser, utils, player, map, fog){
         return this;
     }
 
+    Interface.prototype.displayControlPoints = function() {
+        this.controlPointsGraphics.clear();
+        map.controlPoints.map(function(point){
+            var transformed = this.worldToMinimapCoord(point.position);
+            this.controlPointsGraphics.lineStyle(1, point.sprite.tint, 0.5);
+            this.controlPointsGraphics.drawCircle(transformed.x,
+                                                  transformed.y,
+                                                  point.range*2*config.interface.minimap.scale);
+        }.bind(this));
+        return this;
+    }
+
     /**
      * Update the interface
      */
@@ -99,11 +114,19 @@ function(config, Phaser, utils, player, map, fog){
         for (var id in this.game.units) {
             var unit = this.game.units[id];
 
-            if (unit.playerID != player.id) continue;
+            if (unit.player != player) continue;
             this.fogGraphics.drawCircle(unit.position.x*config.interface.minimap.scale,
                                         unit.position.y*config.interface.minimap.scale,
                                         unit.view*2*config.interface.minimap.scale);
         }
+
+        map.controlPoints.map(function(point){
+            if (point.owner == player.number) {
+                this.fogGraphics.drawCircle(point.position.x*config.interface.minimap.scale,
+                                            point.position.y*config.interface.minimap.scale,
+                                            point.radius*2*config.interface.minimap.scale);
+            }
+        }.bind(this));
         this.fogGraphics.endFill();
     }
 
@@ -126,15 +149,15 @@ function(config, Phaser, utils, player, map, fog){
             var transformed = this.worldToMinimapCoord(position);
 
             if (unit.health > 0) {
-                if (unit.playerID == player.id) {
+                if (unit.player == player) {
                     if (this.game.selectedUnits.indexOf(unit) == -1) {
-                        this.minimap.beginFill(0x0000FF, 0.5);
+                        this.minimap.beginFill(unit.player.color, 0.5);
                     } else {
                         this.minimap.beginFill(0xFFFFFF, 0.5);
 
                     }
-                } else if (unit.sprite.visible){
-                    this.minimap.beginFill(0xCC0000, 0.5);
+                } else if (unit.graphics.visible){
+                    this.minimap.beginFill(unit.player.color, 0.5);
                 }
             }
             this.minimap.drawRect(transformed.x, transformed.y, 4, 4);
