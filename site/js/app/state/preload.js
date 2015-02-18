@@ -18,9 +18,8 @@ function(config, map, handler, jQuery){
             $("#loading-screen .progress-bar").css('width', p+'%')
                 .attr('aria-valuenow', p);
             if (p == 100) {
-                setTimeout(function(){
-                    $("#loading-screen").fadeOut();
-                }, 500);
+                $(".progress").hide();
+                $("#loading-screen .loading-text").html("Ready: Waiting for other players");
             }
         });
 

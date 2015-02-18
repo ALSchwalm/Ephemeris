@@ -3,8 +3,8 @@
  * and the game is ready to start
  * @module app/state/start
  */
-define(["app/config", "app/interface", "app/map"],
-function(config, hud, map){
+define(["app/config", "app/interface", "app/map", "app/network", "jquery"],
+function(config, hud, map, network, jquery){
     "use strict"
 
     /**
@@ -17,6 +17,13 @@ function(config, hud, map){
     var start = function(game){
         map.addControlPoints();
         hud.displayControlPoints();
+        network.onAllReady = function() {
+            setTimeout(function(){
+                $("#loading-screen").fadeOut();
+            }, 500);
+            game.running = true;
+        }
+        network.ready();
     }
     return start;
 });

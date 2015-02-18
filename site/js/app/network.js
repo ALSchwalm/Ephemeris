@@ -34,7 +34,7 @@ function(config, io, player, utils){
             game.state.afterCreate = function(){
                 game.loaded = true;
             }
-            this.socket.on("start", function(msg){
+            this.socket.on("joined", function(msg){
                 msg.players.map(function(playerConfig) {
                     if (playerConfig.id != player.id)
                         player.registerOpponent(playerConfig.id,
@@ -43,12 +43,16 @@ function(config, io, player, utils){
 
                 if (!game.loaded) {
                     game.state.afterCreate = function(){
-                        started && started();
+                        started && started(game);
                     }
                 } else {
-                    started && started();
+                    started && started(game);
                 }
             })
+
+            this.socket.on("ready", function(msg){
+                this.onAllReady && this.onAllReady();
+            }.bind(this));
 
             //TODO show invalid game id error when player.number is null
         }.bind(this));
@@ -72,6 +76,10 @@ function(config, io, player, utils){
             //TODO show screen indicating a player has left
         });
         return this;
+    }
+
+    Network.prototype.ready = function() {
+        this.socket.emit("ready", {});
     }
 
     /**

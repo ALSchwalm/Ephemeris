@@ -72,7 +72,7 @@ function(config, Phaser, player){
 
         if (attemptedOwner == null) {
             this.convertPercent = 0;
-        } else {
+        } else if (this.convertPercent <= 100){
             this.convertPercent += config.map.controlPointConvertRate*magnitude;
 
             if (this.convertPercent >= 100) {

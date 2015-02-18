@@ -82,7 +82,7 @@ function(config, Phaser, map, player){
         }
 
         map.controlPoints.map(function(point){
-            if (point.owner == player.number) {
+            if (point.owner == player) {
                 this.graphics.drawCircle(point.position.x,
                                          point.position.y,
                                          point.radius*2);

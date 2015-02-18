@@ -12,6 +12,7 @@ app.use("/", express.static(sitePath));
 var createGame = function() {
     var id = uuid.v4();
     games[id] = [];
+    games[id].ready = 0;
     return id;
 }
 
@@ -51,9 +52,18 @@ io.on('connection', function(socket){
                 });
             });
             games[gameID].map(function(s){
-                s.emit("start", startMessage);
+                s.emit("joined", startMessage);
             });
         }
+
+        socket.on("ready", function(msg){
+            games[gameID].ready++;
+            if (games[gameID].ready == 2) {
+                games[gameID].map(function(s){
+                    s.emit("ready", {});
+                });
+            }
+        });
 
         socket.on("action", function(msg){
             games[gameID].map(function(s){

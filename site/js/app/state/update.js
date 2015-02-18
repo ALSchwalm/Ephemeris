@@ -15,9 +15,11 @@ function(controls, hud, fog){
      * @param {Phaser.Game} game - The current game object
      */
     var update = function(game) {
-        controls.update();
-        fog.update();
-        hud.update();
+        if (game.running) {
+            controls.update();
+            fog.update();
+            hud.update();
+        }
     }
 
     return update;

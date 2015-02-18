@@ -32,7 +32,7 @@ define(function(){
                 0xEEEEAA,
             ],
             parallaxFactor : 50,
-            controlPointConvertRate : 1/50
+            controlPointConvertRate : 1/30
         },
         interface : {
             minimap : {

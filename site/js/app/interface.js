@@ -121,7 +121,7 @@ function(config, Phaser, utils, player, map, fog){
         }
 
         map.controlPoints.map(function(point){
-            if (point.owner == player.number) {
+            if (point.owner == player) {
                 this.fogGraphics.drawCircle(point.position.x*config.interface.minimap.scale,
                                             point.position.y*config.interface.minimap.scale,
                                             point.radius*2*config.interface.minimap.scale);
