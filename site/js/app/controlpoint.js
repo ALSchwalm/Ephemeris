@@ -54,6 +54,8 @@ function(config, Phaser, player){
         }
     });
 
+    ControlPoint.prototype.redraw = false;
+
     ControlPoint.prototype.update = function() {
         var attemptedOwner = null;
         var magnitude = 1;
@@ -85,6 +87,7 @@ function(config, Phaser, player){
     }
 
     ControlPoint.prototype.updateColor = function() {
+        ControlPoint.redraw = true;
         if (this.owner) {
             this.sprite.tint = this.owner.color;
         } else {

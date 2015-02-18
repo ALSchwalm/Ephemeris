@@ -2,8 +2,9 @@
  * Module which displays the in-game interface
  * @module app/interface
  */
-define(["app/config", "Phaser", "app/utils", "app/player", "app/map", "app/fog"],
-function(config, Phaser, utils, player, map, fog){
+define(["app/config", "Phaser", "app/utils",
+        "app/player", "app/map", "app/fog", "app/controlpoint"],
+function(config, Phaser, utils, player, map, fog, ControlPoint){
     "use strict"
 
     /**
@@ -88,14 +89,18 @@ function(config, Phaser, utils, player, map, fog){
     }
 
     Interface.prototype.displayControlPoints = function() {
-        this.controlPointsGraphics.clear();
-        map.controlPoints.map(function(point){
-            var transformed = this.worldToMinimapCoord(point.position);
-            this.controlPointsGraphics.lineStyle(1, point.sprite.tint, 0.5);
-            this.controlPointsGraphics.drawCircle(transformed.x,
-                                                  transformed.y,
-                                                  point.range*2*config.interface.minimap.scale);
-        }.bind(this));
+        if (ControlPoint.redraw) {
+            this.controlPointsGraphics.clear();
+            map.controlPoints.map(function(point){
+                var transformed = this.worldToMinimapCoord(point.position);
+                var range = point.range*2*config.interface.minimap.scale;
+                this.controlPointsGraphics.lineStyle(1, point.sprite.tint, 0.5);
+                this.controlPointsGraphics.drawCircle(transformed.x,
+                                                      transformed.y,
+                                                      range);
+            }.bind(this));
+            ControlPoint.redraw = false;
+        }
         return this;
     }
 
@@ -137,6 +142,7 @@ function(config, Phaser, utils, player, map, fog){
         this.game.world.bringToTop(this.minimap);
 
         this.updateMinimapFoW();
+        this.displayControlPoints();
 
         this.minimap.lineStyle(2, 0x444444, 1);
         this.minimap.drawRect(0, 0, this.minimapWidth, this.minimapHeight);
