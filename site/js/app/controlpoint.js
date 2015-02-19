@@ -31,7 +31,7 @@ function(config, Phaser, player){
         /**
          * The radius of the circle of FoW holding the control point clears
          */
-        this.radius = 500;
+        this.view = 500;
 
         /**
          * The range within which a unit can capture this control point
@@ -61,7 +61,8 @@ function(config, Phaser, player){
         var magnitude = 1;
         for (var id in this.game.units) {
             var unit = this.game.units[id];
-            if (Phaser.Point.distance(unit.position, this.position) < this.range){
+            if (unit.health > 0 &&
+                Phaser.Point.distance(unit.position, this.position) < this.range){
                 if (attemptedOwner == null) {
                     attemptedOwner = unit.player;
                 } else if (attemptedOwner != unit.player) {

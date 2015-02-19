@@ -119,7 +119,7 @@ function(config, Phaser, utils, player, map, fog, ControlPoint){
         for (var id in this.game.units) {
             var unit = this.game.units[id];
 
-            if (unit.player != player) continue;
+            if (unit.player != player || unit.health <= 0) continue;
             this.fogGraphics.drawCircle(unit.position.x*config.interface.minimap.scale,
                                         unit.position.y*config.interface.minimap.scale,
                                         unit.view*2*config.interface.minimap.scale);
@@ -129,7 +129,7 @@ function(config, Phaser, utils, player, map, fog, ControlPoint){
             if (point.owner == player) {
                 this.fogGraphics.drawCircle(point.position.x*config.interface.minimap.scale,
                                             point.position.y*config.interface.minimap.scale,
-                                            point.radius*2*config.interface.minimap.scale);
+                                            point.view*2*config.interface.minimap.scale);
             }
         }.bind(this));
         this.fogGraphics.endFill();
