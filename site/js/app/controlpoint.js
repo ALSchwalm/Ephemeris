@@ -38,6 +38,21 @@ function(config, Phaser, player){
          */
         this.range = 384;
 
+        this.unitGenTimer = this.game.time.create(false);
+        this.unitGenTimer.loop(5000, function() {
+            if (this.owner == player) {
+                this.handler.do({
+                    type: "create",
+                    data: {
+                        type: "Ship",
+                        x: this.position.x,
+                        y: this.position.y
+                    }
+                });
+            }
+        }.bind(this));
+        this.unitGenTimer.start();
+
         this.convertPercent = 0;
 
         this.graphics = this.game.add.group();

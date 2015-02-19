@@ -99,7 +99,7 @@ function(config, Phaser, controls, utils, player){
          * @type {Player}
          */
         this.player = null;
-        if (this.playerID) {
+        if (this.playerID && this.playerID != player.id) {
             this.player = player.opponents[this.playerID];
         } else {
             this.player = player;

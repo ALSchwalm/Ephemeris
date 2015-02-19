@@ -350,36 +350,6 @@ function(config, Phaser, player, movement, map, hud){
         }
     };
 
-    // TODO remove this
-    controls.registerControl(Phaser.Keyboard.N, function(){
-        require(["app/action"], function(action){
-            action.do({
-                type: "create",
-                data: {
-                    type: "Ship",
-                    x: Math.random()*200+100,
-                    y: Math.random()*200+100,
-                }
-            });
-        })
-    });
-
-    controls.registerControl(Phaser.Keyboard.E, function(){
-        require(["app/action"], function(action){
-            action.do({
-                type: "create",
-                data: {
-                    type: "Ship",
-                    x: Math.random()*200+100,
-                    y: Math.random()*200+100,
-                    config : {
-                        playerID : "some other id"
-                    }
-                },
-            });
-        })
-    });
-
     // Prevent the browser from taking the normal action (scrolling, etc)
     window.addEventListener("keydown", function(e) {
         var codes = [];
