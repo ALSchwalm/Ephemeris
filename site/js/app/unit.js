@@ -357,7 +357,12 @@ function(config, Phaser, controls, utils, player){
         }
     }
 
-    // This is factored out for v8 optimization (avoid work in for-in statements)
+    /**
+     * If 'unit' is within 'avoidDistance' of this unit, move away from it
+     * slightly.
+     *
+     * @note This is factored out for v8 optimization (avoid work in for-in statements)
+     */
     Unit.prototype.avoidOtherUnits = function(unit, avoidDistance) {
         if (this == unit || unit.playerID != this.playerID ||
             unit.health <= 0)
@@ -383,15 +388,35 @@ function(config, Phaser, controls, utils, player){
     }
 
     /**
+     * If 'unit' is an enemy near this unit, automatically engage it
+     */
+    Unit.prototype.autoTargetEnemy = function(unit) {
+        if (!this.enemy &&
+            unit.enemy &&
+            unit.graphics.visible &&
+            unit.health > 0 &&
+            !this.destination &&
+            Phaser.Point.distance(unit.position,
+                                  this.position) < this.view) {
+            this.handler.do({
+                type: "engage",
+                data : {
+                    source: this.id,
+                    target: unit.id
+                }
+            });
+        }
+    }
+
+    /**
      * General unit update. This should be invoked from every unit's update callback
      */
     Unit.prototype.unitUpdate = function() {
         this.moveTowardDestination();
         var avoidDistance = (this.destination && !this.target) ? 0 : 35;
         for (var id in this.game.units) {
-            if (this.avoidOtherUnits(this.game.units[id], avoidDistance)) {
-                break;
-            }
+            this.avoidOtherUnits(this.game.units[id], avoidDistance);
+            this.autoTargetEnemy(this.game.units[id]);
         }
     }
 
