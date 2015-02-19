@@ -357,6 +357,31 @@ function(config, Phaser, controls, utils, player){
         }
     }
 
+    // This is factored out for v8 optimization (avoid work in for-in statements)
+    Unit.prototype.avoidOtherUnits = function(unit, avoidDistance) {
+        if (this == unit || unit.playerID != this.playerID ||
+            unit.health <= 0)
+            return false;
+
+        //TODO: This should move the unit such that it is further away from
+        // the nearby unit, while remaining near its destination
+        if ((!unit.destination || unit.target) &&
+            Phaser.Point.distance(this.position, unit.position) < avoidDistance) {
+            if (this.position.x < unit.position.x) {
+                this.position.x -= 1;
+            } else {
+                this.position.x += 1;
+            }
+
+            if (this.position.y < unit.position.y) {
+                this.position.y -= 1;
+            } else {
+                this.position.y += 1;
+            }
+            return true;
+        }
+    }
+
     /**
      * General unit update. This should be invoked from every unit's update callback
      */
@@ -364,26 +389,7 @@ function(config, Phaser, controls, utils, player){
         this.moveTowardDestination();
         var avoidDistance = (this.destination && !this.target) ? 0 : 35;
         for (var id in this.game.units) {
-            if (id == this.id || this.game.units[id].playerID != this.playerID ||
-                this.game.units[id].health <= 0)
-                continue;
-            var unit = this.game.units[id];
-
-            //TODO: This should move the unit such that it is further away from
-            // the nearby unit, while remaining near its destination
-            if ((!unit.destination || unit.target) &&
-                Phaser.Point.distance(this.position, unit.position) < avoidDistance) {
-                if (this.position.x < unit.position.x) {
-                    this.position.x -= 1;
-                } else {
-                    this.position.x += 1;
-                }
-
-                if (this.position.y < unit.position.y) {
-                    this.position.y -= 1;
-                } else {
-                    this.position.y += 1;
-                }
+            if (this.avoidOtherUnits(this.game.units[id], avoidDistance)) {
                 break;
             }
         }

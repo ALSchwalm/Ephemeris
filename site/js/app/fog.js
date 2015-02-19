@@ -43,35 +43,46 @@ function(config, Phaser, map, player){
         }
     }
 
+    Fog.prototype.updateUnitFog = function(unit) {
+        if (unit.player != player){
+            var hide = true;
+            for (var otherID in this.game.units) {
+                var friendlyUnit = this.game.units[otherID];
+                if (friendlyUnit.player != player || friendlyUnit.health <= 0)
+                    continue
+
+                if (Phaser.Point.distance(unit.position,
+                                          friendlyUnit.position) < friendlyUnit.view) {
+                    hide = false;
+                }
+            }
+
+            map.controlPoints.map(function(point){
+                if (point.owner == player &&
+                    Phaser.Point.distance(unit.position,
+                                          point.position) < point.view) {
+                    hide = false;
+                }
+            }.bind(this));
+
+            this.hideUnit(unit, hide);
+        }
+        return true;
+    }
+
     Fog.prototype.update = function() {
         for (var id in this.game.units) {
-            var unit = this.game.units[id];
-
-            if (unit.player != player){
-                var hide = true;
-                for (var otherID in this.game.units) {
-                    var friendlyUnit = this.game.units[otherID];
-                    if (friendlyUnit.player != player || friendlyUnit.health <= 0)
-                        continue;
-
-                    if (Phaser.Point.distance(unit.position,
-                                             friendlyUnit.position) < friendlyUnit.view) {
-                        hide = false;
-                    }
-                }
-
-                map.controlPoints.map(function(point){
-                    if (point.owner == player &&
-                        Phaser.Point.distance(unit.position,
-                                              point.position) < point.view) {
-                        hide = false;
-                    }
-                }.bind(this));
-
-                this.hideUnit(unit, hide);
-            }
+            this.updateUnitFog(this.game.units[id]);
         }
         this.drawFog();
+    }
+
+    Fog.prototype.revealUnitView = function(unit) {
+        if (unit.player.id != player.id ||
+            unit.health <= 0) return;
+        this.graphics.drawCircle(unit.position.x,
+                                 unit.position.y,
+                                 unit.view*2);
     }
 
     Fog.prototype.drawFog = function() {
@@ -80,13 +91,7 @@ function(config, Phaser, map, player){
 
         this.graphics.beginFill(0x000000, 1);
         for (var id in this.game.units) {
-            var unit = this.game.units[id];
-
-            if (unit.player.id != player.id ||
-                unit.health <= 0) continue;
-            this.graphics.drawCircle(unit.position.x,
-                                     unit.position.y,
-                                     unit.view*2);
+            this.revealUnitView(this.game.units[id]);
         }
 
         map.controlPoints.map(function(point){
