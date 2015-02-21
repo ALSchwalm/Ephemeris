@@ -151,6 +151,18 @@ function(config, Phaser, controls, utils, player){
         }
     });
 
+    Object.defineProperty(Unit.prototype, "alive", {
+        get : function() {
+            return this.health > 0;
+        }
+    });
+
+    Object.defineProperty(Unit.prototype, "dead", {
+        get : function() {
+            return !this.alive;
+        }
+    });
+
     Object.defineProperty(Unit.prototype, "destination", {
         get : function() {
             if (this._destination instanceof Unit) {
@@ -221,7 +233,7 @@ function(config, Phaser, controls, utils, player){
      */
     Unit.prototype.moveTo = function(target) {
         if (typeof(target) === "string") {
-            this.destination = this.game.units[target];
+            this.destination = this.game.getUnit(target);
         } else if (target instanceof Array) {
             this.destination = target.shift();
             this.path = target;
@@ -271,11 +283,13 @@ function(config, Phaser, controls, utils, player){
      */
     Unit.prototype.destroy = function() {
         this.graphics.destroy();
+        this.graphics.visible = false;
         var index = this.game.selectedUnits.indexOf(this);
         if (index != -1) {
             this.game.selectedUnits.splice(index, 1);
             this.onUnselect();
         }
+        this.health = 0;
     }
 
     /**
@@ -299,9 +313,12 @@ function(config, Phaser, controls, utils, player){
                 x: 0,
                 y: 0
             }, 100).start();
+            scaleTween.onComplete.add(function(){
+                shot.destroy();
+            });
 
             target.health -= this.attackPower;
-            if (target.health <= 0) {
+            if (target.dead) {
                 target.destroy();
                 this.target = null;
                 this.destination = null;
@@ -364,8 +381,7 @@ function(config, Phaser, controls, utils, player){
      * @note This is factored out for v8 optimization (avoid work in for-in statements)
      */
     Unit.prototype.avoidOtherUnits = function(unit, avoidDistance) {
-        if (this == unit || unit.playerID != this.playerID ||
-            unit.health <= 0)
+        if (this == unit || unit.playerID != this.playerID || unit.dead)
             return false;
 
         //TODO: This should move the unit such that it is further away from
@@ -394,7 +410,7 @@ function(config, Phaser, controls, utils, player){
         if (!this.enemy &&
             unit.enemy &&
             unit.graphics.visible &&
-            unit.health > 0 &&
+            unit.alive &&
             !this.destination &&
             Phaser.Point.distance(unit.position,
                                   this.position) < this.view) {
@@ -414,10 +430,10 @@ function(config, Phaser, controls, utils, player){
     Unit.prototype.unitUpdate = function() {
         this.moveTowardDestination();
         var avoidDistance = (this.destination && !this.target) ? 0 : 35;
-        for (var id in this.game.units) {
-            this.avoidOtherUnits(this.game.units[id], avoidDistance);
-            this.autoTargetEnemy(this.game.units[id]);
-        }
+        this.game.units.map(function(unit){
+            this.avoidOtherUnits(unit, avoidDistance);
+            this.autoTargetEnemy(unit);
+        }, this);
     }
 
     return Unit;

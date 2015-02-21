@@ -25,12 +25,21 @@ function(config, Phaser, preload, update, create, start, network){
                                        update  : update,
                                        create  : create,
                                    }, true);
-        game.units = {};
+        game.units = [];
         game.selectedUnits = [];
 
         game.registerUnit = function(unit) {
-            game.units[unit.id] = unit;
+            game.units.push(unit);
         }
+
+        game.getUnit = function(id) {
+            for (var i=0; i < game.units.length; ++i) {
+                if (game.units[i].id == id)
+                    return game.units[i];
+            }
+            return null;
+        }
+
         return game;
     }, start);
 });

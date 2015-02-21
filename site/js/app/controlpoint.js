@@ -74,9 +74,8 @@ function(config, Phaser, player){
     ControlPoint.prototype.update = function() {
         var attemptedOwner = null;
         var magnitude = 1;
-        for (var id in this.game.units) {
-            var unit = this.game.units[id];
-            if (unit.health > 0 &&
+        this.game.units.map(function(unit){
+            if (unit.alive &&
                 Phaser.Point.distance(unit.position, this.position) < this.range){
                 if (attemptedOwner == null) {
                     attemptedOwner = unit.player;
@@ -86,7 +85,7 @@ function(config, Phaser, player){
                     ++magnitude;
                 }
             }
-        }
+        }, this);
 
         if (attemptedOwner == null) {
             this.convertPercent = 0;

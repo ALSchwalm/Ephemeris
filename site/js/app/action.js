@@ -36,18 +36,25 @@ function(config, network, player, utils, Ship){
 
         switch(action.type.toLowerCase()) {
         case "attack":
-            this.game.units[action.data.source].attack(
-                this.game.units[action.data.target]
+            this.game.getUnit(action.data.source).attack(
+                this.game.getUnit(action.data.target)
             );
             break;
         case "move":
-            this.game.units[action.data.id].moveTo(action.data.path);
+            this.game.getUnit(action.data.id).moveTo(action.data.path);
             break;
         case "engage":
-            this.game.units[action.data.source].moveTo(action.data.target);
+            this.game.getUnit(action.data.source).moveTo(action.data.target);
             break;
         case "create":
-            var type = eval(action.data.type);
+            var type = null;
+            switch(action.data.type.toLowerCase()){
+            case "ship":
+                type = Ship;
+                break;
+            default:
+                console.error("Unknown unit type:", action.data.type);
+            }
             var newUnit = new type(this.game,
                                    this,
                                    action.data.x,

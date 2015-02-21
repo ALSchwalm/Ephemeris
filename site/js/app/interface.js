@@ -51,7 +51,7 @@ function(config, Phaser, utils, player, map, fog, ControlPoint){
             minimapRegion.alpha = 0.4;
 
             this.minimapBack.addChild(minimapRegion);
-        }.bind(this));
+        }, this);
 
         this.controlPointsGraphics = this.game.add.graphics();
         this.minimapBack.addChild(this.controlPointsGraphics);
@@ -98,7 +98,7 @@ function(config, Phaser, utils, player, map, fog, ControlPoint){
                 this.controlPointsGraphics.drawCircle(transformed.x,
                                                       transformed.y,
                                                       range);
-            }.bind(this));
+            }, this);
             ControlPoint.redraw = false;
         }
         return this;
@@ -116,14 +116,12 @@ function(config, Phaser, utils, player, map, fog, ControlPoint){
         this.fogGraphics.clear();
 
         this.fogGraphics.beginFill(0x000000, 1);
-        for (var id in this.game.units) {
-            var unit = this.game.units[id];
-
-            if (unit.player != player || unit.health <= 0) continue;
+        this.game.units.map(function(unit){
+            if (unit.player != player || unit.dead) return;
             this.fogGraphics.drawCircle(unit.position.x*config.interface.minimap.scale,
                                         unit.position.y*config.interface.minimap.scale,
                                         unit.view*2*config.interface.minimap.scale);
-        }
+        }, this);
 
         map.controlPoints.map(function(point){
             if (point.owner == player) {
@@ -131,7 +129,7 @@ function(config, Phaser, utils, player, map, fog, ControlPoint){
                                             point.position.y*config.interface.minimap.scale,
                                             point.view*2*config.interface.minimap.scale);
             }
-        }.bind(this));
+        }, this);
         this.fogGraphics.endFill();
     }
 
@@ -149,26 +147,20 @@ function(config, Phaser, utils, player, map, fog, ControlPoint){
         this.minimap.lineStyle();
 
         // Draw units
-        for (var id in this.game.units) {
-            var unit = this.game.units[id];
+        this.game.units.map(function(unit){
             var position = unit.position;
             var transformed = this.worldToMinimapCoord(position);
 
-            if (unit.health > 0) {
-                if (unit.player == player) {
-                    if (this.game.selectedUnits.indexOf(unit) == -1) {
-                        this.minimap.beginFill(unit.player.color, 0.5);
-                    } else {
-                        this.minimap.beginFill(0xFFFFFF, 0.5);
-
-                    }
-                } else if (unit.graphics.visible){
+            if (unit.graphics.visible && unit.graphics.exists) {
+                if (this.game.selectedUnits.indexOf(unit) == -1) {
                     this.minimap.beginFill(unit.player.color, 0.5);
+                } else {
+                    this.minimap.beginFill(0xFFFFFF, 0.5);
                 }
+                this.minimap.drawRect(transformed.x, transformed.y, 4, 4);
+                this.minimap.endFill();
             }
-            this.minimap.drawRect(transformed.x, transformed.y, 4, 4);
-            this.minimap.endFill();
-        }
+        }, this);
 
         // Draw camera
         this.minimap.lineStyle(1, 0xFFFFFF, 0.7);

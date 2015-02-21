@@ -28,34 +28,21 @@ function(config, Phaser, map, player){
     }
 
     Fog.prototype.hideUnit = function(unit, hide) {
-        if (hide == unit.graphics.visible && !unit._animating) {
-            unit._animating = true;
-            if (!hide) {
-                unit.graphics.visible = true;
-            }
-            var tween = this.game.add.tween(unit.graphics)
-                .to({alpha: !hide}, 100).start().onComplete.add(function(){
-                    if (hide) {
-                        unit.graphics.visible = false;
-                    }
-                    unit._animating = false;
-                });
-        }
+        unit.graphics.visible = !hide;
     }
 
     Fog.prototype.updateUnitFog = function(unit) {
         if (unit.player != player){
             var hide = true;
-            for (var otherID in this.game.units) {
-                var friendlyUnit = this.game.units[otherID];
-                if (friendlyUnit.player != player || friendlyUnit.health <= 0)
-                    continue
+            this.game.units.map(function(friendlyUnit){
+                if (friendlyUnit.player != player || friendlyUnit.dead)
+                    return;
 
                 if (Phaser.Point.distance(unit.position,
                                           friendlyUnit.position) < friendlyUnit.view) {
                     hide = false;
                 }
-            }
+            });
 
             map.controlPoints.map(function(point){
                 if (point.owner == player &&
@@ -63,7 +50,7 @@ function(config, Phaser, map, player){
                                           point.position) < point.view) {
                     hide = false;
                 }
-            }.bind(this));
+            }, this);
 
             this.hideUnit(unit, hide);
         }
@@ -71,15 +58,15 @@ function(config, Phaser, map, player){
     }
 
     Fog.prototype.update = function() {
-        for (var id in this.game.units) {
-            this.updateUnitFog(this.game.units[id]);
-        }
+        this.game.units.map(function(unit){
+            this.updateUnitFog(unit);
+        }, this);
         this.drawFog();
     }
 
     Fog.prototype.revealUnitView = function(unit) {
         if (unit.player.id != player.id ||
-            unit.health <= 0) return;
+            unit.dead) return;
         this.graphics.drawCircle(unit.position.x,
                                  unit.position.y,
                                  unit.view*2);
@@ -90,9 +77,9 @@ function(config, Phaser, map, player){
         this.graphics.clear();
 
         this.graphics.beginFill(0x000000, 1);
-        for (var id in this.game.units) {
-            this.revealUnitView(this.game.units[id]);
-        }
+        this.game.units.map(function(unit){
+            this.revealUnitView(unit);
+        }, this);
 
         map.controlPoints.map(function(point){
             if (point.owner == player) {

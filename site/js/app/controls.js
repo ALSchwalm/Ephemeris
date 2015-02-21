@@ -147,17 +147,17 @@ function(config, Phaser, player, movement, map, hud){
             var selected = [];
             var rect = this.getSelectBoxBounds();
 
-            for (var id in this.game.units) {
+            this.game.units.map(function(unit){
                 var point = {
-                    x: this.game.units[id].graphics.x,
-                    y: this.game.units[id].graphics.y
+                    x: unit.graphics.x,
+                    y: unit.graphics.y
                 }
-                if (this.game.units[id].player.id == player.id &&
-                    this.game.units[id].health > 0 &&
+                if (unit.player.id == player.id &&
+                    unit.alive &&
                     rect.contains(point.x, point.y)) {
-                    selected.push(this.game.units[id]);
+                    selected.push(unit);
                 }
-            }
+            });
             if (selected.length) {
                 this.clearSelection();
                 selected.map(function(unit){
@@ -218,8 +218,8 @@ function(config, Phaser, player, movement, map, hud){
          * If the pointer is over a unit, returns that unit, otherwise null
          */
         pointerOnUnit : function() {
-            for (var id in this.game.units) {
-                var unit = this.game.units[id];
+            for (var i=0; i < this.game.units.length; ++i) {
+                var unit = this.game.units[i];
                 if (unit.sprite.getBounds().contains(this.pointerPosition(true).x,
                                                      this.pointerPosition(true).y))
                     return unit;
