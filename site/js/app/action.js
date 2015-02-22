@@ -36,15 +36,29 @@ function(config, network, player, utils, Ship){
 
         switch(action.type.toLowerCase()) {
         case "attack":
-            this.game.getUnit(action.data.source).attack(
-                this.game.getUnit(action.data.target)
-            );
+            var unit = this.game.getUnit(action.data.source);
+            var target = this.game.getUnit(action.data.target);
+            if (unit && target) {
+                unit.attack(target);
+            }
             break;
         case "move":
-            this.game.getUnit(action.data.id).moveTo(action.data.path);
+            var unit = this.game.getUnit(action.data.id);
+            if (unit) {
+                unit.moveTo(action.data.path);
+            }
+            break;
+        case "destroy":
+            var unit = this.game.getUnit(action.data.id);
+            if (unit) {
+                unit.destroy();
+            }
             break;
         case "engage":
-            this.game.getUnit(action.data.source).moveTo(action.data.target);
+            var unit = this.game.getUnit(action.data.source);
+            if (unit) {
+                unit.moveTo(action.data.target);
+            }
             break;
         case "create":
             var type = null;

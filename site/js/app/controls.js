@@ -58,15 +58,15 @@ function(config, Phaser, player, movement, map, hud){
          */
         moveSelectedUnits : function(target) {
             var target = target || controls.pointerPosition();
-            if (this.game.selectedUnits.length) {
-                movement.groupMoveToPoint(this.game.selectedUnits,
+            if (this.game.selected.length) {
+                movement.groupMoveToPoint(this.game.selected,
                                           target);
             }
         },
 
         attackUnit : function(unit) {
-            if (this.game.selectedUnits.length) {
-                movement.groupEngageTarget(this.game.selectedUnits,
+            if (this.game.selected.length) {
+                movement.groupEngageTarget(this.game.selected,
                                            unit);
             }
         },
@@ -75,7 +75,7 @@ function(config, Phaser, player, movement, map, hud){
          * Unselect an currently selected units
          */
         clearSelection : function() {
-            this.game.selectedUnits.map(function(unit){
+            this.game.selected.map(function(unit){
                 unit.onUnselect();
             });
         },
@@ -163,7 +163,7 @@ function(config, Phaser, player, movement, map, hud){
                 selected.map(function(unit){
                     unit.onSelect();
                 });
-                this.game.selectedUnits = selected;
+                this.game.selected = selected;
             }
             this.graphics.clear();
             this.selectBoxStart = null;
@@ -175,7 +175,7 @@ function(config, Phaser, player, movement, map, hud){
          */
         unitSelected : function(unit) {
             this.clearSelection();
-            this.game.selectedUnits = [unit];
+            this.game.selected = [unit];
             this.recentSelection = true;
             setTimeout(function() {
                 this.recentSelection = false;
@@ -186,9 +186,9 @@ function(config, Phaser, player, movement, map, hud){
          * Set the star parallax position based on the camara
          */
         updateParallax : function() {
-            map.graphics.cameraOffset.x = this.game.camera.x/config.map.parallaxFactor -
+            map.stars.cameraOffset.x = this.game.camera.x/config.map.parallaxFactor -
                 map.width/2;
-            map.graphics.cameraOffset.y = this.game.camera.y/config.map.parallaxFactor -
+            map.stars.cameraOffset.y = this.game.camera.y/config.map.parallaxFactor -
                 map.height/2;
         },
 
@@ -220,9 +220,23 @@ function(config, Phaser, player, movement, map, hud){
         pointerOnUnit : function() {
             for (var i=0; i < this.game.units.length; ++i) {
                 var unit = this.game.units[i];
-                if (unit.sprite.getBounds().contains(this.pointerPosition(true).x,
+                if (unit.graphics.visible &&
+                    unit.sprite.getBounds().contains(this.pointerPosition(true).x,
                                                      this.pointerPosition(true).y))
                     return unit;
+            }
+            return null;
+        },
+
+        /**
+         * If the pointer is over the flag of a control point, return that point
+         */
+        pointerOnControlPoint : function() {
+            for (var i=0; i < map.controlPoints.length; ++i) {
+                var point = map.controlPoints[i];
+                if (point.flag.getBounds().contains(this.pointerPosition(true).x,
+                                                     this.pointerPosition(true).y))
+                    return point;
             }
             return null;
         },
@@ -296,13 +310,21 @@ function(config, Phaser, player, movement, map, hud){
                 this.attackUnit(this.pointerOnUnit());
                 this.click();
 
+            // Select a control point
+            } else if (this.leftPressed() && !this.selectBoxStart &&
+                       this.pointerOnControlPoint()) {
+                this.clearSelection();
+                var point = this.pointerOnControlPoint();
+                point.onSelect();
+                this.game.selected = [point];
+
             // Select a unit
             } else if (this.leftPressed() && this.pointerOnUnit() &&
                        !this.pointerOnUnit().enemy && !this.selectBoxStart) {
                 this.clearSelection();
                 var unit = this.pointerOnUnit();
                 unit.onSelect();
-                this.game.selectedUnits = [unit];
+                this.game.selected = [unit];
                 this.click();
 
             // Move based on the minimap

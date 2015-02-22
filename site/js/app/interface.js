@@ -152,7 +152,7 @@ function(config, Phaser, utils, player, map, fog, ControlPoint){
             var transformed = this.worldToMinimapCoord(position);
 
             if (unit.graphics.visible && unit.graphics.exists) {
-                if (this.game.selectedUnits.indexOf(unit) == -1) {
+                if (this.game.selected.indexOf(unit) == -1) {
                     this.minimap.beginFill(unit.player.color, 0.5);
                 } else {
                     this.minimap.beginFill(0xFFFFFF, 0.5);

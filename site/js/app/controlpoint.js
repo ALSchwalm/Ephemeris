@@ -46,7 +46,7 @@ function(config, Phaser, player){
                     data: {
                         type: "Ship",
                         x: this.position.x,
-                        y: this.position.y
+                        y: this.position.y+40
                     }
                 });
             }
@@ -57,6 +57,28 @@ function(config, Phaser, player){
 
         this.graphics = this.game.add.group();
         this.graphics.position = new Phaser.Point(x, y);
+
+        this.flag = this.game.add.sprite(0, 0, 'flag');
+        this.flag.anchor.set(0.5, 0.5);
+        this.flag.animations.add('wave');
+        this.flag.animations.play('wave', 7, true);
+
+        this.circle = this.game.add.image(0, 0, '20empty');
+        this.circle.anchor.set(0.5, 0.5);
+        setInterval(function(){
+            this.circle.angle -= 0.5;
+        }.bind(this), 100);
+
+        this.captureBar = this.game.add.graphics(0, -60);
+
+        this.selectGraphic = this.game.add.sprite(0, 0, "20select");
+        this.selectGraphic.anchor.set(0.5, 0.5);
+        this.selectGraphic.visible = false;
+
+        this.graphics.addChild(this.selectGraphic);
+        this.graphics.addChild(this.captureBar);
+        this.graphics.addChild(this.flag);
+        this.graphics.addChild(this.circle);
         this.display();
     }
 
@@ -71,24 +93,58 @@ function(config, Phaser, player){
 
     ControlPoint.prototype.redraw = false;
 
+    ControlPoint.prototype.onSelect = function() {
+        this.selectGraphic.visible = true;
+    }
+
+    ControlPoint.prototype.onUnselect = function() {
+        this.selectGraphic.visible = false;
+    }
+
+    ControlPoint.prototype.drawCaptureBar = function(color) {
+        this.captureBar.clear();
+        var percent = this.convertPercent/100;
+
+        // Background
+        this.captureBar.lineStyle(1, 0xCCCCCC, 1);
+        this.captureBar.beginFill(0x333333, 0.8);
+        this.captureBar.drawRect(-this.flag.width/2,
+                                 this.flag.height,
+                                 this.flag.width, 4);
+        this.captureBar.endFill();
+
+        // Current capture percent
+        this.captureBar.beginFill(color, 0.8);
+        this.captureBar.drawRect(-this.flag.width/2,
+                                 this.flag.height,
+                                 this.flag.width*percent, 4);
+        this.captureBar.endFill();
+    }
+
+    ControlPoint.prototype.drawBuildPercent = function() {
+
+    }
+
     ControlPoint.prototype.update = function() {
         var attemptedOwner = null;
         var magnitude = 1;
-        this.game.units.map(function(unit){
+        for (var i=0; i < this.game.units.length; ++i) {
+            var unit = this.game.units[i];
             if (unit.alive &&
                 Phaser.Point.distance(unit.position, this.position) < this.range){
                 if (attemptedOwner == null) {
                     attemptedOwner = unit.player;
                 } else if (attemptedOwner != unit.player) {
-                    return this;
+                    return false;
                 } else {
                     ++magnitude;
                 }
             }
-        }, this);
+        }
 
-        if (attemptedOwner == null) {
+        if (attemptedOwner == null || attemptedOwner == this.owner) {
             this.convertPercent = 0;
+            this.captureBar.clear();
         } else if (this.convertPercent <= 100){
             this.convertPercent += config.map.controlPointConvertRate*magnitude;
 
@@ -96,9 +152,9 @@ function(config, Phaser, player){
                 this.owner = attemptedOwner;
                 this.updateColor();
             }
+            this.drawCaptureBar(attemptedOwner.color);
         }
-
-        return this;
+        return true;
     }
 
     ControlPoint.prototype.updateColor = function() {

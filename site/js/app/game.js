@@ -26,7 +26,7 @@ function(config, Phaser, preload, update, create, start, network){
                                        create  : create,
                                    }, true);
         game.units = [];
-        game.selectedUnits = [];
+        game.selected = [];
 
         game.registerUnit = function(unit) {
             game.units.push(unit);
@@ -38,6 +38,13 @@ function(config, Phaser, preload, update, create, start, network){
                     return game.units[i];
             }
             return null;
+        }
+
+        game.removeUnit = function(unit) {
+            var index = game.units.indexOf(unit);
+            if (index != -1) {
+                game.units.splice(index, 1);
+            }
         }
 
         return game;

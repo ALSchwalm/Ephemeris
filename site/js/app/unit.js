@@ -284,11 +284,12 @@ function(config, Phaser, controls, utils, player){
     Unit.prototype.destroy = function() {
         this.graphics.destroy();
         this.graphics.visible = false;
-        var index = this.game.selectedUnits.indexOf(this);
+        var index = this.game.selected.indexOf(this);
         if (index != -1) {
-            this.game.selectedUnits.splice(index, 1);
+            this.game.selected.splice(index, 1);
             this.onUnselect();
         }
+        this.game.removeUnit(this);
         this.health = 0;
     }
 
@@ -319,7 +320,12 @@ function(config, Phaser, controls, utils, player){
 
             target.health -= this.attackPower;
             if (target.dead) {
-                target.destroy();
+                this.handler.do({
+                    type: "destroy",
+                    data : {
+                        id : target.id
+                    }
+                });
                 this.target = null;
                 this.destination = null;
             }

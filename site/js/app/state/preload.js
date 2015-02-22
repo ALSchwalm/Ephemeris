@@ -85,6 +85,7 @@ function(config, map, handler, jQuery){
         game.load.image('384empty', 'assets/images/384empty.png');
         game.load.image('10fill', 'assets/images/10fill.png');
         game.load.image('flare2', 'assets/images/flare2.png');
+        game.load.spritesheet('flag', 'assets/animations/controlpoint/flag.png', 32, 32);
     }
 
     return preload;
