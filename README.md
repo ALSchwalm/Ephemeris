@@ -16,12 +16,25 @@ TODO
 
 - [x] Creation of units
 - [x] Allow units to move around the map
-- [ ] Hud (other than the minimap)
+- [x] Hud (other than the minimap)
 - [ ] Sound effects
 - [ ] More animations (explosions on hit, glow on right click, etc.)
 - [ ] Home page
 - [ ] Tutorial
-- [ ] Server support for multiple games
+- [x] Server support for multiple games
 - [ ] Effects for regions
 - [ ] Advanced controls (Ctrl-click, shift-click, hotkeys)
-- [ ] Add control points
+- [x] Add control points
+
+Credit
+======
+
+The following individuals created assets which are used in Ephemeris:
+
+- Daniel Cook and Christopher M. Park for most in-game sprites from [AI War: Fleet Command][fleet-command], freely used per link ([link][ai-war])
+- [SoulFilcher][soulfilcher] for the selected units icons ([link][icons])
+
+[fleet-command]: http://arcengames.com/ai-war/
+[ai-war]: http://christophermpark.blogspot.com/2009/10/free-graphics-for-indie-developers.html
+[soulfilcher]: http://www.sc2mapster.com/profiles/SoulFilcher/
+[icons]: http://www.sc2mapster.com/assets/abilities-and-upgrades-icon-pack/

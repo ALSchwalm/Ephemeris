@@ -3,10 +3,12 @@ function(config, Phaser, Unit, player){
     "use strict"
 
     var Ship = function(game, handler, x, y, config){
+        this.name = "Fighter"
         this.spriteKey = "ship";
         this.overlayKey = "shipOverlay";
         this.backgroundKey = "20empty";
         this.selectKey = "20select";
+        this.iconKey = "fighterIcon"
         this.speed = 4;
         this.range = 180;
         this.view = 300;

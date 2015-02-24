@@ -38,6 +38,13 @@ function(config, Phaser, player){
          */
         this.range = 384;
 
+        /**
+         * The name displayed when the control point is selected
+         *
+         * @type{string}
+         */
+        this.name = "Control Point"
+
         this.unitGenTimer = this.game.time.create(false);
         this.unitGenTimer.loop(5000, function() {
             if (this.owner == player) {
@@ -58,10 +65,12 @@ function(config, Phaser, player){
         this.graphics = this.game.add.group();
         this.graphics.position = new Phaser.Point(x, y);
 
-        this.flag = this.game.add.sprite(0, 0, 'flag');
-        this.flag.anchor.set(0.5, 0.5);
-        this.flag.animations.add('wave');
-        this.flag.animations.play('wave', 7, true);
+        this.sprite = this.game.add.sprite(0, 0, 'flag');
+        this.sprite.anchor.set(0.5, 0.5);
+        this.sprite.animations.add('wave');
+        this.sprite.animations.play('wave', 7, true);
+
+        this.iconKey = "controlpointIcon";
 
         this.circle = this.game.add.image(0, 0, '20empty');
         this.circle.anchor.set(0.5, 0.5);
@@ -77,7 +86,7 @@ function(config, Phaser, player){
 
         this.graphics.addChild(this.selectGraphic);
         this.graphics.addChild(this.captureBar);
-        this.graphics.addChild(this.flag);
+        this.graphics.addChild(this.sprite);
         this.graphics.addChild(this.circle);
         this.display();
     }
@@ -108,16 +117,16 @@ function(config, Phaser, player){
         // Background
         this.captureBar.lineStyle(1, 0xCCCCCC, 1);
         this.captureBar.beginFill(0x333333, 0.8);
-        this.captureBar.drawRect(-this.flag.width/2,
-                                 this.flag.height,
-                                 this.flag.width, 4);
+        this.captureBar.drawRect(-this.sprite.width/2,
+                                 this.sprite.height,
+                                 this.sprite.width, 4);
         this.captureBar.endFill();
 
         // Current capture percent
         this.captureBar.beginFill(color, 0.8);
-        this.captureBar.drawRect(-this.flag.width/2,
-                                 this.flag.height,
-                                 this.flag.width*percent, 4);
+        this.captureBar.drawRect(-this.sprite.width/2,
+                                 this.sprite.height,
+                                 this.sprite.width*percent, 4);
         this.captureBar.endFill();
     }
 
@@ -160,22 +169,22 @@ function(config, Phaser, player){
     ControlPoint.prototype.updateColor = function() {
         ControlPoint.redraw = true;
         if (this.owner) {
-            this.sprite.tint = this.owner.color;
+            this.area.tint = this.owner.color;
         } else {
-            this.sprite.tint = 0xFFFFFF;
+            this.area.tint = 0xFFFFFF;
         }
     }
 
     ControlPoint.prototype.display = function() {
         var loaded = this.game.cache.checkImageKey("384empty");
         if (loaded) {
-            this.sprite = this.graphics.create(0, 0, "384empty");
-            this.sprite.anchor.set(0.5, 0.5);
-            this.sprite.update = this.update.bind(this);
+            this.area = this.graphics.create(0, 0, "384empty");
+            this.area.anchor.set(0.5, 0.5);
+            this.area.update = this.update.bind(this);
             this.updateColor();
 
             setInterval(function(){
-                this.sprite.angle += 0.05;
+                this.area.angle += 0.05;
             }.bind(this), 100);
         } else {
             this.game.load.onFileComplete.add(function(p, name){

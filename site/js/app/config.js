@@ -41,6 +41,8 @@ define(function(){
                 fogOfWarResolution : 6
             },
             fogOfWarSize : 20,
+            iconSize : 76,
+            iconBarMaxWidth : 800
         }
     };
 

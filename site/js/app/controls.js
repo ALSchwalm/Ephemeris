@@ -167,19 +167,18 @@ function(config, Phaser, player, movement, map, hud){
             }
             this.graphics.clear();
             this.selectBoxStart = null;
+            hud.reconstructInfoPanel();
         },
 
         /**
          * A function when should be executed by any unit/structure after it is
          * selected
          */
-        unitSelected : function(unit) {
+        selectUnit : function(unit) {
             this.clearSelection();
+            unit.onSelect();
             this.game.selected = [unit];
-            this.recentSelection = true;
-            setTimeout(function() {
-                this.recentSelection = false;
-            }.bind(this), 200);
+            hud.reconstructInfoPanel();
         },
 
         /**
@@ -234,8 +233,8 @@ function(config, Phaser, player, movement, map, hud){
         pointerOnControlPoint : function() {
             for (var i=0; i < map.controlPoints.length; ++i) {
                 var point = map.controlPoints[i];
-                if (point.flag.getBounds().contains(this.pointerPosition(true).x,
-                                                     this.pointerPosition(true).y))
+                if (point.sprite.getBounds().contains(this.pointerPosition(true).x,
+                                                      this.pointerPosition(true).y))
                     return point;
             }
             return null;
@@ -317,14 +316,13 @@ function(config, Phaser, player, movement, map, hud){
                 var point = this.pointerOnControlPoint();
                 point.onSelect();
                 this.game.selected = [point];
+                hud.reconstructInfoPanel();
 
             // Select a unit
             } else if (this.leftPressed() && this.pointerOnUnit() &&
                        !this.pointerOnUnit().enemy && !this.selectBoxStart) {
-                this.clearSelection();
                 var unit = this.pointerOnUnit();
-                unit.onSelect();
-                this.game.selected = [unit];
+                this.selectUnit(unit)
                 this.click();
 
             // Move based on the minimap

@@ -24,6 +24,10 @@ function(config, Phaser, utils, player, map, fog, ControlPoint){
         this.minimapHeight = map.height*config.interface.minimap.scale;
         this.minimapBack = this.game.add.graphics(0, config.game.height -
                                                   this.minimapHeight);
+        this.iconBarWidth = this.game.width - this.minimapWidth;
+        if (this.iconBarWidth > config.interface.iconBarMaxWidth)
+            this.iconBarWidth = config.interface.iconBarMaxWidth;
+        this.iconBarHeight = this.minimapHeight - this.minimapHeight*0.1;
 
         this.minimapBounds = new Phaser.Rectangle(this.minimapBack.x,
                                                   this.minimapBack.y,
@@ -81,10 +85,21 @@ function(config, Phaser, utils, player, map, fog, ControlPoint){
                                               this.fogData);
         this.fogSprite.mask = this.fogGraphics;
 
+        this.infoBar = this.game.add.graphics(this.minimap.position.x + this.minimapWidth,
+                                              this.minimap.position.y+this.minimap.position.y*0.1);
+        this.infoBarIconGraphics = this.game.add.graphics(0, 0);
+        this.infoBar.addChild(this.infoBarIconGraphics);
+
+        this.infoBarSelectedIcons = [];
+
+        this.infoBar.fixedToCamera = true;
         this.fogGraphics.fixedToCamera = true;
         this.fogSprite.fixedToCamera = true;
         this.minimap.fixedToCamera = true;
         this.minimapBack.fixedToCamera = true;
+
+        // Draw initial infopanel
+        this.reconstructInfoPanel();
         return this;
     }
 
@@ -94,7 +109,7 @@ function(config, Phaser, utils, player, map, fog, ControlPoint){
             map.controlPoints.map(function(point){
                 var transformed = this.worldToMinimapCoord(point.position);
                 var range = point.range*2*config.interface.minimap.scale;
-                this.controlPointsGraphics.lineStyle(1, point.sprite.tint, 0.5);
+                this.controlPointsGraphics.lineStyle(1, point.area.tint, 0.5);
                 this.controlPointsGraphics.drawCircle(transformed.x,
                                                       transformed.y,
                                                       range);
@@ -109,7 +124,80 @@ function(config, Phaser, utils, player, map, fog, ControlPoint){
      */
     Interface.prototype.update = function() {
         this.updateMinimap();
+        this.updateInfoPanel();
         return this;
+    }
+
+    Interface.prototype.updateInfoPanel = function() {
+        this.game.world.bringToTop(this.infoBar);
+    }
+
+    Interface.prototype.reconstructInfoPanel = function() {
+        this.infoBar.clear();
+        this.infoBar.lineStyle(2, 0x444444, 1);
+        this.infoBar.beginFill(0x000000, 1);
+        this.infoBar.drawRect(0, 0, this.iconBarWidth,
+                              this.iconBarHeight);
+        this.infoBar.endFill();
+
+        this.infoBarSelectedIcons.map(function(icon){
+            icon.destroy();
+        });
+
+        // Draw more info if only one unit is selected
+        if (this.game.selected.length == 1) {
+            var key = this.game.selected[0].iconKey;
+            var icon = this.game.add.image(50, this.iconBarHeight/3, key);
+            icon.anchor.set(0.5, 0.5);
+            this.infoBarSelectedIcons.push(icon);
+            this.infoBar.addChild(icon);
+
+            this.infoBar.lineStyle(1, 0xCCCCCC, 1);
+            this.infoBar.beginFill(0x000000, 1);
+            this.infoBar.drawRoundedRect(icon.x-icon.width/2, icon.y-icon.height/2,
+                                         icon.width, icon.height,
+                                         4);
+            this.infoBar.endFill();
+
+            var style = {
+                font: "20px Arial",
+                fill: "#FFFFFF",
+                shadowColor: "#000000"
+            };
+            var text = this.game.add.text(200, this.iconBarHeight/3,
+                                          this.game.selected[0].name,
+                                          style);
+            text.anchor.set(0.5, 0.5);
+            this.infoBarSelectedIcons.push(text);
+            this.infoBar.addChild(text);
+        } else {
+            var iconBarCount = Math.floor(this.iconBarWidth/config.interface.iconSize);
+            var height = -1;
+
+            this.game.selected.map(function(unit, i){
+                var key = this.game.selected[i].iconKey;
+                if (i%iconBarCount == 0) {
+                    ++height;
+                }
+
+                // Create an icon for each selected unit
+                var icon = this.game.add.image(config.interface.iconSize*(i%iconBarCount)*0.9,
+                                               config.interface.iconSize*height, key);
+                icon.scale.set(0.9, 0.9);
+                this.infoBar.addChild(icon);
+                this.infoBarSelectedIcons.push(icon);
+
+                // Draw border around icons
+                this.infoBar.lineStyle(1, 0xCCCCCC, 1);
+                this.infoBar.beginFill(0x000000, 1);
+                this.infoBar.drawRoundedRect(icon.x+2, icon.y+2,
+                                             icon.width-4, icon.height-4,
+                                             4);
+                this.infoBar.endFill();
+
+            }, this);
+
+        }
     }
 
     Interface.prototype.updateMinimapFoW = function() {
