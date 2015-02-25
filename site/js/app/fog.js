@@ -19,7 +19,7 @@ function(config, Phaser, map, player){
         this.graphics = this.game.add.graphics(0, 0);
         this.fogData = this.game.add.bitmapData(config.game.width,
                                                 config.game.height);
-        this.fogData.context.fillStyle = 'rgba(0,0,0,0.45)';
+        this.fogData.context.fillStyle = 'rgba(0,0,0,0.6)';
         this.fogData.context.fillRect(0, 0, config.game.width,
                                       config.game.height);
         this.fogSprite = this.game.add.sprite(0, 0, this.fogData);
@@ -32,10 +32,10 @@ function(config, Phaser, map, player){
     }
 
     Fog.prototype.updateUnitFog = function(unit) {
-        if (unit.player != player){
+        if (unit.owner != player){
             var hide = true;
             this.game.units.map(function(friendlyUnit){
-                if (friendlyUnit.player != player || friendlyUnit.dead)
+                if (friendlyUnit.owner != player || friendlyUnit.dead)
                     return;
 
                 if (Phaser.Point.distance(unit.position,
@@ -61,11 +61,14 @@ function(config, Phaser, map, player){
         this.game.units.map(function(unit){
             this.updateUnitFog(unit);
         }, this);
+        map.controlPoints.map(function(point){
+            this.updateUnitFog(point);
+        }, this);
         this.drawFog();
     }
 
     Fog.prototype.revealUnitView = function(unit) {
-        if (unit.player.id != player.id ||
+        if (unit.owner.id != player.id ||
             unit.dead) return;
         this.graphics.drawCircle(unit.position.x,
                                  unit.position.y,

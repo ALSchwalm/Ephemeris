@@ -152,7 +152,7 @@ function(config, Phaser, player, movement, map, hud){
                     x: unit.graphics.x,
                     y: unit.graphics.y
                 }
-                if (unit.player.id == player.id &&
+                if (unit.owner.id == player.id &&
                     unit.alive &&
                     rect.contains(point.x, point.y)) {
                     selected.push(unit);

@@ -149,8 +149,8 @@ function(config, Phaser, player){
             if (unit.alive &&
                 Phaser.Point.distance(unit.position, this.position) < this.range){
                 if (attemptedOwner == null) {
-                    attemptedOwner = unit.player;
-                } else if (attemptedOwner != unit.player) {
+                    attemptedOwner = unit.owner;
+                } else if (attemptedOwner != unit.owner) {
                     return false;
                 } else {
                     ++magnitude;
@@ -185,7 +185,9 @@ function(config, Phaser, player){
     ControlPoint.prototype.display = function() {
         var loaded = this.game.cache.checkImageKey("384empty");
         if (loaded) {
-            this.area = this.graphics.create(0, 0, "384empty");
+            // Area is not part of 'graphics' so it is not hidden by FoW
+            this.area = this.game.add.image(this.position.x,
+                                            this.position.y, "384empty");
             this.area.anchor.set(0.5, 0.5);
             this.area.update = this.update.bind(this);
             this.updateColor();

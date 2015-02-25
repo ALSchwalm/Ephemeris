@@ -138,7 +138,7 @@ function(config, Phaser, utils, player, map, fog, ControlPoint, Ship){
     Interface.prototype.addControlPointControls = function() {
         var options = [["fighterIcon", "Fighter"],
                        ["bomberIcon", "Bomber"]];
-        var point = this.game.selected[0]
+        var point = this.game.selected[0];
 
         if (point.owner != player)
             return;
@@ -244,7 +244,7 @@ function(config, Phaser, utils, player, map, fog, ControlPoint, Ship){
 
         this.fogGraphics.beginFill(0x000000, 1);
         this.game.units.map(function(unit){
-            if (unit.player != player || unit.dead) return;
+            if (unit.owner != player || unit.dead) return;
             this.fogGraphics.drawCircle(unit.position.x*config.interface.minimap.scale,
                                         unit.position.y*config.interface.minimap.scale,
                                         unit.view*2*config.interface.minimap.scale);
@@ -280,7 +280,7 @@ function(config, Phaser, utils, player, map, fog, ControlPoint, Ship){
 
             if (unit.graphics.visible && unit.graphics.exists) {
                 if (this.game.selected.indexOf(unit) == -1) {
-                    this.minimap.beginFill(unit.player.color, 0.5);
+                    this.minimap.beginFill(unit.owner.color, 0.5);
                 } else {
                     this.minimap.beginFill(0xFFFFFF, 0.5);
                 }

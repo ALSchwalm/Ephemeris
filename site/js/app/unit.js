@@ -99,11 +99,11 @@ function(config, Phaser, controls, utils, player, hud){
          * A reference to the owner of this unit
          * @type {Player}
          */
-        this.player = null;
+        this.owner = null;
         if (this.playerID && this.playerID != player.id) {
-            this.player = player.opponents[this.playerID];
+            this.owner = player.opponents[this.playerID];
         } else {
-            this.player = player;
+            this.owner = player;
         }
 
         /**
@@ -127,9 +127,9 @@ function(config, Phaser, controls, utils, player, hud){
         this.target = this.target || null;
         this.attacking = false;
 
-        this.highlights.tint = this.player.color;
-        this.sprite.tint = config.player.mutedColors[this.player.number]
-        this.enemy = (this.player != player);
+        this.highlights.tint = this.owner.color;
+        this.sprite.tint = config.player.mutedColors[this.owner.number]
+        this.enemy = (this.owner != player);
         this.game.registerUnit(this);
     }
 
