@@ -309,6 +309,16 @@ function(config, Phaser, player, movement, map, hud){
                 this.attackUnit(this.pointerOnUnit());
                 this.click();
 
+            // Move based on the minimap
+            } else if (this.leftPressed() && !this.selectBoxStart &&
+                       (this.pointerOverMinimap() || this.minimapActive)) {
+                var position = this.minimapToWorldCoord();
+                if (position) {
+                    this.game.camera.x = position.x - this.game.camera.width/2;
+                    this.game.camera.y = position.y -  this.game.camera.height/2;
+                    this.minimapActive = true;
+                }
+
             // Select a control point
             } else if (this.leftPressed() && !this.selectBoxStart &&
                        this.pointerOnControlPoint()) {
@@ -325,16 +335,6 @@ function(config, Phaser, player, movement, map, hud){
                 var unit = this.pointerOnUnit();
                 this.selectUnit(unit)
                 this.click();
-
-            // Move based on the minimap
-            } else if (this.leftPressed() && !this.selectBoxStart &&
-                       (this.pointerOverMinimap() || this.minimapActive)) {
-                var position = this.minimapToWorldCoord();
-                if (position) {
-                    this.game.camera.x = position.x - this.game.camera.width/2;
-                    this.game.camera.y = position.y -  this.game.camera.height/2;
-                    this.minimapActive = true;
-                }
 
             // If left is pressed and has not been 'dragged' from the minimap
             } else if (this.leftPressed() && !this.minimapActive) {
