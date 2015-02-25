@@ -3,8 +3,8 @@
  * @module app/interface
  */
 define(["app/config", "Phaser", "app/utils",
-        "app/player", "app/map", "app/fog", "app/controlpoint"],
-function(config, Phaser, utils, player, map, fog, ControlPoint){
+        "app/player", "app/map", "app/fog", "app/controlpoint", "app/ship"],
+function(config, Phaser, utils, player, map, fog, ControlPoint, Ship){
     "use strict"
 
     /**
@@ -52,7 +52,10 @@ function(config, Phaser, utils, player, map, fog, ControlPoint){
                 x: config.interface.minimap.scale*scale.x,
                 y: config.interface.minimap.scale*scale.y
             }
-            minimapRegion.alpha = 0.4;
+
+            if (region.type != "nebula") {
+                minimapRegion.alpha = 0.4;
+            }
 
             this.minimapBack.addChild(minimapRegion);
         }, this);
@@ -132,6 +135,38 @@ function(config, Phaser, utils, player, map, fog, ControlPoint){
         this.game.world.bringToTop(this.infoBar);
     }
 
+    Interface.prototype.addControlPointControls = function() {
+        var options = [["fighterIcon", "Fighter"],
+                       ["bomberIcon", "Bomber"]];
+        var point = this.game.selected[0]
+
+        if (point.owner != player)
+            return;
+
+        options.map(function(option, i){
+            var button = this.game.add.button(50+config.interface.iconSize*i, 160,
+                                              option[0],
+                                              function(){
+                                                  this.buildUnit(option[1]);
+                                                  hud.reconstructInfoPanel();
+                                              }, point);
+            button.anchor.set(0.5, 0.5);
+            this.infoBarSelectedIcons.push(button);
+            this.infoBar.addChild(button);
+
+            // Show the current option
+            if (point.buildUnitType == option[1]) {
+                this.infoBar.lineStyle(1, 0xCCCCCC, 1);
+                this.infoBar.beginFill(0x000000, 1);
+                this.infoBar.drawRoundedRect(button.x-button.width/2,
+                                             button.y-button.height/2,
+                                             button.width, button.height,
+                                             4);
+                this.infoBar.endFill();
+            }
+        }, this);
+    }
+
     Interface.prototype.reconstructInfoPanel = function() {
         this.infoBar.clear();
         this.infoBar.lineStyle(2, 0x444444, 1);
@@ -147,10 +182,14 @@ function(config, Phaser, utils, player, map, fog, ControlPoint){
         // Draw more info if only one unit is selected
         if (this.game.selected.length == 1) {
             var key = this.game.selected[0].iconKey;
-            var icon = this.game.add.image(50, this.iconBarHeight/3, key);
+            var icon = this.game.add.image(50, 60, key);
             icon.anchor.set(0.5, 0.5);
             this.infoBarSelectedIcons.push(icon);
             this.infoBar.addChild(icon);
+
+            if (this.game.selected[0] instanceof ControlPoint) {
+                this.addControlPointControls();
+            }
 
             this.infoBar.lineStyle(1, 0xCCCCCC, 1);
             this.infoBar.beginFill(0x000000, 1);
@@ -164,7 +203,7 @@ function(config, Phaser, utils, player, map, fog, ControlPoint){
                 fill: "#FFFFFF",
                 shadowColor: "#000000"
             };
-            var text = this.game.add.text(200, this.iconBarHeight/3,
+            var text = this.game.add.text(200, icon.y,
                                           this.game.selected[0].name,
                                           style);
             text.anchor.set(0.5, 0.5);

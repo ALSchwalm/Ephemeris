@@ -317,6 +317,7 @@ function(config, Phaser, player, movement, map, hud){
                 point.onSelect();
                 this.game.selected = [point];
                 hud.reconstructInfoPanel();
+                this.click();
 
             // Select a unit
             } else if (this.leftPressed() && this.pointerOnUnit() &&

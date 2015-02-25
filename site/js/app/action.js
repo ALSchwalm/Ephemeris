@@ -2,8 +2,9 @@
  * Module defining the action handler
  * @module app/action
  */
-define(['app/config', 'app/network', 'app/player', 'app/utils', 'app/ship'],
-function(config, network, player, utils, Ship){
+define(['app/config', 'app/network', 'app/player',
+        'app/utils', 'app/ship', 'app/bomber'],
+function(config, network, player, utils, Ship, Bomber){
     "use strict"
 
     /**
@@ -63,8 +64,11 @@ function(config, network, player, utils, Ship){
         case "create":
             var type = null;
             switch(action.data.type.toLowerCase()){
-            case "ship":
+            case "fighter":
                 type = Ship;
+                break;
+            case "bomber":
+                type = Bomber;
                 break;
             default:
                 console.error("Unknown unit type:", action.data.type);

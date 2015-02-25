@@ -81,6 +81,8 @@ function(config, map, handler, jQuery){
         game.load.image('ship', 'assets/images/units/MercenaryFighter.png');
         game.load.image('shipOverlay', 'assets/images/units/MercenaryFighter_overlay.png');
         game.load.image('fighterIcon', 'assets/images/icons/fighter.png');
+        game.load.image('bomber', 'assets/images/units/MercenaryBomber.png');
+        game.load.image('bomberIcon', 'assets/images/icons/bomber.png');
         game.load.image('controlpointIcon', 'assets/images/icons/controlpoint.png');
         game.load.image('20select', 'assets/images/20select.png');
         game.load.image('20empty', 'assets/images/20empty.png');

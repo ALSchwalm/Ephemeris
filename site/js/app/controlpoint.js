@@ -51,7 +51,7 @@ function(config, Phaser, player){
                 this.handler.do({
                     type: "create",
                     data: {
-                        type: "Ship",
+                        type: this.buildUnitType,
                         x: this.position.x,
                         y: this.position.y+40
                     }
@@ -60,6 +60,7 @@ function(config, Phaser, player){
         }.bind(this));
         this.unitGenTimer.start();
 
+        this.buildUnitType = "Fighter";
         this.convertPercent = 0;
 
         this.graphics = this.game.add.group();
@@ -108,6 +109,12 @@ function(config, Phaser, player){
 
     ControlPoint.prototype.onUnselect = function() {
         this.selectGraphic.visible = false;
+    }
+
+    ControlPoint.prototype.buildUnit = function(unit) {
+        this.buildUnitType = unit;
+        this.unitGenTimer.stop(false);
+        this.unitGenTimer.start();
     }
 
     ControlPoint.prototype.drawCaptureBar = function(color) {
