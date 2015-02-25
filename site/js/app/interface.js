@@ -219,9 +219,18 @@ function(config, Phaser, utils, player, map, fog, ControlPoint, Ship){
                     ++height;
                 }
 
+                var clickIcon = function() {
+                    this.game.selected.map(function(unit){
+                        unit.onUnselect();
+                    });
+                    this.game.selected = [this];
+                    this.onSelect();
+                };
+
                 // Create an icon for each selected unit
-                var icon = this.game.add.image(config.interface.iconSize*(i%iconBarCount)*0.9,
-                                               config.interface.iconSize*height, key);
+                var icon = this.game.add.button(config.interface.iconSize*(i%iconBarCount)*0.9,
+                                                config.interface.iconSize*height, key,
+                                                clickIcon, unit);
                 icon.scale.set(0.9, 0.9);
                 this.infoBar.addChild(icon);
                 this.infoBarSelectedIcons.push(icon);
