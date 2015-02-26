@@ -30,6 +30,7 @@ function(config, io, player, utils){
 
         this.socket.on("connected", function(msg){
             player.init(this.socket.id, msg.playerNumber)
+            config.mapFormat = msg.map;
             var game = connected();
             game.state.afterCreate = function(){
                 game.loaded = true;

@@ -13,6 +13,7 @@ var createGame = function() {
     var id = uuid.v4();
     games[id] = [];
     games[id].ready = 0;
+    games[id].mapFile = "1.json";
     return id;
 }
 
@@ -29,15 +30,18 @@ var games = {};
 io.on('connection', function(socket){
     try {
         var gameID = socket.handshake.query.gameID;
-
         var playerNumber = null;
+        var map = require(path.join(sitePath, "assets/maps/",
+                                    games[gameID].mapFile));
+
         if (typeof(games[gameID]) !== "undefined") {
             playerNumber = games[gameID].length;
             games[gameID].push(socket);
         }
 
         socket.emit("connected", {
-            playerNumber : playerNumber
+            playerNumber : playerNumber,
+            map : map
         });
 
         // TODO support for arbitrary numbers of players

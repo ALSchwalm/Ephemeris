@@ -23,60 +23,7 @@ function(config, map, handler, jQuery){
             }
         });
 
-        map.init(game, handler, {
-            seed: "3.141597",
-            width: 4000,
-            height: 4000,
-            startingPoints : [
-                {x: 50, y: 50},
-                {x: 3950, y: 3950},
-            ],
-            controlPoints : [
-                {x: 500,  y: 700,  owner: 1},
-                {x: 3200, y: 3000, owner: 2},
-                {x: 2800, y: 1000, owner: null},
-            ],
-            regions : [
-                {
-                    type: "planet",
-                    position : { x: 500, y: 700 },
-                    asset : "planets/1.png"
-                },
-                {
-                    type: "nebula",
-                    position : { x: 2800, y: 1000 },
-                    asset : "nebulas/0.png",
-                    tint : 0x00FF00,
-                    scale : { x : 3, y : 3 }
-                },
-                {
-                    type: "nebula",
-                    position : { x: 1200, y: 2300 },
-                    asset : "nebulas/11.png",
-                    tint : 0xFF0000,
-                    scale : { x : 4, y : 4 }
-                },
-                {
-                    type: "nebula",
-                    position : { x: 2000, y: 2000 },
-                    asset : "nebulas/11.png",
-                    tint : 0xFF0000,
-                    angle : 90,
-                    scale : { x : 4, y : 4 }
-                },
-                {
-                    type: "planet",
-                    position : { x: 200, y: 3700 },
-                    scale : { x : 0.4, y : 0.4 },
-                    asset : "planets/2.png"
-                },
-                {
-                    type: "planet",
-                    position : { x: 3200, y: 3000 },
-                    asset : "planets/4.png"
-                }
-            ]
-        });
+        map.init(game, handler, config.mapFormat);
 
         game.load.image('ship', 'assets/images/units/MercenaryFighter.png');
         game.load.image('shipOverlay', 'assets/images/units/MercenaryFighter_overlay.png');
