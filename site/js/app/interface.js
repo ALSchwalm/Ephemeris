@@ -94,6 +94,7 @@ function(config, Phaser, utils, player, map, fog, ControlPoint, Ship){
         this.infoBar.addChild(this.infoBarIconGraphics);
 
         this.infoBarSelectedIcons = [];
+        this.infoBarSelectedText = [];
 
         this.infoBar.fixedToCamera = true;
         this.fogGraphics.fixedToCamera = true;
@@ -131,8 +132,24 @@ function(config, Phaser, utils, player, map, fog, ControlPoint, Ship){
         return this;
     }
 
+    /**
+     * Bring the contents of the menu panel up-to-date. This includes health info
+     * for units and unit production time for control points
+     */
     Interface.prototype.updateInfoPanel = function() {
         this.game.world.bringToTop(this.infoBar);
+
+        if (this.game.selected.length == 1 &&
+            !(this.game.selected[0] instanceof ControlPoint)) {
+            this.infoBarSelectedText[0].text =
+                "Health: " + this.game.selected[0].health +
+                "/" + this.game.selected[0].maxHealth;
+        } else if (this.game.selected.length > 1) {
+            this.infoBarSelectedText.map(function(text, i){
+                text.text = this.game.selected[i].health.toString() +
+                    "/" + this.game.selected[i].maxHealth;
+            }, this);
+        }
     }
 
     Interface.prototype.addControlPointControls = function() {
@@ -167,6 +184,101 @@ function(config, Phaser, utils, player, map, fog, ControlPoint, Ship){
         }, this);
     }
 
+    /**
+     * Fill the info panel with information about a single selected unit
+     */
+    Interface.prototype.drawSelectedUnitInfo = function() {
+        var key = this.game.selected[0].iconKey;
+        var icon = this.game.add.image(50, 60, key);
+        icon.anchor.set(0.5, 0.5);
+        this.infoBarSelectedIcons.push(icon);
+        this.infoBar.addChild(icon);
+
+        if (this.game.selected[0] instanceof ControlPoint) {
+            this.addControlPointControls();
+        }
+
+        this.infoBar.lineStyle(1, 0xCCCCCC, 1);
+        this.infoBar.beginFill(0x000000, 1);
+        this.infoBar.drawRoundedRect(icon.x-icon.width/2, icon.y-icon.height/2,
+                                     icon.width, icon.height,
+                                     4);
+        this.infoBar.endFill();
+
+        var style = {
+            font: "20px Arial",
+            fill: "#FFFFFF",
+            shadowColor: "#000000"
+        };
+        var text = this.game.add.text(200, icon.y-icon.height/3,
+                                      this.game.selected[0].name,
+                                      style);
+        this.infoBarSelectedIcons.push(text);
+        this.infoBar.addChild(text);
+
+        var health = this.game.add.text(text.x, text.y+35, "", style);
+        this.infoBarSelectedIcons.push(health);
+        this.infoBarSelectedText.push(health);
+        this.infoBar.addChild(health);
+    }
+
+    /**
+     * Fill the info panel with information and icons about the
+     * the currently selected group of units
+     */
+    Interface.prototype.drawSelectedGroupInfo = function() {
+        var iconBarCount = Math.floor(this.iconBarWidth/config.interface.iconSize);
+        var height = -1;
+
+        this.game.selected.map(function(unit, i){
+            var key = this.game.selected[i].iconKey;
+            if (i%iconBarCount == 0) {
+                ++height;
+            }
+
+            var clickIcon = function() {
+                this.game.selected.map(function(unit){
+                    unit.onUnselect();
+                });
+                this.game.selected = [this];
+                this.onSelect();
+            };
+
+            // Create an icon for each selected unit
+            var icon = this.game.add.button(config.interface.iconSize*(i%iconBarCount)*0.9,
+                                            (config.interface.iconSize+10)*height, key,
+                                            clickIcon, unit);
+            icon.scale.set(0.9, 0.9);
+            this.infoBar.addChild(icon);
+            this.infoBarSelectedIcons.push(icon);
+
+            var style = {
+                font: "12px Arial",
+                fill: "#FFFFFF",
+                shadowColor: "#000000"
+            };
+            var text = this.game.add.text(icon.x+icon.width/2, icon.y+icon.height+5,
+                                          "", style);
+            text.anchor.set(0.5, 0.5);
+            this.infoBarSelectedText.push(text);
+            this.infoBarSelectedIcons.push(text);
+            this.infoBar.addChild(text);
+
+            // Draw border around icons
+            this.infoBar.lineStyle(1, 0xCCCCCC, 1);
+            this.infoBar.beginFill(0x000000, 1);
+            this.infoBar.drawRoundedRect(icon.x+2, icon.y+2,
+                                         icon.width-4, icon.height-4,
+                                         4);
+            this.infoBar.endFill();
+        }, this);
+    }
+
+    /**
+     * Remove all contents of the info panel and re-add them for the currently
+     * selected group of units or control point. This should be invoked whenever
+     * a unit is destroyed or a control point is captured, etc
+     */
     Interface.prototype.reconstructInfoPanel = function() {
         this.infoBar.clear();
         this.infoBar.lineStyle(2, 0x444444, 1);
@@ -178,73 +290,13 @@ function(config, Phaser, utils, player, map, fog, ControlPoint, Ship){
         this.infoBarSelectedIcons.map(function(icon){
             icon.destroy();
         });
+        this.infoBarSelectedText = [];
 
         // Draw more info if only one unit is selected
         if (this.game.selected.length == 1) {
-            var key = this.game.selected[0].iconKey;
-            var icon = this.game.add.image(50, 60, key);
-            icon.anchor.set(0.5, 0.5);
-            this.infoBarSelectedIcons.push(icon);
-            this.infoBar.addChild(icon);
-
-            if (this.game.selected[0] instanceof ControlPoint) {
-                this.addControlPointControls();
-            }
-
-            this.infoBar.lineStyle(1, 0xCCCCCC, 1);
-            this.infoBar.beginFill(0x000000, 1);
-            this.infoBar.drawRoundedRect(icon.x-icon.width/2, icon.y-icon.height/2,
-                                         icon.width, icon.height,
-                                         4);
-            this.infoBar.endFill();
-
-            var style = {
-                font: "20px Arial",
-                fill: "#FFFFFF",
-                shadowColor: "#000000"
-            };
-            var text = this.game.add.text(200, icon.y,
-                                          this.game.selected[0].name,
-                                          style);
-            text.anchor.set(0.5, 0.5);
-            this.infoBarSelectedIcons.push(text);
-            this.infoBar.addChild(text);
-        } else {
-            var iconBarCount = Math.floor(this.iconBarWidth/config.interface.iconSize);
-            var height = -1;
-
-            this.game.selected.map(function(unit, i){
-                var key = this.game.selected[i].iconKey;
-                if (i%iconBarCount == 0) {
-                    ++height;
-                }
-
-                var clickIcon = function() {
-                    this.game.selected.map(function(unit){
-                        unit.onUnselect();
-                    });
-                    this.game.selected = [this];
-                    this.onSelect();
-                };
-
-                // Create an icon for each selected unit
-                var icon = this.game.add.button(config.interface.iconSize*(i%iconBarCount)*0.9,
-                                                config.interface.iconSize*height, key,
-                                                clickIcon, unit);
-                icon.scale.set(0.9, 0.9);
-                this.infoBar.addChild(icon);
-                this.infoBarSelectedIcons.push(icon);
-
-                // Draw border around icons
-                this.infoBar.lineStyle(1, 0xCCCCCC, 1);
-                this.infoBar.beginFill(0x000000, 1);
-                this.infoBar.drawRoundedRect(icon.x+2, icon.y+2,
-                                             icon.width-4, icon.height-4,
-                                             4);
-                this.infoBar.endFill();
-
-            }, this);
-
+            this.drawSelectedUnitInfo();
+        } else if (this.game.selected.length > 1){
+            this.drawSelectedGroupInfo();
         }
     }
 
