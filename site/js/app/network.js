@@ -29,8 +29,15 @@ function(config, io, player, utils){
         });
 
         this.socket.on("connected", function(msg){
-            player.init(this.socket.id, msg.playerNumber)
+            if (!msg.player) {
+                player.init(this.socket.id, msg.playerNumber)
+            } else {
+                player.clone(msg.player);
+            }
+
             config.mapFormat = msg.map;
+            config.mapName = msg.mapName;
+
             var game = connected();
             game.state.afterCreate = function(){
                 game.loaded = true;
@@ -51,8 +58,8 @@ function(config, io, player, utils){
                 }
             })
 
-            this.socket.on("ready", function(msg){
-                this.onAllReady && this.onAllReady();
+            this.socket.on("ready", function(){
+                this.onAllReady && this.onAllReady(msg.replay);
             }.bind(this));
 
             //TODO show invalid game id error when player.number is null

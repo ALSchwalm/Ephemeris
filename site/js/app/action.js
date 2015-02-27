@@ -20,8 +20,42 @@ function(config, network, player, utils, Ship, Bomber){
      */
     ActionHandler.prototype.init = function(game) {
         this.game = game;
-        this.actions = [];
+        this.history = [];
+        this.replay = null;
         return this;
+    }
+
+    ActionHandler.prototype.update = function() {
+        if (this.replay) {
+            if (this.replay[0] &&
+                this.replay[0][0] <= new Date().getTime() - this.game.startTime) {
+                this.replay[0][1].replay = true;
+                this.do(this.replay[0][1]);
+                this.replay.shift(1);
+            }
+        }
+    }
+
+    /**
+     * Replay a previous game described by 'replay'
+     */
+    ActionHandler.prototype.startReplay = function(replay) {
+        this.replay = replay;
+    }
+
+    /**
+     * Download a replay for this game
+     */
+    ActionHandler.prototype.downloadReplay = function() {
+        var replay = {
+            data: this.history,
+            map: config.mapName,
+            player: player
+        };
+        var data = "text/json;charset=utf-8," +
+            encodeURIComponent(JSON.stringify(replay));
+        $('<a href="data:' + data + '" download="replay.json"></a>')
+            .appendTo('#phaser-container')[0].click();
     }
 
     /**
@@ -30,10 +64,12 @@ function(config, network, player, utils, Ship, Bomber){
      * @param {object} action - An action to perform
      */
     ActionHandler.prototype.do = function(action) {
+        if (this.replay && !action.replay)
+            return;
+
         // Clone the action, as acting on it, may destroy it
         var clone = utils.clone(action);
-
-        this.actions.push(clone);
+        this.history.push([new Date().getTime() - this.game.startTime, clone]);
 
         switch(action.type.toLowerCase()) {
         case "attack":

@@ -1,25 +1,45 @@
-var express = require('express');
-var path = require('path');
-var compress = require('compression');
-var uuid = require("node-uuid");
+var express     = require('express');
+var path        = require('path');
+var compress    = require('compression');
+var uuid        = require("node-uuid");
+var bodyParser  = require('body-parser');
+var multer      = require('multer');
 
 var sitePath = path.join(__dirname, "/../site");
 
 var app = express();
-app.use(compress());
 app.use("/", express.static(sitePath));
+app.use(compress());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(multer({inMemory : true}));
 
-var createGame = function() {
+var createGame = function(username, map, replay, player) {
     var id = uuid.v4();
     games[id] = [];
     games[id].ready = 0;
-    games[id].mapFile = "1.json";
+    games[id].mapName = map;
+    games[id].mapFile = map + ".json";
+    games[id].replay = replay;
+    games[id].player = player;
     return id;
 }
 
-// For the time being, just redirect from index to a game
-app.use(["/", "/index", "/index.html"], function(req, res){
-    res.redirect("/game.html?id=" + createGame());
+// For the time being, just redirect from index to game creation
+app.get(["/", "/index", "/index.html"], function(req, res){
+    res.redirect("newgame.html");
+});
+
+app.post("/create", function(req, res) {
+    var id = null;
+    if (req.body.gametype === "replay") {
+        var replay = JSON.parse(req.files["file-input"].buffer.toString());
+        var map = replay.map;
+        id = createGame(req.body.username, map, replay.data, replay.player);
+    } else {
+        id = createGame(req.body.username, req.body.map);
+    }
+    res.redirect("game.html?id=" + id);
 });
 
 var server = app.listen(3000);
@@ -41,11 +61,14 @@ io.on('connection', function(socket){
 
         socket.emit("connected", {
             playerNumber : playerNumber,
-            map : map
+            map : map,
+            mapName : games[gameID].mapName,
+            replay : games[gameID].replay,
+            player : games[gameID].player
         });
 
         // TODO support for arbitrary numbers of players
-        if (games[gameID].length == 2) {
+        if (games[gameID].length == 2 || games[gameID].replay) {
             var startMessage = {
                 players : []
             };
@@ -62,7 +85,7 @@ io.on('connection', function(socket){
 
         socket.on("ready", function(msg){
             games[gameID].ready++;
-            if (games[gameID].ready == 2) {
+            if (games[gameID].ready == 2 || games[gameID].replay) {
                 games[gameID].map(function(s){
                     s.emit("ready", {});
                 });

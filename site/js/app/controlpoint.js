@@ -47,7 +47,7 @@ function(config, Phaser, player){
 
         this.unitGenTimer = this.game.time.create(false);
         this.unitGenTimer.loop(5000, function() {
-            if (this.owner == player) {
+            if (this.owner == player && !this.handler.replay) {
                 this.handler.do({
                     type: "create",
                     data: {

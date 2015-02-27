@@ -55,6 +55,12 @@ function(config, utils){
         this.opponents[id] = new Player(id, number);
     }
 
+    Player.prototype.clone = function(player) {
+        for (var key in player) {
+            this[key] = player[key];
+        }
+    }
+
     var player = new Player();
 
     return player;

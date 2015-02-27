@@ -2,8 +2,8 @@
  * A module returning a function which will be executed during each frame
  * @module app/state/update
  */
-define(["app/controls", "app/interface", "app/fog"],
-function(controls, hud, fog){
+define(["app/controls", "app/interface", "app/fog", "app/action"],
+function(controls, hud, fog, action){
     "use strict"
 
     var active = false;
@@ -19,6 +19,7 @@ function(controls, hud, fog){
             controls.update();
             fog.update();
             hud.update();
+            action.update();
         }
     }
 

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Ephemeris: Create a game</title>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+    <script src="js/lib/jquery.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <form action="/create" method="post" enctype="multipart/form-data" class="row col-sm-8 col-sm-offset-2">
+
+        <div class="radio">
+          <input type="radio" name="gametype" id="normal-game" value="normal" checked>
+        </div>
+        <fieldset id="normal-fieldset">
+          <div class="panel panel-default panel-primary">
+            <div class="panel-heading">New Game</div>
+            <div class="panel-body">
+              <div class="form-group">
+                <label>Username</label>
+                <input name="username" type="text" class="form-control" placeholder="Username">
+              </div>
+              <div class="form-group">
+                <label>Map</label>
+                <select name="map" class="form-control">
+                  <option>1</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </fieldset>
+
+        <div class="radio">
+          <input type="radio" name="gametype" id="replay-game" value="replay">
+        </div>
+        <fieldset id="replay-fieldset" disabled>
+          <div class="panel panel-default">
+            <div class="panel-heading">Replay</div>
+            <div class="panel-body">
+              <div class="form-group">
+                <label>Replay File</label>
+                <input name="file-input" type="file">
+                <p class="help-block">Upload a replay file from a previous game.</p>
+              </div>
+            </div>
+          </div>
+        </fieldset>
+
+        <div class="row text-center col-sm-6 col-sm-offset-3">
+          <button type="submit" class="btn btn-lg btn-primary btn-block">Start</button>
+        </div>
+      </form>
+    </div>
+  </body>
+  <script>
+   $("input:radio").change(function(){
+     $("fieldset").prop("disabled", function(i, val){
+       return !val;
+     });
+     $("fieldset .panel").toggleClass("panel-primary");
+   });
+  </script>
+</html>
