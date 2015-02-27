@@ -13,6 +13,9 @@ app.use(compress());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(multer({inMemory : true}));
+app.set('views', sitePath)
+app.set('view engine', 'ejs');
+app.engine('html', require('ejs').__express);
 
 var createGame = function(username, map, replay, player) {
     var id = uuid.v4();
@@ -39,7 +42,16 @@ app.post("/create", function(req, res) {
     } else {
         id = createGame(req.body.username, req.body.map);
     }
-    res.redirect("game.html?id=" + id);
+    res.redirect("/game?id=" + id);
+});
+
+app.get("/game", function(req, res) {
+    if (games[req.query.id]) {
+        res.render("game.html");
+    } else {
+        //TODO make a nice page for this
+        res.send("Invalid game id");
+    }
 });
 
 var server = app.listen(3000);
