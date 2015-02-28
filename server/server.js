@@ -8,12 +8,17 @@ var multer      = require('multer');
 var sitePath = path.join(__dirname, "/../site");
 
 var app = express();
-app.use("/", express.static(sitePath));
+
+// Serve static content
+app.use("/assets", express.static(path.join(sitePath, "assets")));
+app.use("/js", express.static(path.join(sitePath, "js")));
+app.use("/css", express.static(path.join(sitePath, "css")));
+
 app.use(compress());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(multer({inMemory : true}));
-app.set('views', sitePath)
+app.set('views', path.join(sitePath, "view"))
 app.set('view engine', 'ejs');
 app.engine('html', require('ejs').__express);
 
@@ -30,7 +35,11 @@ var createGame = function(username, map, replay, player) {
 
 // For the time being, just redirect from index to game creation
 app.get(["/", "/index", "/index.html"], function(req, res){
-    res.redirect("newgame.html");
+    res.redirect("newgame");
+});
+
+app.get("/newgame", function(req, res){
+    res.render("newgame.html");
 });
 
 app.post("/create", function(req, res) {

@@ -9,6 +9,6 @@
         // All application files can be required with 'app/<name>'
         app: '../app'
     },
-    name : "../../app",
-    out : "site/ephemeris-built.js"
+    name : "../app",
+    out : "site/js/ephemeris-built.js"
 })
