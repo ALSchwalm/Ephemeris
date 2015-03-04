@@ -107,16 +107,16 @@ function(config, Phaser, controls, utils, player, hud){
         }
 
         /**
-         * The current health of this unit
-         * @type {Number}
-         */
-        this.health = this.health || 100;
-
-        /**
          * The maximum health of this unit
          * @type {Number}
          */
-        this.maxHealth = this.health || 100;
+        this.maxHealth = this.maxHealth || 100;
+
+        /**
+         * The current health of this unit
+         * @type {Number}
+         */
+        this.health = this.health || this.maxHealth;
 
         /**
          * The base damage done by this unit during an attack

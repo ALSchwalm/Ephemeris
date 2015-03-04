@@ -3,8 +3,8 @@
  * @module app/action
  */
 define(['app/config', 'app/network', 'app/player',
-        'app/utils', 'app/ship', 'app/bomber'],
-function(config, network, player, utils, Ship, Bomber){
+        'app/utils', 'app/ship', 'app/bomber', 'app/carrier'],
+function(config, network, player, utils, Ship, Bomber, Carrier){
     "use strict"
 
     /**
@@ -105,6 +105,9 @@ function(config, network, player, utils, Ship, Bomber){
                 break;
             case "bomber":
                 type = Bomber;
+                break;
+            case "carrier":
+                type = Carrier;
                 break;
             default:
                 console.error("Unknown unit type:", action.data.type);

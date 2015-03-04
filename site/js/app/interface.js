@@ -154,7 +154,8 @@ function(config, Phaser, utils, player, map, fog, ControlPoint, Ship){
 
     Interface.prototype.addControlPointControls = function() {
         var options = [["fighterIcon", "Fighter"],
-                       ["bomberIcon", "Bomber"]];
+                       ["bomberIcon", "Bomber"],
+                       ["carrierIcon", "Carrier"]];
         var point = this.game.selected[0];
 
         if (point.owner != player)
