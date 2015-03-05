@@ -3,12 +3,10 @@ function(config, Phaser, Unit, player){
     "use strict"
 
     var Ship = function(game, handler, x, y, config){
-        this.name = "Fighter"
         this.spriteKey = "ship";
         this.overlayKey = "shipOverlay";
         this.backgroundKey = "20empty";
         this.selectKey = "20select";
-        this.iconKey = "fighterIcon"
         this.speed = 4;
         this.range = 180;
         this.view = 300;
@@ -21,6 +19,9 @@ function(config, Phaser, Unit, player){
     }
 
     Ship.prototype = new Unit();
+    Ship.prototype.buildFraction = 1;
+    Ship.prototype.name = "Fighter";
+    Ship.prototype.iconKey = "fighterIcon"
 
     Ship.prototype.update = function() {
         this.unitUpdate();

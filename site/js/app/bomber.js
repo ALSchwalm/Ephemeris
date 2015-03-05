@@ -3,11 +3,9 @@ function(config, Phaser, Unit, player){
     "use strict"
 
     var Bomber = function(game, handler, x, y, config){
-        this.name = "Bomber"
         this.spriteKey = "bomber";
         this.backgroundKey = "20empty";
         this.selectKey = "20select";
-        this.iconKey = "bomberIcon"
         this.speed = 3;
         this.range = 180;
         this.view = 300;
@@ -20,6 +18,9 @@ function(config, Phaser, Unit, player){
     }
 
     Bomber.prototype = new Unit();
+    Bomber.prototype.buildFraction = 0.9;
+    Bomber.prototype.name = "Bomber";
+    Bomber.prototype.iconKey = "bomberIcon"
 
     Bomber.prototype.update = function() {
         this.unitUpdate();

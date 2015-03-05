@@ -22,6 +22,9 @@ function(config, hud, map, network, action, jquery){
             setTimeout(function(){
                 $("#loading-screen").fadeOut();
             }, 500);
+            map.controlPoints.map(function(point){
+                point.start();
+            });
             game.running = true;
             game.startTime = new Date().getTime();
             action.startReplay(replay);

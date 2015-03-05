@@ -3,11 +3,9 @@ function(config, Phaser, Unit, player){
     "use strict"
 
     var Carrier = function(game, handler, x, y, config){
-        this.name = "Carrier"
         this.spriteKey = "carrier";
         this.backgroundKey = "120empty";
         this.selectKey = "120select";
-        this.iconKey = "carrierIcon"
         this.speed = 2;
         this.range = 180;
         this.view = 350;
@@ -19,6 +17,9 @@ function(config, Phaser, Unit, player){
     }
 
     Carrier.prototype = new Unit();
+    Carrier.prototype.buildFraction = 0.3;
+    Carrier.prototype.name = "Carrier";
+    Carrier.prototype.iconKey = "carrierIcon"
 
     Carrier.prototype.update = function() {
         this.unitUpdate();

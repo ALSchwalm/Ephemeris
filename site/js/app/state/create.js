@@ -16,7 +16,7 @@ function(config, handler, controls, network, movement, hud, fog){
      */
     var create = function(game){
         controls.init(game, handler);
-        handler.init(game);
+        handler.init(game, hud);
         network.init(game, handler);
         movement.init(game, handler);
         hud.init(game);

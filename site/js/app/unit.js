@@ -2,9 +2,8 @@
  * A module which defines a basic unit
  * @module app/unit
  */
-define(["app/config", "Phaser", "app/controls",
-        "app/utils", "app/player", "app/interface"],
-function(config, Phaser, controls, utils, player, hud){
+define(["app/config", "Phaser", "app/utils", "app/player"],
+function(config, Phaser, utils, player){
     "use strict"
 
     /**
@@ -289,7 +288,6 @@ function(config, Phaser, controls, utils, player, hud){
         if (index != -1) {
             this.game.selected.splice(index, 1);
             this.onUnselect();
-            hud.reconstructInfoPanel();
         }
         this.game.removeUnit(this);
         this.health = 0;

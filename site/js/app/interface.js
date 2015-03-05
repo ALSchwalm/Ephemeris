@@ -3,8 +3,8 @@
  * @module app/interface
  */
 define(["app/config", "Phaser", "app/utils",
-        "app/player", "app/map", "app/fog", "app/controlpoint", "app/ship"],
-function(config, Phaser, utils, player, map, fog, ControlPoint, Ship){
+        "app/player", "app/map", "app/fog", "app/controlpoint"],
+function(config, Phaser, utils, player, map, fog, ControlPoint){
     "use strict"
 
     /**
@@ -139,11 +139,15 @@ function(config, Phaser, utils, player, map, fog, ControlPoint, Ship){
     Interface.prototype.updateInfoPanel = function() {
         this.game.world.bringToTop(this.infoBar);
 
-        if (this.game.selected.length == 1 &&
-            !(this.game.selected[0] instanceof ControlPoint)) {
-            this.infoBarSelectedText[0].text =
-                "Health: " + this.game.selected[0].health +
-                "/" + this.game.selected[0].maxHealth;
+        if (this.game.selected.length == 1) {
+            if (!(this.game.selected[0] instanceof ControlPoint)) {
+                this.infoBarSelectedText[0].text =
+                    "Health: " + this.game.selected[0].health +
+                    "/" + this.game.selected[0].maxHealth;
+            } else {
+                this.infoBarSelectedText[0].text =
+                    "Building: " + Math.floor(this.game.selected[0].buildPercent) + "%";
+            }
         } else if (this.game.selected.length > 1) {
             this.infoBarSelectedText.map(function(text, i){
                 text.text = this.game.selected[i].health.toString() +
@@ -153,27 +157,24 @@ function(config, Phaser, utils, player, map, fog, ControlPoint, Ship){
     }
 
     Interface.prototype.addControlPointControls = function() {
-        var options = [["fighterIcon", "Fighter"],
-                       ["bomberIcon", "Bomber"],
-                       ["carrierIcon", "Carrier"]];
+        var options = ["fighterIcon", "bomberIcon", "carrierIcon"];
         var point = this.game.selected[0];
-
-        if (point.owner != player)
-            return;
 
         options.map(function(option, i){
             var button = this.game.add.button(50+config.interface.iconSize*i, 160,
-                                              option[0],
+                                              option,
                                               function(){
-                                                  this.buildUnit(option[1]);
-                                                  hud.reconstructInfoPanel();
+                                                  if (point.owner == player) {
+                                                      this.buildUnit(i);
+                                                      hud.reconstructInfoPanel();
+                                                  }
                                               }, point);
             button.anchor.set(0.5, 0.5);
             this.infoBarSelectedIcons.push(button);
             this.infoBar.addChild(button);
 
             // Show the current option
-            if (point.buildUnitType == option[1]) {
+            if (point.buildUnitType.prototype.iconKey == option) {
                 this.infoBar.lineStyle(1, 0xCCCCCC, 1);
                 this.infoBar.beginFill(0x000000, 1);
                 this.infoBar.drawRoundedRect(button.x-button.width/2,

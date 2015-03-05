@@ -18,8 +18,9 @@ function(config, network, player, utils, Ship, Bomber, Carrier){
      *
      * @param {Phaser.Game} game - A reference to the current game object
      */
-    ActionHandler.prototype.init = function(game) {
+    ActionHandler.prototype.init = function(game, hud) {
         this.game = game;
+        this.hud = hud;
         this.history = [];
         this.replay = null;
         return this;
@@ -89,6 +90,7 @@ function(config, network, player, utils, Ship, Bomber, Carrier){
             var unit = this.game.getUnit(action.data.id);
             if (unit) {
                 unit.destroy();
+                this.hud.reconstructInfoPanel();
             }
             break;
         case "engage":

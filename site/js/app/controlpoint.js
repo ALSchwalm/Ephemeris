@@ -2,8 +2,9 @@
  * A module which defines control points
  * @module app/controlpoint
  */
-define(["app/config", "Phaser", "app/player"],
-function(config, Phaser, player){
+define(["app/config", "Phaser", "app/player",
+       "app/ship", "app/bomber", "app/carrier"],
+function(config, Phaser, player, Fighter, Bomber, Carrier){
     "use strict"
 
     /**
@@ -46,22 +47,28 @@ function(config, Phaser, player){
         this.name = "Control Point"
 
         this.unitGenTimer = this.game.time.create(false);
-        this.unitGenTimer.loop(5000, function() {
-            if (this.owner == player && !this.handler.replay) {
+        this.unitGenTimer.loop(100, function() {
+            if (this.owner == player && this.buildPercent >= 100) {
                 this.handler.do({
                     type: "create",
                     data: {
-                        type: this.buildUnitType,
+                        type: this.buildUnitType.prototype.name,
                         x: this.position.x,
-                        y: this.position.y+40
+                        y: this.position.y+50
                     }
                 });
+                this.buildPercent = 0;
+            } else if (this.owner) {
+                if (this.buildPercent >= 100) {
+                    this.buildPercent = 0;
+                }
+                this.buildPercent += this.buildUnitType.prototype.buildFraction;
             }
         }.bind(this));
-        this.unitGenTimer.start();
 
-        this.buildUnitType = "Fighter";
+        this.buildUnitType = Fighter;
         this.convertPercent = 0;
+        this.buildPercent = 0;
 
         this.graphics = this.game.add.group();
         this.graphics.position = new Phaser.Point(x, y);
@@ -80,6 +87,7 @@ function(config, Phaser, player){
         }.bind(this), 100);
 
         this.captureBar = this.game.add.graphics(0, -60);
+        this.buildBar = this.game.add.graphics(0, -10);
 
         this.selectGraphic = this.game.add.sprite(0, 0, "20select");
         this.selectGraphic.anchor.set(0.5, 0.5);
@@ -87,6 +95,7 @@ function(config, Phaser, player){
 
         this.graphics.addChild(this.selectGraphic);
         this.graphics.addChild(this.captureBar);
+        this.graphics.addChild(this.buildBar);
         this.graphics.addChild(this.sprite);
         this.graphics.addChild(this.circle);
         this.display();
@@ -101,6 +110,10 @@ function(config, Phaser, player){
         }
     });
 
+    ControlPoint.prototype.start = function() {
+        this.unitGenTimer.start();
+    }
+
     ControlPoint.prototype.redraw = false;
 
     ControlPoint.prototype.onSelect = function() {
@@ -111,10 +124,10 @@ function(config, Phaser, player){
         this.selectGraphic.visible = false;
     }
 
-    ControlPoint.prototype.buildUnit = function(unit) {
-        this.buildUnitType = unit;
-        this.unitGenTimer.stop(false);
-        this.unitGenTimer.start();
+    ControlPoint.prototype.buildUnit = function(number) {
+        var options = [Fighter, Bomber, Carrier];
+        this.buildUnitType = options[number];
+        this.buildPercent = 0;
     }
 
     ControlPoint.prototype.drawCaptureBar = function(color) {
@@ -137,13 +150,34 @@ function(config, Phaser, player){
         this.captureBar.endFill();
     }
 
-    ControlPoint.prototype.drawBuildPercent = function() {
+    ControlPoint.prototype.drawBuildBar = function() {
+        this.buildBar.clear();
+        var percent = this.buildPercent/100;
 
+        // Background
+        this.buildBar.lineStyle(1, 0xCCCCCC, 1);
+        this.buildBar.beginFill(0x333333, 0.8);
+        this.buildBar.drawRect(-this.sprite.width/2,
+                                 this.sprite.height,
+                                 this.sprite.width, 4);
+        this.buildBar.endFill();
+
+        // Current capture percent
+        this.buildBar.beginFill(0x00FF00, 0.8);
+        this.buildBar.drawRect(-this.sprite.width/2,
+                               this.sprite.height,
+                               this.sprite.width*percent, 4);
+        this.buildBar.endFill();
     }
 
     ControlPoint.prototype.update = function() {
         var attemptedOwner = null;
         var magnitude = 1;
+
+        if (this.owner) {
+            this.drawBuildBar();
+        }
+
         for (var i=0; i < this.game.units.length; ++i) {
             var unit = this.game.units[i];
             if (unit.alive &&
