@@ -52,6 +52,9 @@ function(config, Phaser, utils, player){
         this.healthGraphic = this.game.add.graphics(0, 0);
         this.graphics.addChild(this.healthGraphic);
 
+        this.statusGraphic = this.game.add.graphics(0, 0);
+        this.graphics.addChild(this.statusGraphic);
+
         this.highlights = this.game.add.sprite(0, 0, this.overlayKey);
         this.highlights.anchor.set(0.5, 0.5);
         this.highlights.alpha = 0.7;
@@ -123,6 +126,15 @@ function(config, Phaser, utils, player){
          */
         this.attackPower = this.attackPower || 10;
 
+        /**
+         * The current status effects applied to this unit
+         */
+        this.statusEffects = {
+            heal : false,
+            damage : false,
+            hide : false
+        };
+
         this.target = this.target || null;
         this.attacking = false;
 
@@ -146,8 +158,19 @@ function(config, Phaser, utils, player){
             return this._health;
         },
         set : function(value) {
+            var wasAlive = !this.dead;
             this._health = value;
             this.drawHealthBar();
+            if (wasAlive && !this.enemy && this.dead) {
+                this.handler.do({
+                    type: "destroy",
+                    data : {
+                        id : this.id
+                    }
+                });
+                this.target = null;
+                this.destination = null;
+            }
         }
     });
 
@@ -180,6 +203,38 @@ function(config, Phaser, utils, player){
             this._destination = value;
         }
     });
+
+    Unit.prototype.applyStatusEffects = function() {
+        this.statusGraphic.clear();
+
+        var offset = 0;
+        if (this.statusEffects.heal && this.health < this.maxHealth) {
+            this.statusGraphic.lineStyle(1, 0xCCCCCC, 1);
+            this.statusGraphic.beginFill(0x00DD00, 0.8);
+            this.statusGraphic.drawRect(this.sprite.width/2 + 5 + 10*offset,
+                                        this.sprite.height + 1,
+                                        8, 2);
+            this.statusGraphic.drawRect(this.sprite.width/2 + 8 + 10*offset,
+                                        this.sprite.height-2,
+                                        2, 8);
+            this.statusGraphic.endFill();
+
+            this.health += 0.1;
+            this.statusEffects.heal = false;
+            offset++;
+        }
+        if (this.statusEffects.damage && this.alive) {
+            this.statusGraphic.lineStyle(1, 0xCCCCCC, 1);
+            this.statusGraphic.beginFill(0xDD0000, 0.8);
+            this.statusGraphic.drawRect(this.sprite.width/2 + 5 + 10*offset,
+                                        this.sprite.height + 1,
+                                        8, 2);
+            this.statusGraphic.endFill();
+            this.health -= 0.1;
+            this.statusEffects.damage = false;
+            offset++;
+        }
+    }
 
     /**
      * Update this unit's health bar
@@ -319,16 +374,6 @@ function(config, Phaser, utils, player){
             });
 
             target.health -= this.attackPower;
-            if (target.dead) {
-                this.handler.do({
-                    type: "destroy",
-                    data : {
-                        id : target.id
-                    }
-                });
-                this.target = null;
-                this.destination = null;
-            }
         }.bind(this));
     }
 
@@ -435,6 +480,7 @@ function(config, Phaser, utils, player){
      */
     Unit.prototype.unitUpdate = function() {
         this.moveTowardDestination();
+        this.applyStatusEffects();
         var avoidDistance = (this.destination && !this.target) ? 0 : 35;
         this.game.units.map(function(unit){
             this.avoidOtherUnits(unit, avoidDistance);

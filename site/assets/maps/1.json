@@ -22,14 +22,22 @@
             "position" : { "x": 2800, "y": 1000 },
             "asset" : "nebulas/0.png",
             "tint" : 65280,
-            "scale" : { "x" : 3, "y" : 3 }
+            "scale" : { "x" : 3, "y" : 3 },
+            "effectRadius" : 400,
+            "effect" : {
+                "heal" : 1
+            }
         },
         {
             "type": "nebula",
             "position" : { "x": 1200, "y": 2300 },
             "asset" : "nebulas/11.png",
             "tint" : 16711680,
-            "scale" : { "x" : 4, "y" : 4 }
+            "scale" : { "x" : 4, "y" : 4 },
+            "effectRadius" : 400,
+            "effect" : {
+                "damage" : 1
+            }
         },
         {
             "type": "nebula",
@@ -37,7 +45,11 @@
             "asset" : "nebulas/11.png",
             "tint" : 16711680,
             "angle" : 90,
-            "scale" : { "x" : 4, "y" : 4 }
+            "scale" : { "x" : 4, "y" : 4 },
+            "effectRadius" : 400,
+            "effect" : {
+                "damage" : 1
+            }
         },
         {
             "type": "planet",

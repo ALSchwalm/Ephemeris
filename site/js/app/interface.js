@@ -142,7 +142,7 @@ function(config, Phaser, utils, player, map, fog, ControlPoint){
         if (this.game.selected.length == 1) {
             if (!(this.game.selected[0] instanceof ControlPoint)) {
                 this.infoBarSelectedText[0].text =
-                    "Health: " + this.game.selected[0].health +
+                    "Health: " + Math.floor(this.game.selected[0].health) +
                     "/" + this.game.selected[0].maxHealth;
             } else {
                 this.infoBarSelectedText[0].text =
@@ -150,7 +150,7 @@ function(config, Phaser, utils, player, map, fog, ControlPoint){
             }
         } else if (this.game.selected.length > 1) {
             this.infoBarSelectedText.map(function(text, i){
-                text.text = this.game.selected[i].health.toString() +
+                text.text = Math.floor(this.game.selected[i].health.toString()) +
                     "/" + this.game.selected[i].maxHealth;
             }, this);
         }

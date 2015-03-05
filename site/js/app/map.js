@@ -1,9 +1,9 @@
 /**
- * Module which generates a random map
+ * Module which generates a map from a config file
  * @module app/map
  */
-define(["app/config", "app/utils", "app/player", "app/controlpoint"],
-function(config, utils, player, ControlPoint){
+define(["app/config", "Phaser", "app/utils", "app/player", "app/controlpoint"],
+function(config, Phaser, utils, player, ControlPoint){
     "use strict"
 
     /**
@@ -58,10 +58,7 @@ function(config, utils, player, ControlPoint){
         // Add regions
         this.regions = [];
         for (var i=0; i < map.regions.length; ++i) {
-            var newRegion = this.makeRegion(map.regions[i]);
-            if (newRegion) {
-                this.regions.push(newRegion);
-            }
+            this.makeRegion(map.regions[i]);
         }
 
         // Place camera over this player's starting position
@@ -124,6 +121,22 @@ function(config, utils, player, ControlPoint){
                 region.image.scale = regionConfig.scale;
             }
 
+            region.image.update = function(){
+                if (!region.effect) {
+                    return;
+                }
+                this.game.units.map(function(unit){
+                    if (Phaser.Point.distance(unit.position,
+                                              region.image.position) < region.effectRadius) {
+                        for (var effect in region.effect) {
+                            if (!unit.statusEffects[effect]) {
+                                unit.statusEffects[effect] = region.effect[effect];
+                            }
+                        }
+                    }
+                }, this);
+            }.bind(this);
+
             this.regions.push(region);
 
             if (regionConfig.type == "planet") {
@@ -139,8 +152,6 @@ function(config, utils, player, ControlPoint){
                 }
             }.bind(this));
         }
-
-        return null;
     }
 
     var map = new Map();
