@@ -5,7 +5,7 @@ body {
     background-color: #151515;
 }
 
-#loading-screen {
+#loading-screen, #game-over {
     position: absolute;
     top: 0;
     left: 0;
@@ -14,6 +14,10 @@ body {
     background-color: black;
     color: white;
     text-align: center;
+}
+
+#game-over {
+    background-color: rgba(0,0,0,0.6);
 }
 
 .vertical-center {
