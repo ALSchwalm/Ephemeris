@@ -2,7 +2,7 @@
  * A module which handles pathing and movement
  * @module app/movement
  */
-define(["app/config", "app/utils"], function(config, utils){
+define(["app/config", "Phaser", "app/utils"], function(config, Phaser, utils){
     "use strict"
 
     /**
@@ -53,23 +53,61 @@ define(["app/config", "app/utils"], function(config, utils){
                         path: [modifiedPoint]
                     }
                 });
-
-                var moveGraphic = this.game.add.image(modifiedPoint.x,
-                                                      modifiedPoint.y,
-                                                      "10fill");
-                moveGraphic.anchor = {x:0.5, y:0.5};
-                moveGraphic.tint = 0x00DD00;
-                this.game.add.tween(moveGraphic.scale).to({
-                    x: 0,
-                    y: 0
-                }, 200).start().onComplete.add(function(){
-                    moveGraphic.destroy();
-                });
-
+                this.drawMovementPont(modifiedPoint);
                 index++;
             }
         }
         return this;
+    }
+
+    /**
+     * Show a movement point effect at the given point which fades out over
+     * the given time.
+     *
+     * @param {Phaser.Point} point - Where to show the effect
+     * @param {time} fadeTime - Duration of the effect
+     */
+    MovementHandler.prototype.drawMovementPont = function(point, fadeTime) {
+        var fadeTime = fadeTime || 200;
+        var moveGraphic = this.game.add.image(point.x,
+                                              point.y,
+                                              "10fill");
+        moveGraphic.anchor = {x:0.5, y:0.5};
+        moveGraphic.tint = 0x00DD00;
+        this.game.add.tween(moveGraphic.scale).to({
+            x: 0,
+            y: 0
+        }, fadeTime).start().onComplete.add(function(){
+            moveGraphic.destroy();
+        });
+    }
+
+    /**
+     * Move the selected units to the given points.
+     *
+     * @param {Unit[]} units - The group of units
+     * @param {Phaser.Point[]} points - An array of target points
+     */
+    MovementHandler.prototype.moveGroupToPoints = function(units, points) {
+        var pointsPerUnit = Math.floor(points.length / units.length) || 1;
+
+        var points = points.filter(function(point, i){
+            if (i==0)
+                return true;
+            return Phaser.Point.distance(points[i-1], point) > 20;
+        });
+
+        units.forEach(function(unit, i){
+            var index = (i*pointsPerUnit < points.length) ? i*pointsPerUnit :
+                Math.floor(Math.random()*points.length);
+            this.handler.do({
+                type: "move",
+                data : {
+                    id : unit.id,
+                    path: [points[index]]
+                }
+            });
+        }, this);
     }
 
     /**

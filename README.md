@@ -23,7 +23,7 @@ TODO
 - [ ] Tutorial
 - [x] Server support for multiple games
 - [ ] Effects for regions
-- [ ] Advanced controls (Ctrl-click, shift-click, hotkeys)
+- [x] Advanced controls (Ctrl-click, shift-click, hotkeys)
 - [x] Add control points
 
 Credit

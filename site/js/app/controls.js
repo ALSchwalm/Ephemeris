@@ -19,6 +19,8 @@ function(config, Phaser, player, movement, map, hud){
 
         recentClick : false,
         selectBoxStart : null,
+        dwimDraw : false,
+        dwimPointGroup : [],
         minimapActive : false,
         postMove : function() {},
         keys : [],
@@ -278,11 +280,12 @@ function(config, Phaser, player, movement, map, hud){
          * Helper function which will prevent single clicks from being
          * interpreted as multiple events
          */
-        click : function() {
+        click : function(timeout) {
+            var timeout = timeout || 100;
             this.recentClick = true;
             setTimeout(function(){
                 this.recentClick = false;
-            }.bind(this), 100);
+            }.bind(this), timeout);
             return this;
         },
 
@@ -292,8 +295,25 @@ function(config, Phaser, player, movement, map, hud){
         handleMouse : function() {
             if (this.recentClick) return;
 
+
+            // Shift left click DWIM
+            if (this.leftPressed() && this.game.input.keyboard.event &&
+                this.game.input.keyboard.event.shiftKey) {
+                this.dwimDraw = true;
+                this.dwimPointGroup.push(this.pointerPosition());
+                movement.drawMovementPont(this.pointerPosition(), 650);
+                this.click(40);
+
+            // Done drawing DWIM path
+            } else if (this.dwimDraw && (!this.leftPressed() ||
+                                         !(this.game.input.keyboard.event &&
+                                           this.game.input.keyboard.event.shiftKey))) {
+                this.dwimDraw = false;
+                movement.moveGroupToPoints(this.game.selected, this.dwimPointGroup);
+                this.dwimPointGroup = [];
+
             // Right click on minimap
-            if (this.rightPressed() && this.pointerOverMinimap()) {
+            } else if (this.rightPressed() && this.pointerOverMinimap()) {
                 this.moveSelectedUnits(this.minimapToWorldCoord());
                 this.click();
 
