@@ -391,6 +391,15 @@ function(config, Phaser, player, movement, map, hud){
         }
     };
 
+    controls.registerControl(Phaser.Keyboard.K, function(){
+        while(controls.game.selected.length) {
+            if (!controls.game.selected[0].destroy) {
+                break;
+            }
+            controls.game.selected[0].destroy();
+        }
+    });
+
     // Prevent the browser from taking the normal action (scrolling, etc)
     window.addEventListener("keydown", function(e) {
         var codes = [];

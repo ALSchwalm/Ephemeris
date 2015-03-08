@@ -4,8 +4,8 @@
  * @module app/state/create
  */
 define(["app/config", "app/action", "app/controls", "app/network",
-        "app/movement", "app/interface", "app/fog"],
-function(config, handler, controls, network, movement, hud, fog){
+        "app/movement", "app/interface", "app/fog", "app/music"],
+       function(config, handler, controls, network, movement, hud, fog, music){
     "use strict"
 
     /**
@@ -21,6 +21,7 @@ function(config, handler, controls, network, movement, hud, fog){
         movement.init(game, handler);
         hud.init(game);
         fog.init(game);
+        music.init(game);
         game.state.afterCreate();
     }
     return create;

@@ -337,6 +337,16 @@ function(config, Phaser, utils, player){
      * Remove this unit from the game
      */
     Unit.prototype.destroy = function() {
+        if (this.graphics.visible) {
+            var explosion = this.game.add.sprite(this.position.x, this.position.y,
+                                                 'explosion');
+            explosion.anchor.set(0.5, 0.5);
+            explosion.animations.add("explode");
+            explosion.animations.play("explode");
+            var sound = this.game.add.audio("explosion", 0.5);
+            sound.play();
+        }
+
         this.graphics.destroy();
         this.graphics.visible = false;
         var index = this.game.selected.indexOf(this);

@@ -4,8 +4,8 @@
  * @module app/state/start
  */
 define(["app/config", "app/interface", "app/map",
-        "app/network", "app/action", "jquery"],
-function(config, hud, map, network, action, jquery){
+        "app/network", "app/action", "app/music", "jquery"],
+function(config, hud, map, network, action, music, jquery){
     "use strict"
 
     /**
@@ -27,6 +27,7 @@ function(config, hud, map, network, action, jquery){
             });
             game.running = true;
             game.startTime = new Date().getTime();
+            music.playSong("background");
             action.startReplay(replay);
         }
         network.ready();
