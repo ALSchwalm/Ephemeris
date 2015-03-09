@@ -383,9 +383,12 @@ function(config, Phaser, utils, player){
      * @param {Unit} target - Target to attack
      */
     Unit.prototype.attack = function(target) {
+        var attackSprite = this.attackSprite || "flare2"
         var shot = this.game.add.sprite(this.position.x,
-                                        this.position.y, "flare2");
-        shot.anchor = {x:0.5, y:0.5};
+                                        this.position.y, attackSprite);
+        shot.anchor.set(0.5, 0.5);
+        shot.scale.set(0.6, 0.6);
+        shot.angle = this.sprite.angle;
         var tween = this.game.add.tween(shot);
         tween.to({
             x: target.position.x,
