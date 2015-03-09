@@ -496,6 +496,11 @@ function(config, Phaser, utils, player){
     Unit.prototype.unitUpdate = function() {
         this.moveTowardDestination();
         this.applyStatusEffects();
+        if (this.target && !this.target.alive) {
+            this.target = null;
+            this.destination = null;
+        }
+
         var avoidDistance = (this.destination && !this.target) ? 0 : 35;
         this.game.units.map(function(unit){
             this.avoidOtherUnits(unit, avoidDistance);
