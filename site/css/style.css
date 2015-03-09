@@ -5,7 +5,7 @@ body {
     background-color: #151515;
 }
 
-#loading-screen, #game-over {
+#loading-screen, #game-over, #paused {
     position: absolute;
     top: 0;
     left: 0;
@@ -16,7 +16,7 @@ body {
     text-align: center;
 }
 
-#game-over {
+#game-over, #paused {
     background-color: rgba(0,0,0,0.6);
 }
 

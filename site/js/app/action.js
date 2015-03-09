@@ -55,8 +55,7 @@ function(config, network, player, utils, Ship, Bomber, Carrier){
         };
         var data = "text/json;charset=utf-8," +
             encodeURIComponent(JSON.stringify(replay));
-        $('<a href="data:' + data + '" download="replay.json"></a>')
-            .appendTo('#phaser-container')[0].click();
+        $('<a href="data:' + data + '" download="replay.json"></a>')[0].click();
     }
 
     /**
@@ -98,6 +97,17 @@ function(config, network, player, utils, Ship, Bomber, Carrier){
             if (unit) {
                 unit.moveTo(action.data.target);
             }
+            break;
+        case "forfeit":
+            var id = action.data.player;
+            this.game.running = false;
+            if (id != player) {
+                $("#game-over h1").html("Victory");
+            } else {
+                $("#game-over h1").html("Defeat");
+            }
+            $("#paused").addClass("hidden");
+            $("#game-over").removeClass("hidden");
             break;
         case "create":
             var type = null;

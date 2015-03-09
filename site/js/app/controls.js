@@ -400,6 +400,12 @@ function(config, Phaser, player, movement, map, hud){
         }
     });
 
+    controls.registerControl(Phaser.Keyboard.ESC, function(){
+        if (controls.game.running) {
+            $("#paused").toggleClass("hidden");
+        }
+    });
+
     // Prevent the browser from taking the normal action (scrolling, etc)
     window.addEventListener("keydown", function(e) {
         var codes = [];
