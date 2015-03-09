@@ -45,6 +45,9 @@ function(config, map, handler, jQuery){
 
         game.load.audio("background", "assets/sounds/background.mp3");
         game.load.audio("explosion", "assets/sounds/explosion.wav");
+        game.load.audio("fighterSelect", "assets/sounds/fighterSelect.wav");
+        game.load.audio("bomberSelect", "assets/sounds/bomberSelect.wav");
+        game.load.audio("carrierSelect", "assets/sounds/carrierSelect.wav");
     }
 
     return preload;

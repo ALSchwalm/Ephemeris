@@ -6,6 +6,7 @@ function(config, Phaser, Unit, player){
         this.spriteKey = "carrier";
         this.backgroundKey = "120empty";
         this.selectKey = "120select";
+        this.selectSound = "carrierSelect";
         this.speed = 2;
         this.range = 180;
         this.view = 350;

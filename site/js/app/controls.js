@@ -162,8 +162,8 @@ function(config, Phaser, player, movement, map, hud){
             });
             if (selected.length) {
                 this.clearSelection();
-                selected.map(function(unit){
-                    unit.onSelect();
+                selected.map(function(unit, i){
+                    unit.onSelect(i!=0);
                 });
                 this.game.selected = selected;
             }

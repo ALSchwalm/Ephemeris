@@ -6,6 +6,7 @@ function(config, Phaser, Unit, player){
         this.spriteKey = "bomber";
         this.backgroundKey = "20empty";
         this.selectKey = "20select";
+        this.selectSound = "bomberSelect";
         this.speed = 3;
         this.range = 180;
         this.view = 300;

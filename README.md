@@ -35,6 +35,9 @@ The following individuals created assets which are used in Ephemeris:
 - [SoulFilcher][soulfilcher] for the selected units icons ([link][icons])
 - Background music by DST available at [nosoapradio][nosoap] (unmodified).
 - Explosion sound by Isaac200000 available [here][explosion] (unmodified).
+- Fighter selection sound by Kijadzel available [here][fighterSelect] (unmodified).
+- Bomber selection sound by M-RED available [here][bomberSelect] (unmodified).
+- Carrier selection sound by tcpp available [here][carrierSelect] (unmodified).
 
 [fleet-command]: http://arcengames.com/ai-war/
 [ai-war]: http://christophermpark.blogspot.com/2009/10/free-graphics-for-indie-developers.html
@@ -42,3 +45,6 @@ The following individuals created assets which are used in Ephemeris:
 [icons]: http://www.sc2mapster.com/assets/abilities-and-upgrades-icon-pack/
 [nosoap]: http://www.nosoapradio.us/
 [explosion]: http://www.freesound.org/people/Isaac200000/sounds/184651/
+[fighterSelect]: http://www.freesound.org/people/Kijadzel/sounds/170608/
+[bomberSelect]: http://www.freesound.org/people/M-RED/sounds/55356/
+[carrierSelect]: http://www.freesound.org/people/tcpp/sounds/151309/
