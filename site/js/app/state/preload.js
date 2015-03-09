@@ -48,6 +48,8 @@ function(config, map, handler, jQuery){
         game.load.audio("fighterSelect", "assets/sounds/fighterSelect.wav");
         game.load.audio("bomberSelect", "assets/sounds/bomberSelect.wav");
         game.load.audio("carrierSelect", "assets/sounds/carrierSelect.wav");
+        game.load.audio("laser", "assets/sounds/laser.wav");
+        game.load.audio("move", "assets/sounds/move.wav");
     }
 
     return preload;

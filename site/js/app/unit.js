@@ -286,12 +286,26 @@ function(config, Phaser, utils, player){
         this.selectGraphic = null;
     }
 
+    Unit.prototype.moveSoundPlaying = false;
+
     /**
      * Move the target toward a location
      *
      * @param {Phaser.Point|Unit} target - A point or unit to move toward
      */
     Unit.prototype.moveTo = function(target) {
+        if (this.graphics.visible && !this.enemy && !Unit.prototype.moveSoundPlaying) {
+            console.log("playing");
+            var sound = this.game.add.audio("move", 0.7);
+            sound.play();
+            Unit.prototype.moveSoundPlaying = true;
+
+            // Allow some overlap between move sounds playing
+            setTimeout(function(){
+                Unit.prototype.moveSoundPlaying = false;
+            }, 200);
+        }
+
         if (typeof(target) === "string") {
             this.destination = this.game.getUnit(target);
         } else if (target instanceof Array) {
@@ -422,6 +436,8 @@ function(config, Phaser, utils, player){
                 setTimeout(function(){
                     this.attacking = false;
                 }.bind(this), this.attackRate);
+                var sound = this.game.add.audio("laser", 0.7);
+                sound.play();
                 return this;
             } else {
                 return this;
