@@ -295,7 +295,6 @@ function(config, Phaser, utils, player){
      */
     Unit.prototype.moveTo = function(target) {
         if (this.graphics.visible && !this.enemy && !Unit.prototype.moveSoundPlaying) {
-            console.log("playing");
             var sound = this.game.add.audio("move", 0.7);
             sound.play();
             Unit.prototype.moveSoundPlaying = true;

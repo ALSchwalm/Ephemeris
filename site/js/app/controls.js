@@ -13,10 +13,12 @@ function(config, Phaser, player, movement, map, hud){
             this.handler = handler;
             this.graphics = this.game.add.graphics(0, 0);
             game.canvas.oncontextmenu = function(e) {e.preventDefault();}
-            this.game.input.activePointer.position =
-                new Phaser.Point(game.camera.position.x, game.camera.position.y);
+            this.game.input.addMoveCallback(function(){
+                controls.active = true;
+            }, this);
         },
 
+        active : false,
         recentClick : false,
         selectBoxStart : null,
         dwimDraw : false,
@@ -295,7 +297,6 @@ function(config, Phaser, player, movement, map, hud){
         handleMouse : function() {
             if (this.recentClick) return;
 
-
             // Shift left click DWIM
             if (this.leftPressed() && this.game.input.keyboard.event &&
                 this.game.input.keyboard.event.shiftKey) {
@@ -377,6 +378,10 @@ function(config, Phaser, player, movement, map, hud){
         update : function() {
             // Show selection box on top
             this.game.world.bringToTop(this.graphics);
+
+            if (!this.active) {
+                return;
+            }
 
             this.handleMouse();
             this.panCamera();
