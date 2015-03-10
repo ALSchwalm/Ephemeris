@@ -135,7 +135,7 @@ function(config, Phaser, utils, player){
             hide : false
         };
 
-        this.target = this.target || null;
+        this._destination = this.buildTargetPosition || null;
         this.attacking = false;
 
         this.highlights.tint = this.owner.color;

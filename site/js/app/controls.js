@@ -1,6 +1,6 @@
 define(["app/config","Phaser", "app/player", "app/movement",
-        "app/map", "app/interface"],
-function(config, Phaser, player, movement, map, hud){
+        "app/map", "app/interface", "app/controlpoint", "app/unit"],
+function(config, Phaser, player, movement, map, hud, ControlPoint, Unit){
     "use strict"
 
     /**
@@ -313,20 +313,38 @@ function(config, Phaser, player, movement, map, hud){
                 movement.moveGroupToPoints(this.game.selected, this.dwimPointGroup);
                 this.dwimPointGroup = [];
 
+            // Right click on minimap with control point selected
+            } else if (this.rightPressed() &&
+                       this.game.selected[0] instanceof ControlPoint &&
+                       this.pointerOverMinimap()) {
+                var pos = this.minimapToWorldCoord();
+                this.game.selected[0].setBuildTarget(pos.x, pos.y);
+                this.click()
+
+            // Right click with selected control point
+            } else if (this.rightPressed() &&
+                       this.game.selected[0] instanceof ControlPoint) {
+                var pos = this.pointerPosition();
+                this.game.selected[0].setBuildTarget(pos.x, pos.y);
+                this.click()
+
             // Right click on minimap
-            } else if (this.rightPressed() && this.pointerOverMinimap()) {
+            } else if (this.rightPressed() && this.pointerOverMinimap() &&
+                       this.game.selected[0] instanceof Unit) {
                 this.moveSelectedUnits(this.minimapToWorldCoord());
                 this.click();
 
             // Right click on empty space
             } else if (this.rightPressed() && (!this.pointerOnUnit() ||
-                                               !this.pointerOnUnit().enemy)) {
+                                               !this.pointerOnUnit().enemy) &&
+                       this.game.selected[0] instanceof Unit) {
                 this.moveSelectedUnits(this.pointerToWorld);
                 this.click();
 
             // Targeting an enemy
             } else if (this.rightPressed() && this.pointerOnUnit() &&
-                       this.pointerOnUnit().enemy) {
+                       this.pointerOnUnit().enemy &&
+                       this.game.selected[0] instanceof Unit) {
                 this.attackUnit(this.pointerOnUnit());
                 this.click();
 

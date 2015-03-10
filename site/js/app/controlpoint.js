@@ -48,13 +48,18 @@ function(config, Phaser, player, Fighter, Bomber, Carrier){
 
         this.unitGenTimer = this.game.time.create(false);
         this.unitGenTimer.loop(100, function() {
-            if (this.owner == player && this.buildPercent >= 100) {
+            if (this.owner == player && this.buildPercent >= 100 &&
+                this.game.running) {
+
                 this.handler.do({
                     type: "create",
                     data: {
                         type: this.buildUnitType.prototype.name,
                         x: this.position.x,
-                        y: this.position.y+50
+                        y: this.position.y+50,
+                        config : {
+                            buildTargetPosition : this.buildTargetPosition
+                        }
                     }
                 });
                 this.buildPercent = 0;
@@ -88,6 +93,10 @@ function(config, Phaser, player, Fighter, Bomber, Carrier){
 
         this.captureBar = this.game.add.graphics(0, -60);
         this.buildBar = this.game.add.graphics(0, -10);
+        this.targetGraphics = this.game.add.sprite(0, 0, "10fill");
+        this.targetGraphics.anchor.set(0.5, 0.5);
+        this.targetGraphics.visible = false;
+        this.targetGraphics.tint = 0x00DD00;
 
         this.selectGraphic = this.game.add.sprite(0, 0, "20select");
         this.selectGraphic.anchor.set(0.5, 0.5);
@@ -117,11 +126,19 @@ function(config, Phaser, player, Fighter, Bomber, Carrier){
     ControlPoint.prototype.redraw = false;
 
     ControlPoint.prototype.onSelect = function() {
+        if (this.buildTargetPosition) {
+            this.targetGraphics.position.set(
+                this.buildTargetPosition.x,
+                this.buildTargetPosition.y
+            );
+            this.targetGraphics.visible = true;
+        }
         this.selectGraphic.visible = true;
     }
 
     ControlPoint.prototype.onUnselect = function() {
         this.selectGraphic.visible = false;
+        this.targetGraphics.visible = false;
     }
 
     ControlPoint.prototype.buildUnit = function(number) {
@@ -205,6 +222,18 @@ function(config, Phaser, player, Fighter, Bomber, Carrier){
             this.drawCaptureBar(attemptedOwner.color);
         }
         return true;
+    }
+
+    ControlPoint.prototype.setBuildTarget = function(x, y) {
+        this.buildTargetPosition = {
+            x: x,
+            y: y
+        }
+        this.targetGraphics.position.set(
+            this.buildTargetPosition.x,
+            this.buildTargetPosition.y
+        );
+        this.targetGraphics.visible = true;
     }
 
     ControlPoint.prototype.updateColor = function() {

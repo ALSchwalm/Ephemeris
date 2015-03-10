@@ -337,7 +337,7 @@ function(config, Phaser, utils, player, map, fog, ControlPoint){
         this.minimap.lineStyle();
 
         // Draw units
-        this.game.units.map(function(unit){
+        this.game.units.concat(map.controlPoints).map(function(unit){
             var position = unit.position;
             var transformed = this.worldToMinimapCoord(position);
 
@@ -347,6 +347,16 @@ function(config, Phaser, utils, player, map, fog, ControlPoint){
                 } else {
                     this.minimap.beginFill(0xFFFFFF, 0.5);
                 }
+                this.minimap.drawRect(transformed.x, transformed.y, 4, 4);
+                this.minimap.endFill();
+            }
+        }, this);
+
+        map.controlPoints.map(function(point){
+            if (point.targetGraphics.visible) {
+                var position = point.targetGraphics;
+                var transformed = this.worldToMinimapCoord(position);
+                this.minimap.beginFill(0x00DD00, 0.5);
                 this.minimap.drawRect(transformed.x, transformed.y, 4, 4);
                 this.minimap.endFill();
             }
