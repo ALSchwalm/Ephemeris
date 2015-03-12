@@ -106,6 +106,7 @@ function(config, Phaser, utils, player){
             this.owner = player.opponents[this.playerID];
         } else {
             this.owner = player;
+            this.playerID = player.id;
         }
 
         /**

@@ -6,6 +6,52 @@
         {"x": 50, "y": 400},
         {"x": 3000, "y": 2800}
     ],
+    "startingUnits" : {
+        "1" : [
+            {
+                "type": "create",
+                "data": { "type": "fighter", "x" : 500, "y" : 750 }
+            },
+            {
+                "type": "create",
+                "data": { "type": "fighter", "x" : 500, "y" : 800 }
+            },
+            {
+                "type": "create",
+                "data": { "type": "fighter", "x" : 500, "y" : 850 }
+            },
+            {
+                "type": "create",
+                "data": { "type": "bomber", "x" : 550, "y" : 750 }
+            },
+            {
+                "type": "create",
+                "data": { "type": "bomber", "x" : 550, "y" : 800 }
+            }
+        ],
+        "2" : [
+            {
+                "type" : "create",
+                "data" : { "type": "fighter", "x" : 3200, "y" : 3050 }
+            },
+            {
+                "type": "create",
+                "data": { "type": "fighter", "x" : 3200, "y" : 3100 }
+            },
+            {
+                "type": "create",
+                "data": { "type": "fighter", "x" : 3200, "y" : 3150 }
+            },
+            {
+                "type": "create",
+                "data": { "type": "bomber", "x" : 3250, "y" : 3050 }
+            },
+            {
+                "type": "create",
+                "data": { "type": "bomber", "x" : 3250, "y" : 3100 }
+            }
+        ]
+    },
     "controlPoints" : [
         {"x": 500,  "y": 700,  "owner": 1},
         {"x": 3200, "y": 3000, "owner": 2},

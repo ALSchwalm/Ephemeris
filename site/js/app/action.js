@@ -136,6 +136,7 @@ function(config, network, player, utils, Ship, Bomber, Carrier){
             }
             break;
         default:
+            console.error("Unknown action type:", action.type);
             break;
         }
 

@@ -3,9 +3,10 @@
  * and the game is ready to start
  * @module app/state/start
  */
-define(["app/config", "app/interface", "app/map",
-        "app/network", "app/action", "app/music", "app/timer", "jquery"],
-function(config, hud, map, network, action, music, timer, jquery){
+define(["app/config", "app/interface", "app/map", "app/network",
+        "app/action", "app/music", "app/timer", "app/player", "jquery"],
+       function(config, hud, map, network, action, music,
+                timer, player, jquery){
     "use strict"
 
     /**
@@ -30,6 +31,12 @@ function(config, hud, map, network, action, music, timer, jquery){
             music.playSong("background");
             action.startReplay(replay);
             timer.start();
+
+            if (!replay) {
+                config.mapFormat.startingUnits[player.number+1].map(function(conf) {
+                    action.do(conf);
+                });
+            }
         }
         network.ready();
     }

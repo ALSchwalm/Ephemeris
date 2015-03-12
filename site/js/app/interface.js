@@ -359,7 +359,7 @@ function(config, Phaser, utils, player, map, fog, ControlPoint, timer){
             var position = unit.position;
             var transformed = this.worldToMinimapCoord(position);
 
-            if (unit.graphics.visible && unit.graphics.exists) {
+            if (unit.owner && unit.graphics.visible && unit.graphics.exists) {
                 if (this.game.selected.indexOf(unit) == -1) {
                     this.minimap.beginFill(unit.owner.color, 0.5);
                 } else {
