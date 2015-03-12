@@ -4,9 +4,9 @@
  * @module app/state/create
  */
 define(["app/config", "app/action", "app/controls", "app/network",
-        "app/movement", "app/interface", "app/fog", "app/music", "app/player"],
+        "app/movement", "app/interface", "app/fog", "app/music", "app/player", "app/timer"],
 function(config, handler, controls, network, movement,
-         hud, fog, music, player){
+         hud, fog, music, player, timer){
     "use strict"
 
     /**
@@ -37,6 +37,7 @@ function(config, handler, controls, network, movement,
         handler.init(game, hud);
         network.init(game, handler);
         movement.init(game, handler);
+        timer.init(game);
         hud.init(game);
         fog.init(game);
         music.init(game);

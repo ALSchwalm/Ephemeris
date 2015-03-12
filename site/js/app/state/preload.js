@@ -51,6 +51,7 @@ function(config, map, handler, jQuery){
         game.load.audio("carrierSelect", "assets/sounds/carrierSelect.wav");
         game.load.audio("laser", "assets/sounds/laser.wav");
         game.load.audio("move", "assets/sounds/move.wav");
+        game.load.audio("activate", "assets/sounds/activate.wav");
     }
 
     return preload;

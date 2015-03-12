@@ -142,6 +142,11 @@ function(config, Phaser, utils, player){
         this.sprite.tint = config.player.mutedColors[this.owner.number]
         this.enemy = (this.owner != player);
         this.game.registerUnit(this);
+
+        if (!this.enemy) {
+            var sound = this.game.add.audio("activate", 0.5);
+            sound.play();
+        }
     }
 
     Object.defineProperty(Unit.prototype, "position", {

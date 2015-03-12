@@ -3,8 +3,8 @@
  * @module app/state/update
  */
 define(["app/controls", "app/interface", "app/fog",
-        "app/action", "app/map", "app/player"],
-function(controls, hud, fog, action, map, player){
+        "app/action", "app/map", "app/player", "app/timer"],
+function(controls, hud, fog, action, map, player, timer){
     "use strict"
 
     var gameIsOver = function(game) {

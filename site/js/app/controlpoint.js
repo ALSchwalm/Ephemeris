@@ -3,8 +3,8 @@
  * @module app/controlpoint
  */
 define(["app/config", "Phaser", "app/player",
-       "app/ship", "app/bomber", "app/carrier"],
-function(config, Phaser, player, Fighter, Bomber, Carrier){
+        "app/ship", "app/bomber", "app/carrier", "app/timer"],
+function(config, Phaser, player, Fighter, Bomber, Carrier, timer){
     "use strict"
 
     /**
@@ -49,7 +49,7 @@ function(config, Phaser, player, Fighter, Bomber, Carrier){
         this.unitGenTimer = this.game.time.create(false);
         this.unitGenTimer.loop(100, function() {
             if (this.owner == player && this.buildPercent >= 100 &&
-                this.game.running) {
+                this.game.running && !timer.expired()) {
 
                 this.handler.do({
                     type: "create",
@@ -169,6 +169,10 @@ function(config, Phaser, player, Fighter, Bomber, Carrier){
 
     ControlPoint.prototype.drawBuildBar = function() {
         this.buildBar.clear();
+
+        if (timer.expired())
+            return;
+
         var percent = this.buildPercent/100;
 
         // Background

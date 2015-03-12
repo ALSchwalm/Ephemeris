@@ -3,8 +3,8 @@
  * @module app/interface
  */
 define(["app/config", "Phaser", "app/utils",
-        "app/player", "app/map", "app/fog", "app/controlpoint"],
-function(config, Phaser, utils, player, map, fog, ControlPoint){
+        "app/player", "app/map", "app/fog", "app/controlpoint", "app/timer"],
+function(config, Phaser, utils, player, map, fog, ControlPoint, timer){
     "use strict"
 
     /**
@@ -102,6 +102,20 @@ function(config, Phaser, utils, player, map, fog, ControlPoint){
         this.minimap.fixedToCamera = true;
         this.minimapBack.fixedToCamera = true;
 
+        // Timer text
+        var style = {
+            font: "20px Arial",
+            fill: "#FFFFFF",
+            shadowColor: "#000000"
+        };
+        var timeText = this.game.add.text(-this.minimapWidth+5, -80,
+                                          "", style);
+        this.infoBar.addChild(timeText);
+
+        timer.onTick = function(){
+            timeText.text = timer.getTime();
+        }.bind(this);
+
         // Draw initial infopanel
         this.reconstructInfoPanel();
         return this;
@@ -145,8 +159,12 @@ function(config, Phaser, utils, player, map, fog, ControlPoint){
                     "Health: " + Math.floor(this.game.selected[0].health) +
                     "/" + this.game.selected[0].maxHealth;
             } else {
-                this.infoBarSelectedText[0].text =
-                    "Building: " + Math.floor(this.game.selected[0].buildPercent) + "%";
+                if (!timer.expired()){
+                    this.infoBarSelectedText[0].text =
+                        "Building: " + Math.floor(this.game.selected[0].buildPercent) + "%";
+                } else {
+                    this.infoBarSelectedText[0].text = "Build Time Ended";
+                }
             }
         } else if (this.game.selected.length > 1) {
             this.infoBarSelectedText.map(function(text, i){

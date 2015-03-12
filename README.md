@@ -40,6 +40,7 @@ The following individuals created assets which are used in Ephemeris:
 - Carrier selection sound by tcpp available [here][carrierSelect] (unmodified).
 - Laser sound by Nbs Dark available [here][laser] (unmodified).
 - Movement sound by Sergenious available [here][move] (unmodified).
+- Activate sound by Yuroun available [here][activate] (unmodified).
 
 [fleet-command]: http://arcengames.com/ai-war/
 [ai-war]: http://christophermpark.blogspot.com/2009/10/free-graphics-for-indie-developers.html
@@ -52,3 +53,4 @@ The following individuals created assets which are used in Ephemeris:
 [carrierSelect]: http://www.freesound.org/people/tcpp/sounds/151309/
 [laser]: http://www.freesound.org/people/Nbs%20Dark/sounds/83562/
 [move]: http://www.freesound.org/people/Sergenious/sounds/55849/
+[activate]: http://www.freesound.org/people/Yuroun/sounds/233028/
