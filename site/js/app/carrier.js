@@ -20,6 +20,7 @@ function(config, Phaser, Unit, player){
     Carrier.prototype = new Unit();
     Carrier.prototype.buildFraction = 0.3;
     Carrier.prototype.name = "Carrier";
+    Carrier.prototype.weakness = "Bomber";
     Carrier.prototype.iconKey = "carrierIcon"
 
     Carrier.prototype.update = function() {

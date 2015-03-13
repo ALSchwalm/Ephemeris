@@ -21,6 +21,7 @@ function(config, Phaser, Unit, player){
     Bomber.prototype = new Unit();
     Bomber.prototype.buildFraction = 0.9;
     Bomber.prototype.name = "Bomber";
+    Bomber.prototype.weakness = "Fighter";
     Bomber.prototype.iconKey = "bomberIcon"
 
     Bomber.prototype.update = function() {

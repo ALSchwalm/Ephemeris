@@ -410,7 +410,11 @@ function(config, Phaser, utils, player){
                 shot.destroy();
             });
 
-            target.health -= this.attackPower;
+            var multiplier = 1;
+            if (target.weakness === this.name) {
+                multiplier = 2;
+            }
+            target.health -= this.attackPower*multiplier;
         }.bind(this));
     }
 

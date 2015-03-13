@@ -23,6 +23,7 @@ function(config, Phaser, Unit, player){
     Ship.prototype = new Unit();
     Ship.prototype.buildFraction = 1;
     Ship.prototype.name = "Fighter";
+    Ship.prototype.weakness = "Carrier";
     Ship.prototype.iconKey = "fighterIcon"
 
     Ship.prototype.update = function() {
