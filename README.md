@@ -11,6 +11,52 @@ followed by `npm start` from the project root.
 [nodejitsu]: https://www.nodejitsu.com/
 [nodejs]: http://nodejs.org/
 
+How To Play
+===========
+
+Each game consists of two opposing players. These players attempt to capture control
+points distributed in key locations around the map. Once a player has taken a
+control point, it will start producing units over time. These units may be used to
+destroy units controlled by the other player, or to capture additional control
+points. If a player controls no points and has no units, they lose.
+
+The Map
+-------
+
+The map also contains different regions which have effects on the units within them.
+Some regions may regenerate or damage health over time. These regions are color
+coded, and display indicators of their effects on the units within them. The location
+of enemy units is obscured by the Fog of War. This fog hides enemy units, but is
+revealed by nearby friendly units or captured control points.
+
+The Units
+---------
+
+There are three units in Ephemeris: Fighters, Bombers and Carriers. Each unit does
+double damage against on other unit type, while taking double damage from a
+different unit type. These weaknesses/strengths are as follows:
+
+| Unit     | Strong Against  | Weak Against |
+| -------- | --------------- | ------------ |
+| Fighter  | Bomber          | Carrier      |
+| Bomber   | Carrier         | Fighter      |
+| Carrier  | Fighter         | Bomber       |
+
+Controls
+--------
+
+Units may be selected by left clicking on them. If a unit or group of units is
+selected, it can be moved by right clicking on the map or minimap. If an enemy unit
+is right clicked, the currently selected unit or group of units will attack it.
+The player may also left click and drag to select a group of friendly units. The
+player may hold select and draw a shape using the mouse. This will cause the
+currently selected units to "form up" to that shape, allowing for easy, complex
+formations.
+
+If the player clicks a control point, the HUD will display a series of buttons
+which determine what unit is currently being built. Different units have different
+build times.
+
 TODO
 ====
 
