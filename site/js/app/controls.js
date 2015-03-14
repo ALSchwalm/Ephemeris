@@ -1,6 +1,6 @@
 define(["app/config","Phaser", "app/player", "app/movement",
-        "app/map", "app/interface"],
-function(config, Phaser, player, movement, map, hud){
+        "app/map", "app/interface", "app/controlpoint", "app/unit"],
+function(config, Phaser, player, movement, map, hud, ControlPoint, Unit){
     "use strict"
 
     /**
@@ -13,12 +13,16 @@ function(config, Phaser, player, movement, map, hud){
             this.handler = handler;
             this.graphics = this.game.add.graphics(0, 0);
             game.canvas.oncontextmenu = function(e) {e.preventDefault();}
-            this.game.input.activePointer.position =
-                new Phaser.Point(game.camera.position.x, game.camera.position.y);
+            this.game.input.addMoveCallback(function(){
+                controls.active = true;
+            }, this);
         },
 
+        active : false,
         recentClick : false,
         selectBoxStart : null,
+        dwimDraw : false,
+        dwimPointGroup : [],
         minimapActive : false,
         postMove : function() {},
         keys : [],
@@ -160,8 +164,8 @@ function(config, Phaser, player, movement, map, hud){
             });
             if (selected.length) {
                 this.clearSelection();
-                selected.map(function(unit){
-                    unit.onSelect();
+                selected.map(function(unit, i){
+                    unit.onSelect(i!=0);
                 });
                 this.game.selected = selected;
             }
@@ -278,11 +282,12 @@ function(config, Phaser, player, movement, map, hud){
          * Helper function which will prevent single clicks from being
          * interpreted as multiple events
          */
-        click : function() {
+        click : function(timeout) {
+            var timeout = timeout || 100;
             this.recentClick = true;
             setTimeout(function(){
                 this.recentClick = false;
-            }.bind(this), 100);
+            }.bind(this), timeout);
             return this;
         },
 
@@ -292,20 +297,54 @@ function(config, Phaser, player, movement, map, hud){
         handleMouse : function() {
             if (this.recentClick) return;
 
+            // Shift left click DWIM
+            if (this.leftPressed() && this.game.input.keyboard.event &&
+                this.game.input.keyboard.event.shiftKey) {
+                this.dwimDraw = true;
+                this.dwimPointGroup.push(this.pointerPosition());
+                movement.drawMovementPont(this.pointerPosition(), 650);
+                this.click(40);
+
+            // Done drawing DWIM path
+            } else if (this.dwimDraw && (!this.leftPressed() ||
+                                         !(this.game.input.keyboard.event &&
+                                           this.game.input.keyboard.event.shiftKey))) {
+                this.dwimDraw = false;
+                movement.moveGroupToPoints(this.game.selected, this.dwimPointGroup);
+                this.dwimPointGroup = [];
+
+            // Right click on minimap with control point selected
+            } else if (this.rightPressed() &&
+                       this.game.selected[0] instanceof ControlPoint &&
+                       this.pointerOverMinimap()) {
+                var pos = this.minimapToWorldCoord();
+                this.game.selected[0].setBuildTarget(pos.x, pos.y);
+                this.click()
+
+            // Right click with selected control point
+            } else if (this.rightPressed() &&
+                       this.game.selected[0] instanceof ControlPoint) {
+                var pos = this.pointerPosition();
+                this.game.selected[0].setBuildTarget(pos.x, pos.y);
+                this.click()
+
             // Right click on minimap
-            if (this.rightPressed() && this.pointerOverMinimap()) {
+            } else if (this.rightPressed() && this.pointerOverMinimap() &&
+                       this.game.selected[0] instanceof Unit) {
                 this.moveSelectedUnits(this.minimapToWorldCoord());
                 this.click();
 
             // Right click on empty space
             } else if (this.rightPressed() && (!this.pointerOnUnit() ||
-                                               !this.pointerOnUnit().enemy)) {
+                                               !this.pointerOnUnit().enemy) &&
+                       this.game.selected[0] instanceof Unit) {
                 this.moveSelectedUnits(this.pointerToWorld);
                 this.click();
 
             // Targeting an enemy
             } else if (this.rightPressed() && this.pointerOnUnit() &&
-                       this.pointerOnUnit().enemy) {
+                       this.pointerOnUnit().enemy &&
+                       this.game.selected[0] instanceof Unit) {
                 this.attackUnit(this.pointerOnUnit());
                 this.click();
 
@@ -358,6 +397,10 @@ function(config, Phaser, player, movement, map, hud){
             // Show selection box on top
             this.game.world.bringToTop(this.graphics);
 
+            if (!this.active) {
+                return;
+            }
+
             this.handleMouse();
             this.panCamera();
 
@@ -370,6 +413,12 @@ function(config, Phaser, player, movement, map, hud){
             }
         }
     };
+
+    controls.registerControl(Phaser.Keyboard.ESC, function(){
+        if (controls.game.running) {
+            $("#paused").toggleClass("hidden");
+        }
+    });
 
     // Prevent the browser from taking the normal action (scrolling, etc)
     window.addEventListener("keydown", function(e) {

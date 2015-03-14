@@ -2,20 +2,27 @@
  * A module which defines control points
  * @module app/controlpoint
  */
-define(["app/config", "Phaser", "app/player"],
-function(config, Phaser, player){
+define(["app/config", "Phaser", "app/player",
+        "app/ship", "app/bomber", "app/carrier", "app/timer"],
+function(config, Phaser, player, Fighter, Bomber, Carrier, timer){
     "use strict"
 
     /**
      * A type defining in-game control points
      * @alias module:app/controlpoint
      */
-    var ControlPoint = function(game, handler, x, y, owner) {
+    var ControlPoint = function(game, handler, x, y, scale, owner) {
         /**
          * A reference to the current game
          * @type {Phaser.Game}
          */
         this.game = game;
+
+        /**
+         * The scale of this control point. This is a multiplier for how
+         * quickly units are built.
+         */
+        this.scale = scale || 1;
 
         /**
          * A reference to this games ActionHandler
@@ -31,12 +38,12 @@ function(config, Phaser, player){
         /**
          * The radius of the circle of FoW holding the control point clears
          */
-        this.view = 500;
+        this.view = 500*this.scale;
 
         /**
          * The range within which a unit can capture this control point
          */
-        this.range = 384;
+        this.range = 384*this.scale;
 
         /**
          * The name displayed when the control point is selected
@@ -46,22 +53,33 @@ function(config, Phaser, player){
         this.name = "Control Point"
 
         this.unitGenTimer = this.game.time.create(false);
-        this.unitGenTimer.loop(5000, function() {
-            if (this.owner == player && !this.handler.replay) {
+        this.unitGenTimer.loop(100, function() {
+            if (this.owner == player && this.buildPercent >= 100 &&
+                this.game.running && !timer.expired()) {
+
                 this.handler.do({
                     type: "create",
                     data: {
-                        type: this.buildUnitType,
+                        type: this.buildUnitType.prototype.name,
                         x: this.position.x,
-                        y: this.position.y+40
+                        y: this.position.y+50,
+                        config : {
+                            buildTargetPosition : this.buildTargetPosition
+                        }
                     }
                 });
+                this.buildPercent = 0;
+            } else if (this.owner) {
+                if (this.buildPercent >= 100) {
+                    this.buildPercent = 0;
+                }
+                this.buildPercent += this.buildUnitType.prototype.buildFraction*this.scale;
             }
         }.bind(this));
-        this.unitGenTimer.start();
 
-        this.buildUnitType = "Fighter";
+        this.buildUnitType = Fighter;
         this.convertPercent = 0;
+        this.buildPercent = 0;
 
         this.graphics = this.game.add.group();
         this.graphics.position = new Phaser.Point(x, y);
@@ -80,6 +98,11 @@ function(config, Phaser, player){
         }.bind(this), 100);
 
         this.captureBar = this.game.add.graphics(0, -60);
+        this.buildBar = this.game.add.graphics(0, -10);
+        this.targetGraphics = this.game.add.sprite(0, 0, "10fill");
+        this.targetGraphics.anchor.set(0.5, 0.5);
+        this.targetGraphics.visible = false;
+        this.targetGraphics.tint = 0x00DD00;
 
         this.selectGraphic = this.game.add.sprite(0, 0, "20select");
         this.selectGraphic.anchor.set(0.5, 0.5);
@@ -87,6 +110,7 @@ function(config, Phaser, player){
 
         this.graphics.addChild(this.selectGraphic);
         this.graphics.addChild(this.captureBar);
+        this.graphics.addChild(this.buildBar);
         this.graphics.addChild(this.sprite);
         this.graphics.addChild(this.circle);
         this.display();
@@ -101,20 +125,32 @@ function(config, Phaser, player){
         }
     });
 
+    ControlPoint.prototype.start = function() {
+        this.unitGenTimer.start();
+    }
+
     ControlPoint.prototype.redraw = false;
 
     ControlPoint.prototype.onSelect = function() {
+        if (this.buildTargetPosition) {
+            this.targetGraphics.position.set(
+                this.buildTargetPosition.x,
+                this.buildTargetPosition.y
+            );
+            this.targetGraphics.visible = true;
+        }
         this.selectGraphic.visible = true;
     }
 
     ControlPoint.prototype.onUnselect = function() {
         this.selectGraphic.visible = false;
+        this.targetGraphics.visible = false;
     }
 
-    ControlPoint.prototype.buildUnit = function(unit) {
-        this.buildUnitType = unit;
-        this.unitGenTimer.stop(false);
-        this.unitGenTimer.start();
+    ControlPoint.prototype.buildUnit = function(number) {
+        var options = [Fighter, Bomber, Carrier];
+        this.buildUnitType = options[number];
+        this.buildPercent = 0;
     }
 
     ControlPoint.prototype.drawCaptureBar = function(color) {
@@ -137,13 +173,38 @@ function(config, Phaser, player){
         this.captureBar.endFill();
     }
 
-    ControlPoint.prototype.drawBuildPercent = function() {
+    ControlPoint.prototype.drawBuildBar = function() {
+        this.buildBar.clear();
 
+        if (timer.expired())
+            return;
+
+        var percent = this.buildPercent/100;
+
+        // Background
+        this.buildBar.lineStyle(1, 0xCCCCCC, 1);
+        this.buildBar.beginFill(0x333333, 0.8);
+        this.buildBar.drawRect(-this.sprite.width/2,
+                                 this.sprite.height,
+                                 this.sprite.width, 4);
+        this.buildBar.endFill();
+
+        // Current capture percent
+        this.buildBar.beginFill(0x00FF00, 0.8);
+        this.buildBar.drawRect(-this.sprite.width/2,
+                               this.sprite.height,
+                               this.sprite.width*percent, 4);
+        this.buildBar.endFill();
     }
 
     ControlPoint.prototype.update = function() {
         var attemptedOwner = null;
         var magnitude = 1;
+
+        if (this.owner) {
+            this.drawBuildBar();
+        }
+
         for (var i=0; i < this.game.units.length; ++i) {
             var unit = this.game.units[i];
             if (unit.alive &&
@@ -173,6 +234,18 @@ function(config, Phaser, player){
         return true;
     }
 
+    ControlPoint.prototype.setBuildTarget = function(x, y) {
+        this.buildTargetPosition = {
+            x: x,
+            y: y
+        }
+        this.targetGraphics.position.set(
+            this.buildTargetPosition.x,
+            this.buildTargetPosition.y
+        );
+        this.targetGraphics.visible = true;
+    }
+
     ControlPoint.prototype.updateColor = function() {
         ControlPoint.redraw = true;
         if (this.owner) {
@@ -189,6 +262,7 @@ function(config, Phaser, player){
             this.area = this.game.add.image(this.position.x,
                                             this.position.y, "384empty");
             this.area.anchor.set(0.5, 0.5);
+            this.area.scale.set(this.scale, this.scale);
             this.area.update = this.update.bind(this);
             this.updateColor();
 

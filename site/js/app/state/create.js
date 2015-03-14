@@ -4,8 +4,10 @@
  * @module app/state/create
  */
 define(["app/config", "app/action", "app/controls", "app/network",
-        "app/movement", "app/interface", "app/fog"],
-function(config, handler, controls, network, movement, hud, fog){
+        "app/movement", "app/interface", "app/fog", "app/music", "app/player",
+        "app/timer", "app/messenger"],
+function(config, handler, controls, network, movement,
+         hud, fog, music, player, timer, messenger){
     "use strict"
 
     /**
@@ -15,12 +17,32 @@ function(config, handler, controls, network, movement, hud, fog){
      * @param {Phaser.Game} game - The current game object
      */
     var create = function(game){
+        $("#paused-continue").click(function(){
+            $("#paused").addClass("hidden");
+        });
+
+        $("#paused-forfeit").click(function(){
+            handler.do({
+                type : "forfeit",
+                data : {
+                    player : player
+                }
+            });
+        });
+
+        $("#download-replay").click(function(){
+            handler.downloadReplay();
+        })
+
         controls.init(game, handler);
-        handler.init(game);
+        handler.init(game, hud);
         network.init(game, handler);
         movement.init(game, handler);
+        timer.init(game);
         hud.init(game);
         fog.init(game);
+        music.init(game);
+        messenger.init(game, network);
         game.state.afterCreate();
     }
     return create;

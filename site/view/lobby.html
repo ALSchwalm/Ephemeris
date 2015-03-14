@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Ephemeris: Join a game</title>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+    <script src="js/lib/jquery.js"></script>
+    <style>
+     tr {
+       cursor: pointer;
+     }
+     .table tbody tr:hover td, .table tbody tr:hover th {
+       background-color: #eeeeea;
+     }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row col-sm-offset-2 col-sm-8">
+        <table class="table">
+          <tr>
+            <th>Name</th>
+            <th>Map</th>
+            <th>Players</th>
+          </tr>
+          <% for(var id in games) {%>
+          <% if (games[id].length > 0 && games[id].length < 2){%>
+          <tr gameid="<%= id %>">
+            <td><%= games[id].gamename %></td>
+            <td><%= games[id].mapName %></td>
+            <td><%= games[id].length + "/2" %></td>
+          </tr>
+          <% }} %>
+        </table>
+      </div>
+    </div>
+  </body>
+  <script>
+   $("tr").click(function(){
+     var id = $(this).attr("gameid");
+     document.location.href = '/game?id=' + id;
+   });
+  </script>
+</html>

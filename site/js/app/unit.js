@@ -2,9 +2,8 @@
  * A module which defines a basic unit
  * @module app/unit
  */
-define(["app/config", "Phaser", "app/controls",
-        "app/utils", "app/player", "app/interface"],
-function(config, Phaser, controls, utils, player, hud){
+define(["app/config", "Phaser", "app/utils", "app/player"],
+function(config, Phaser, utils, player){
     "use strict"
 
     /**
@@ -52,6 +51,9 @@ function(config, Phaser, controls, utils, player, hud){
 
         this.healthGraphic = this.game.add.graphics(0, 0);
         this.graphics.addChild(this.healthGraphic);
+
+        this.statusGraphic = this.game.add.graphics(0, 0);
+        this.graphics.addChild(this.statusGraphic);
 
         this.highlights = this.game.add.sprite(0, 0, this.overlayKey);
         this.highlights.anchor.set(0.5, 0.5);
@@ -104,19 +106,20 @@ function(config, Phaser, controls, utils, player, hud){
             this.owner = player.opponents[this.playerID];
         } else {
             this.owner = player;
+            this.playerID = player.id;
         }
-
-        /**
-         * The current health of this unit
-         * @type {Number}
-         */
-        this.health = this.health || 100;
 
         /**
          * The maximum health of this unit
          * @type {Number}
          */
-        this.maxHealth = this.health || 100;
+        this.maxHealth = this.maxHealth || 100;
+
+        /**
+         * The current health of this unit
+         * @type {Number}
+         */
+        this.health = this.health || this.maxHealth;
 
         /**
          * The base damage done by this unit during an attack
@@ -124,13 +127,27 @@ function(config, Phaser, controls, utils, player, hud){
          */
         this.attackPower = this.attackPower || 10;
 
-        this.target = this.target || null;
+        /**
+         * The current status effects applied to this unit
+         */
+        this.statusEffects = {
+            heal : false,
+            damage : false,
+            hide : false
+        };
+
+        this._destination = this.buildTargetPosition || null;
         this.attacking = false;
 
         this.highlights.tint = this.owner.color;
         this.sprite.tint = config.player.mutedColors[this.owner.number]
         this.enemy = (this.owner != player);
         this.game.registerUnit(this);
+
+        if (!this.enemy) {
+            var sound = this.game.add.audio("activate", 0.5);
+            sound.play();
+        }
     }
 
     Object.defineProperty(Unit.prototype, "position", {
@@ -147,8 +164,19 @@ function(config, Phaser, controls, utils, player, hud){
             return this._health;
         },
         set : function(value) {
+            var wasAlive = !this.dead;
             this._health = value;
             this.drawHealthBar();
+            if (wasAlive && !this.enemy && this.dead) {
+                this.handler.do({
+                    type: "destroy",
+                    data : {
+                        id : this.id
+                    }
+                });
+                this.target = null;
+                this.destination = null;
+            }
         }
     });
 
@@ -182,6 +210,38 @@ function(config, Phaser, controls, utils, player, hud){
         }
     });
 
+    Unit.prototype.applyStatusEffects = function() {
+        this.statusGraphic.clear();
+
+        var offset = 0;
+        if (this.statusEffects.heal && this.health < this.maxHealth) {
+            this.statusGraphic.lineStyle(1, 0xCCCCCC, 1);
+            this.statusGraphic.beginFill(0x00DD00, 0.8);
+            this.statusGraphic.drawRect(this.sprite.width/2 + 5 + 10*offset,
+                                        this.sprite.height + 1,
+                                        8, 2);
+            this.statusGraphic.drawRect(this.sprite.width/2 + 8 + 10*offset,
+                                        this.sprite.height-2,
+                                        2, 8);
+            this.statusGraphic.endFill();
+
+            this.health += 0.1;
+            this.statusEffects.heal = false;
+            offset++;
+        }
+        if (this.statusEffects.damage && this.alive) {
+            this.statusGraphic.lineStyle(1, 0xCCCCCC, 1);
+            this.statusGraphic.beginFill(0xDD0000, 0.8);
+            this.statusGraphic.drawRect(this.sprite.width/2 + 5 + 10*offset,
+                                        this.sprite.height + 1,
+                                        8, 2);
+            this.statusGraphic.endFill();
+            this.health -= 0.1;
+            this.statusEffects.damage = false;
+            offset++;
+        }
+    }
+
     /**
      * Update this unit's health bar
      */
@@ -211,11 +271,16 @@ function(config, Phaser, controls, utils, player, hud){
     /**
      * Callback executed when the unit is selected
      */
-    Unit.prototype.onSelect = function() {
+    Unit.prototype.onSelect = function(noSound) {
+        var noSound = noSound || false;
         if (this.selectGraphic == null) {
             this.selectGraphic = this.game.add.sprite(0, 0, this.selectKey);
             this.selectGraphic.anchor.set(0.5, 0.5);
             this.graphics.addChild(this.selectGraphic);
+        }
+        if (!noSound && this.selectSound) {
+            var sound = this.game.add.audio(this.selectSound, 0.5);
+            sound.play();
         }
     }
 
@@ -227,12 +292,25 @@ function(config, Phaser, controls, utils, player, hud){
         this.selectGraphic = null;
     }
 
+    Unit.prototype.moveSoundPlaying = false;
+
     /**
      * Move the target toward a location
      *
      * @param {Phaser.Point|Unit} target - A point or unit to move toward
      */
     Unit.prototype.moveTo = function(target) {
+        if (this.graphics.visible && !this.enemy && !Unit.prototype.moveSoundPlaying) {
+            var sound = this.game.add.audio("move", 0.7);
+            sound.play();
+            Unit.prototype.moveSoundPlaying = true;
+
+            // Allow some overlap between move sounds playing
+            setTimeout(function(){
+                Unit.prototype.moveSoundPlaying = false;
+            }, 200);
+        }
+
         if (typeof(target) === "string") {
             this.destination = this.game.getUnit(target);
         } else if (target instanceof Array) {
@@ -283,13 +361,22 @@ function(config, Phaser, controls, utils, player, hud){
      * Remove this unit from the game
      */
     Unit.prototype.destroy = function() {
+        if (this.graphics.visible) {
+            var explosion = this.game.add.sprite(this.position.x, this.position.y,
+                                                 'explosion');
+            explosion.anchor.set(0.5, 0.5);
+            explosion.animations.add("explode");
+            explosion.animations.play("explode");
+            var sound = this.game.add.audio("explosion", 0.5);
+            sound.play();
+        }
+
         this.graphics.destroy();
         this.graphics.visible = false;
         var index = this.game.selected.indexOf(this);
         if (index != -1) {
             this.game.selected.splice(index, 1);
             this.onUnselect();
-            hud.reconstructInfoPanel();
         }
         this.game.removeUnit(this);
         this.health = 0;
@@ -301,9 +388,12 @@ function(config, Phaser, controls, utils, player, hud){
      * @param {Unit} target - Target to attack
      */
     Unit.prototype.attack = function(target) {
+        var attackSprite = this.attackSprite || "flare2"
         var shot = this.game.add.sprite(this.position.x,
-                                        this.position.y, "flare2");
-        shot.anchor = {x:0.5, y:0.5};
+                                        this.position.y, attackSprite);
+        shot.anchor.set(0.5, 0.5);
+        shot.scale.set(0.6, 0.6);
+        shot.angle = this.sprite.angle;
         var tween = this.game.add.tween(shot);
         tween.to({
             x: target.position.x,
@@ -320,17 +410,11 @@ function(config, Phaser, controls, utils, player, hud){
                 shot.destroy();
             });
 
-            target.health -= this.attackPower;
-            if (target.dead) {
-                this.handler.do({
-                    type: "destroy",
-                    data : {
-                        id : target.id
-                    }
-                });
-                this.target = null;
-                this.destination = null;
+            var multiplier = 1;
+            if (target.weakness === this.name) {
+                multiplier = 2;
             }
+            target.health -= this.attackPower*multiplier;
         }.bind(this));
     }
 
@@ -364,6 +448,8 @@ function(config, Phaser, controls, utils, player, hud){
                 setTimeout(function(){
                     this.attacking = false;
                 }.bind(this), this.attackRate);
+                var sound = this.game.add.audio("laser", 0.7);
+                sound.play();
                 return this;
             } else {
                 return this;
@@ -437,6 +523,12 @@ function(config, Phaser, controls, utils, player, hud){
      */
     Unit.prototype.unitUpdate = function() {
         this.moveTowardDestination();
+        this.applyStatusEffects();
+        if (this.target && !this.target.alive) {
+            this.target = null;
+            this.destination = null;
+        }
+
         var avoidDistance = (this.destination && !this.target) ? 0 : 35;
         this.game.units.map(function(unit){
             this.avoidOtherUnits(unit, avoidDistance);

@@ -18,8 +18,26 @@
         </div>
       </div>
     </div>
+    <div id="game-over" class="jumbotron vertical-center hidden">
+      <div class="container">
+        <h1></h1>
+        <button id="download-replay" class="btn btn-primary">Download Replay</button>
+      </div>
+    </div>
+    <div id="paused" class="jumbotron vertical-center hidden">
+      <div class="container">
+        <h1>Surrender?</h1>
+        <button id="paused-continue" class="btn btn-primary">Continue</button>
+        <button id="paused-forfeit" class="btn btn-danger">Forfeit</button>
+      </div>
+    </div>
+    <div id="notification-box" class="hidden">
+      <ul id="notification-text"></ul>
+    </div>
+    <input type="text" id="chat-input" class="hidden" type="submit">
     <div id="phaser-container">
-      <div id="phaser-body"></div>
+      <div id="phaser-body">
+      </div>
     </div>
   </body>
 </html>

@@ -30,13 +30,28 @@ function(config, map, handler, jQuery){
         game.load.image('fighterIcon', 'assets/images/icons/fighter.png');
         game.load.image('bomber', 'assets/images/units/MercenaryBomber.png');
         game.load.image('bomberIcon', 'assets/images/icons/bomber.png');
+        game.load.image('carrier', 'assets/images/units/Carrier.png');
+        game.load.image('carrierIcon', 'assets/images/icons/carrier.png');
         game.load.image('controlpointIcon', 'assets/images/icons/controlpoint.png');
         game.load.image('20select', 'assets/images/20select.png');
+        game.load.image('120select', 'assets/images/120select.png');
         game.load.image('20empty', 'assets/images/20empty.png');
+        game.load.image('120empty', 'assets/images/120empty.png');
         game.load.image('384empty', 'assets/images/384empty.png');
         game.load.image('10fill', 'assets/images/10fill.png');
         game.load.image('flare2', 'assets/images/flare2.png');
-        game.load.spritesheet('flag', 'assets/animations/controlpoint/flag.png', 32, 32);
+        game.load.image('lazer', 'assets/images/lazer.png');
+        game.load.spritesheet('flag', 'assets/animations/flag.png', 32, 32);
+        game.load.spritesheet('explosion', 'assets/animations/explosion.png', 128, 128);
+
+        game.load.audio("background", "assets/sounds/background.mp3");
+        game.load.audio("explosion", "assets/sounds/explosion.wav");
+        game.load.audio("fighterSelect", "assets/sounds/fighterSelect.wav");
+        game.load.audio("bomberSelect", "assets/sounds/bomberSelect.wav");
+        game.load.audio("carrierSelect", "assets/sounds/carrierSelect.wav");
+        game.load.audio("laser", "assets/sounds/laser.wav");
+        game.load.audio("move", "assets/sounds/move.wav");
+        game.load.audio("activate", "assets/sounds/activate.wav");
     }
 
     return preload;

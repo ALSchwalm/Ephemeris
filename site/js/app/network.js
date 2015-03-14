@@ -61,8 +61,6 @@ function(config, io, player, utils){
             this.socket.on("ready", function(){
                 this.onAllReady && this.onAllReady(msg.replay);
             }.bind(this));
-
-            //TODO show invalid game id error when player.number is null
         }.bind(this));
     }
 

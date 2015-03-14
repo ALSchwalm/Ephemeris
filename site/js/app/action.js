@@ -3,8 +3,8 @@
  * @module app/action
  */
 define(['app/config', 'app/network', 'app/player',
-        'app/utils', 'app/ship', 'app/bomber'],
-function(config, network, player, utils, Ship, Bomber){
+        'app/utils', 'app/ship', 'app/bomber', 'app/carrier'],
+function(config, network, player, utils, Ship, Bomber, Carrier){
     "use strict"
 
     /**
@@ -18,8 +18,9 @@ function(config, network, player, utils, Ship, Bomber){
      *
      * @param {Phaser.Game} game - A reference to the current game object
      */
-    ActionHandler.prototype.init = function(game) {
+    ActionHandler.prototype.init = function(game, hud) {
         this.game = game;
+        this.hud = hud;
         this.history = [];
         this.replay = null;
         return this;
@@ -54,8 +55,7 @@ function(config, network, player, utils, Ship, Bomber){
         };
         var data = "text/json;charset=utf-8," +
             encodeURIComponent(JSON.stringify(replay));
-        $('<a href="data:' + data + '" download="replay.json"></a>')
-            .appendTo('#phaser-container')[0].click();
+        $('<a href="data:' + data + '" download="replay.json"></a>')[0].click();
     }
 
     /**
@@ -89,6 +89,7 @@ function(config, network, player, utils, Ship, Bomber){
             var unit = this.game.getUnit(action.data.id);
             if (unit) {
                 unit.destroy();
+                this.hud.reconstructInfoPanel();
             }
             break;
         case "engage":
@@ -96,6 +97,17 @@ function(config, network, player, utils, Ship, Bomber){
             if (unit) {
                 unit.moveTo(action.data.target);
             }
+            break;
+        case "forfeit":
+            var id = action.data.player;
+            this.game.running = false;
+            if (id != player) {
+                $("#game-over h1").html("Victory");
+            } else {
+                $("#game-over h1").html("Defeat");
+            }
+            $("#paused").addClass("hidden");
+            $("#game-over").removeClass("hidden");
             break;
         case "create":
             var type = null;
@@ -105,6 +117,9 @@ function(config, network, player, utils, Ship, Bomber){
                 break;
             case "bomber":
                 type = Bomber;
+                break;
+            case "carrier":
+                type = Carrier;
                 break;
             default:
                 console.error("Unknown unit type:", action.data.type);
@@ -121,6 +136,7 @@ function(config, network, player, utils, Ship, Bomber){
             }
             break;
         default:
+            console.error("Unknown action type:", action.type);
             break;
         }
 
