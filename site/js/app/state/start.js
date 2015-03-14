@@ -22,6 +22,8 @@ define(["app/config", "app/interface", "app/map", "app/network",
         network.onAllReady = function(replay) {
             setTimeout(function(){
                 $("#loading-screen").fadeOut();
+                $("#notification-box").removeClass("hidden");
+                $("#chat-input").removeClass("hidden");
             }, 500);
             map.controlPoints.map(function(point){
                 point.start();

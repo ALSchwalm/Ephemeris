@@ -414,15 +414,6 @@ function(config, Phaser, player, movement, map, hud, ControlPoint, Unit){
         }
     };
 
-    controls.registerControl(Phaser.Keyboard.K, function(){
-        while(controls.game.selected.length) {
-            if (!controls.game.selected[0].destroy) {
-                break;
-            }
-            controls.game.selected[0].destroy();
-        }
-    });
-
     controls.registerControl(Phaser.Keyboard.ESC, function(){
         if (controls.game.running) {
             $("#paused").toggleClass("hidden");

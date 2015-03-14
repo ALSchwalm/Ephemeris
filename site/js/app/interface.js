@@ -108,8 +108,7 @@ function(config, Phaser, utils, player, map, fog, ControlPoint, timer){
             fill: "#FFFFFF",
             shadowColor: "#000000"
         };
-        var timeText = this.game.add.text(-this.minimapWidth+5, -80,
-                                          "", style);
+        var timeText = this.game.add.text(5, -25, "", style);
         this.infoBar.addChild(timeText);
 
         timer.onTick = function(){

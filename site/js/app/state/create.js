@@ -4,9 +4,10 @@
  * @module app/state/create
  */
 define(["app/config", "app/action", "app/controls", "app/network",
-        "app/movement", "app/interface", "app/fog", "app/music", "app/player", "app/timer"],
+        "app/movement", "app/interface", "app/fog", "app/music", "app/player",
+        "app/timer", "app/messenger"],
 function(config, handler, controls, network, movement,
-         hud, fog, music, player, timer){
+         hud, fog, music, player, timer, messenger){
     "use strict"
 
     /**
@@ -41,6 +42,7 @@ function(config, handler, controls, network, movement,
         hud.init(game);
         fog.init(game);
         music.init(game);
+        messenger.init(game, network);
         game.state.afterCreate();
     }
     return create;

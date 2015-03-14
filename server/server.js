@@ -22,13 +22,15 @@ app.set('views', path.join(sitePath, "view"))
 app.set('view engine', 'ejs');
 app.engine('html', require('ejs').__express);
 
-var createGame = function(gamename, username, map, replay, player) {
+var createGame = function(gamename, map, replay, player) {
     var id = uuid.v4();
     games[id] = [];
     games[id].ready = 0;
     games[id].gamename = gamename;
     games[id].mapName = map;
     games[id].mapFile = map + ".json";
+
+    // If the game is a replay
     games[id].replay = replay;
     games[id].player = player;
     return id;
@@ -52,9 +54,9 @@ app.post("/create", function(req, res) {
     if (req.body.gametype === "replay") {
         var replay = JSON.parse(req.files["file-input"].buffer.toString());
         var map = replay.map;
-        id = createGame(null, req.body.username, map, replay.data, replay.player);
+        id = createGame(null, map, replay.data, replay.player);
     } else {
-        id = createGame(req.body.gamename, req.body.username, req.body.map);
+        id = createGame(req.body.gamename, req.body.map);
     }
     res.redirect("/game?id=" + id);
 });
@@ -110,6 +112,12 @@ io.on('connection', function(socket){
                 s.emit("joined", startMessage);
             });
         }
+
+        socket.on("message", function(msg){
+            games[gameID].map(function(s){
+                s.emit("message", msg);
+            });
+        })
 
         socket.on("ready", function(msg){
             games[gameID].ready++;

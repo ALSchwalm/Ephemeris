@@ -20,6 +20,44 @@ body {
     background-color: rgba(0,0,0,0.6);
 }
 
+#notification-box {
+    position: absolute;
+    left: 10px;
+    bottom: 300px;
+    width: 400px;
+    height: 200px;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+#chat-input {
+    position: absolute;
+    bottom: 290px;
+    left: 10px;
+    background-color: rgba(0,0,0,0.8);
+    border: 1px solid rgba(255, 255, 255, .2);
+    color: white;
+    width: 250px;
+}
+
+#notification-text {
+    color: white;
+    margin: 0px;
+    padding: 0px;
+}
+
+#notification-text li {
+    list-style-type: none;
+}
+
+.player-name-1 {
+    color: blue;
+}
+
+.player-name-2 {
+    color: red;
+}
+
 .vertical-center {
     min-height: 100vh;
     display: flex;
