@@ -112,7 +112,9 @@ function(config, Phaser, utils, player, map, fog, ControlPoint, timer){
         this.infoBar.addChild(timeText);
 
         timer.onTick = function(){
-            timeText.text = timer.getTime();
+            if (this.game.running) {
+                timeText.text = timer.getTime();
+            }
         }.bind(this);
 
         // Draw initial infopanel

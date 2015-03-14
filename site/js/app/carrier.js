@@ -8,9 +8,9 @@ function(config, Phaser, Unit, player){
         this.selectKey = "120select";
         this.selectSound = "carrierSelect";
         this.speed = 2;
-        this.range = 180;
+        this.range = 200;
         this.view = 350;
-        this.attackRate = 350;
+        this.attackRate = 330;
         this.attackPower = 20;
         this.maxHealth = 600;
 

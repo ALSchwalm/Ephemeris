@@ -69,7 +69,7 @@ function(config, Phaser, player, Fighter, Bomber, Carrier, timer){
                     }
                 });
                 this.buildPercent = 0;
-            } else if (this.owner) {
+            } else if (this.owner && this.game.running && !timer.expired()) {
                 if (this.buildPercent >= 100) {
                     this.buildPercent = 0;
                 }

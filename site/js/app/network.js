@@ -79,8 +79,10 @@ function(config, io, player, utils){
         }.bind(this));
 
         this.socket.on("disconnected", function(msg){
-            //TODO show screen indicating a player has left
-        });
+            $("#game-over h1").html("Victory");
+            $("#game-over").removeClass("hidden");
+            this.game.running = false;
+        }.bind(this));
         return this;
     }
 

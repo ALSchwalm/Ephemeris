@@ -137,14 +137,16 @@ io.on('connection', function(socket){
         });
 
         socket.on('disconnect', function () {
-            if (games[gameID] && games[gameID][playerNumber]) {
-                games[gameID].splice(playerNumber, 1);
-
-                games[gameID].map(function(s){
-                    s.emit("disconnected", {
-                        playerNumber : playerNumber
+            if (games[gameID]) {
+                if (games[gameID].length == 2) {
+                    games[gameID].map(function(s){
+                        s.emit("disconnected", {
+                            playerNumber : playerNumber
+                        });
                     });
-                });
+                } else {
+                    delete games[gameID];
+                }
             }
         });
     } catch (err) {
