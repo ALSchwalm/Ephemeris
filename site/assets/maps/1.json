@@ -53,9 +53,10 @@
         ]
     },
     "controlPoints" : [
-        {"x": 500,  "y": 700,  "owner": 1},
-        {"x": 3200, "y": 3000, "owner": 2},
-        {"x": 2800, "y": 1000, "owner": null}
+        {"x": 500,  "y": 700,  "scale": 1, "owner": 1},
+        {"x": 3200, "y": 3000, "scale": 1, "owner": 2},
+        {"x": 2800, "y": 1000, "scale": 0.8, "owner": null},
+        {"x": 600, "y": 2100, "scale": 0.6, "owner": null}
     ],
     "regions" : [
         {

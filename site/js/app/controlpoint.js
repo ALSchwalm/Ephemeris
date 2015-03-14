@@ -11,12 +11,18 @@ function(config, Phaser, player, Fighter, Bomber, Carrier, timer){
      * A type defining in-game control points
      * @alias module:app/controlpoint
      */
-    var ControlPoint = function(game, handler, x, y, owner) {
+    var ControlPoint = function(game, handler, x, y, scale, owner) {
         /**
          * A reference to the current game
          * @type {Phaser.Game}
          */
         this.game = game;
+
+        /**
+         * The scale of this control point. This is a multiplier for how
+         * quickly units are built.
+         */
+        this.scale = scale || 1;
 
         /**
          * A reference to this games ActionHandler
@@ -32,12 +38,12 @@ function(config, Phaser, player, Fighter, Bomber, Carrier, timer){
         /**
          * The radius of the circle of FoW holding the control point clears
          */
-        this.view = 500;
+        this.view = 500*this.scale;
 
         /**
          * The range within which a unit can capture this control point
          */
-        this.range = 384;
+        this.range = 384*this.scale;
 
         /**
          * The name displayed when the control point is selected
@@ -67,7 +73,7 @@ function(config, Phaser, player, Fighter, Bomber, Carrier, timer){
                 if (this.buildPercent >= 100) {
                     this.buildPercent = 0;
                 }
-                this.buildPercent += this.buildUnitType.prototype.buildFraction;
+                this.buildPercent += this.buildUnitType.prototype.buildFraction*this.scale;
             }
         }.bind(this));
 
@@ -256,6 +262,7 @@ function(config, Phaser, player, Fighter, Bomber, Carrier, timer){
             this.area = this.game.add.image(this.position.x,
                                             this.position.y, "384empty");
             this.area.anchor.set(0.5, 0.5);
+            this.area.scale.set(this.scale, this.scale);
             this.area.update = this.update.bind(this);
             this.updateColor();
 

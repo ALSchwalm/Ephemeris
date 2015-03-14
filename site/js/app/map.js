@@ -91,6 +91,7 @@ function(config, Phaser, utils, player, ControlPoint){
             this.controlPoints.push(new ControlPoint(this.game,
                                                      this.handler,
                                                      point.x, point.y,
+                                                     point.scale || 1,
                                                      owner));
         }
     }
