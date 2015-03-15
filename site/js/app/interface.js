@@ -177,6 +177,7 @@ function(config, Phaser, utils, player, map, fog, ControlPoint, timer){
 
     Interface.prototype.addControlPointControls = function() {
         var options = ["fighterIcon", "bomberIcon", "carrierIcon"];
+        var names = ["Fighter", "Bomber", "Carrier"];
         var point = this.game.selected[0];
 
         options.map(function(option, i){
@@ -189,6 +190,15 @@ function(config, Phaser, utils, player, map, fog, ControlPoint, timer){
                                                   }
                                               }, point);
             button.anchor.set(0.5, 0.5);
+
+            var style = {
+                font: "16px Arial",
+                fill: "#FFFFFF",
+                shadowColor: "#000000"
+            };
+            var text = this.game.add.text(-30, 40, names[i], style);
+            button.addChild(text);
+
             this.infoBarSelectedIcons.push(button);
             this.infoBar.addChild(button);
 
@@ -308,7 +318,7 @@ function(config, Phaser, utils, player, map, fog, ControlPoint, timer){
      */
     Interface.prototype.reconstructInfoPanel = function() {
         this.infoBar.clear();
-        this.infoBar.lineStyle(2, 0x444444, 1);
+        this.infoBar.lineStyle(2, 0x888888, 1);
         this.infoBar.beginFill(0x000000, 1);
         this.infoBar.drawRect(0, 0, this.iconBarWidth,
                               this.iconBarHeight);
@@ -357,7 +367,7 @@ function(config, Phaser, utils, player, map, fog, ControlPoint, timer){
         this.updateMinimapFoW();
         this.displayControlPoints();
 
-        this.minimap.lineStyle(2, 0x444444, 1);
+        this.minimap.lineStyle(2, 0x888888, 1);
         this.minimap.drawRect(0, 0, this.minimapWidth, this.minimapHeight);
         this.minimap.lineStyle();
 
