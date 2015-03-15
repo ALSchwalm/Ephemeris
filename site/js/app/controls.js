@@ -186,6 +186,18 @@ function(config, Phaser, player, movement, map, hud, ControlPoint, Unit){
         },
 
         /**
+         * A function when should be executed by any unit/structure after it is
+         * selected
+         */
+        addUnit : function(unit) {
+            //this.clearSelection();
+            unit.onSelect();
+            this.game.selected.push(unit);
+            hud.reconstructInfoPanel();
+        },
+
+
+        /**
          * Set the star parallax position based on the camara
          */
         updateParallax : function() {
@@ -366,6 +378,14 @@ function(config, Phaser, player, movement, map, hud, ControlPoint, Unit){
                 point.onSelect();
                 this.game.selected = [point];
                 hud.reconstructInfoPanel();
+                this.click();
+
+            // Select a unit and add it to the group
+            } else if (this.leftPressed() && this.pointerOnUnit() &&
+                       !this.pointerOnUnit().enemy && !this.selectBoxStart && 
+                       this.game.input.keyboard.event && this.game.input.keyboard.event.ctrlKey) {
+                var unit = this.pointerOnUnit();
+                this.addUnit(unit)
                 this.click();
 
             // Select a unit
