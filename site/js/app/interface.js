@@ -181,7 +181,7 @@ function(config, Phaser, utils, player, map, fog, ControlPoint, timer){
 
         options.map(function(option, i){
             var button = this.game.add.button(50+config.interface.iconSize*i, 160,
-                                              option,
+                                              option + (player.number+1),
                                               function(){
                                                   if (point.owner == player) {
                                                       this.buildUnit(i);
@@ -209,7 +209,12 @@ function(config, Phaser, utils, player, map, fog, ControlPoint, timer){
      * Fill the info panel with information about a single selected unit
      */
     Interface.prototype.drawSelectedUnitInfo = function() {
-        var key = this.game.selected[0].iconKey;
+        var owner = this.game.selected[0].owner;
+        if (!(this.game.selected[0] instanceof ControlPoint)) {
+            var key = this.game.selected[0].iconKey + (owner.number + 1);
+        } else {
+            var key = this.game.selected[0].iconKey;
+        }
         var icon = this.game.add.image(50, 60, key);
         icon.anchor.set(0.5, 0.5);
         this.infoBarSelectedIcons.push(icon);
@@ -252,7 +257,8 @@ function(config, Phaser, utils, player, map, fog, ControlPoint, timer){
         var height = -1;
 
         this.game.selected.map(function(unit, i){
-            var key = this.game.selected[i].iconKey;
+            var owner = this.game.selected[i].owner;
+            var key = this.game.selected[i].iconKey + (owner.number+1);
             if (i%iconBarCount == 0) {
                 ++height;
             }
