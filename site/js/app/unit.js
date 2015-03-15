@@ -274,7 +274,8 @@ function(config, Phaser, utils, player){
     Unit.prototype.onSelect = function(noSound) {
         var noSound = noSound || false;
         if (this.selectGraphic == null) {
-            this.selectGraphic = this.game.add.sprite(0, 0, this.selectKey);
+            this.selectGraphic =
+                this.game.add.sprite(0, 0, this.selectKey + (this.owner.number+1));
             this.selectGraphic.anchor.set(0.5, 0.5);
             this.graphics.addChild(this.selectGraphic);
         }

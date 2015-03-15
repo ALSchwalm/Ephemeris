@@ -36,8 +36,10 @@ function(config, map, handler, jQuery){
         game.load.image('carrierIcon1', 'assets/images/icons/carrier_blue.png');
         game.load.image('carrierIcon2', 'assets/images/icons/carrier_red.png');
         game.load.image('controlpointIcon', 'assets/images/icons/controlpoint.png');
-        game.load.image('20select', 'assets/images/20select.png');
-        game.load.image('120select', 'assets/images/120select.png');
+        game.load.image('20select1', 'assets/images/20select_blue.png');
+        game.load.image('20select2', 'assets/images/20select_red.png');
+        game.load.image('120select1', 'assets/images/120select_blue.png');
+        game.load.image('120select2', 'assets/images/120select_red.png');
         game.load.image('20empty', 'assets/images/20empty.png');
         game.load.image('120empty', 'assets/images/120empty.png');
         game.load.image('384empty', 'assets/images/384empty.png');

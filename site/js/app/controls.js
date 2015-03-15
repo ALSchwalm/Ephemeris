@@ -186,11 +186,13 @@ function(config, Phaser, player, movement, map, hud, ControlPoint, Unit){
         },
 
         /**
-         * A function when should be executed by any unit/structure after it is
-         * selected
+         * Add the specified unit to the group of selected units
          */
         addUnit : function(unit) {
-            //this.clearSelection();
+            if (unit instanceof ControlPoint ||
+                this.game.selected[0] instanceof ControlPoint) {
+                return;
+            }
             unit.onSelect();
             this.game.selected.push(unit);
             hud.reconstructInfoPanel();
@@ -382,7 +384,7 @@ function(config, Phaser, player, movement, map, hud, ControlPoint, Unit){
 
             // Select a unit and add it to the group
             } else if (this.leftPressed() && this.pointerOnUnit() &&
-                       !this.pointerOnUnit().enemy && !this.selectBoxStart && 
+                       !this.pointerOnUnit().enemy && !this.selectBoxStart &&
                        this.game.input.keyboard.event && this.game.input.keyboard.event.ctrlKey) {
                 var unit = this.pointerOnUnit();
                 this.addUnit(unit)

@@ -104,11 +104,15 @@ function(config, Phaser, player, Fighter, Bomber, Carrier, timer){
         this.targetGraphics.visible = false;
         this.targetGraphics.tint = 0x00DD00;
 
-        this.selectGraphic = this.game.add.sprite(0, 0, "20select");
-        this.selectGraphic.anchor.set(0.5, 0.5);
-        this.selectGraphic.visible = false;
+        this.selectGraphicBlue = this.game.add.sprite(0, 0, "20select1");
+        this.selectGraphicBlue.anchor.set(0.5, 0.5);
+        this.selectGraphicBlue.visible = false;
+        this.selectGraphicRed = this.game.add.sprite(0, 0, "20select2");
+        this.selectGraphicRed.anchor.set(0.5, 0.5);
+        this.selectGraphicRed.visible = false;
 
-        this.graphics.addChild(this.selectGraphic);
+        this.graphics.addChild(this.selectGraphicBlue);
+        this.graphics.addChild(this.selectGraphicRed);
         this.graphics.addChild(this.captureBar);
         this.graphics.addChild(this.buildBar);
         this.graphics.addChild(this.sprite);
@@ -139,11 +143,16 @@ function(config, Phaser, player, Fighter, Bomber, Carrier, timer){
             );
             this.targetGraphics.visible = true;
         }
-        this.selectGraphic.visible = true;
+        if (this.owner.number == 0) {
+            this.selectGraphicBlue.visible = true;
+        } else {
+            this.selectGraphicRed.visible = true;
+        }
     }
 
     ControlPoint.prototype.onUnselect = function() {
-        this.selectGraphic.visible = false;
+        this.selectGraphicBlue.visible = false;
+        this.selectGraphicRed.visible = false;
         this.targetGraphics.visible = false;
     }
 

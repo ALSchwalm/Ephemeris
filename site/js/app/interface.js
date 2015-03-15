@@ -182,7 +182,7 @@ function(config, Phaser, utils, player, map, fog, ControlPoint, timer){
 
         options.map(function(option, i){
             var button = this.game.add.button(50+config.interface.iconSize*i, 160,
-                                              option + (player.number+1),
+                                              option + (point.owner.number+1),
                                               function(){
                                                   if (point.owner == player) {
                                                       this.buildUnit(i);
