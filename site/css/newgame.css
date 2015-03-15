@@ -1,0 +1,32 @@
+body {
+    background-image: url("/assets/images/star-background.jpg");
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+}
+
+h1 {
+    text-align: center;
+    color: white;
+    font-size: 100px;
+}
+
+.panel-transparent {
+    background: none;
+}
+
+.panel-transparent .panel-heading{
+    background: rgba(122, 130, 136, 0.7)!important;
+}
+
+.panel-transparent .panel-body{
+    background: rgba(46, 51, 56, 0.7)!important;
+}
+
+.panel-transparent label {
+    color: white;
+}
+
+.panel-transparent input[type=file] {
+    color: white;
+}

@@ -4,17 +4,22 @@
     <meta charset="utf-8" />
     <title>Ephemeris: Create a game</title>
     <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/newgame.css">
     <script src="js/lib/jquery.js"></script>
   </head>
   <body>
     <div class="container">
+      <div class="row col-sm-12">
+        <h1>New Game</h1>
+      </div>
+
       <form action="/create" method="post" enctype="multipart/form-data" class="row col-sm-8 col-sm-offset-2">
 
         <div class="radio">
           <input type="radio" name="gametype" id="normal-game" value="normal" checked>
         </div>
         <fieldset id="normal-fieldset">
-          <div class="panel panel-default panel-primary">
+          <div class="panel panel-default panel-primary panel-transparent">
             <div class="panel-heading">New Game</div>
             <div class="panel-body">
               <div class="form-group">
@@ -35,7 +40,7 @@
           <input type="radio" name="gametype" id="replay-game" value="replay">
         </div>
         <fieldset id="replay-fieldset" disabled>
-          <div class="panel panel-default">
+          <div class="panel panel-default panel-transparent">
             <div class="panel-heading">Replay</div>
             <div class="panel-body">
               <div class="form-group">

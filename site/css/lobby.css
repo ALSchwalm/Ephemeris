@@ -1,0 +1,31 @@
+body {
+    background-image: url("/assets/images/star-background.jpg");
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+}
+
+tr {
+    color: white;
+}
+
+tr td {
+    cursor: pointer;
+}
+
+.table {
+    background-color: rgba(150, 150, 150, 0.3);
+    border-style: solid;
+    border-width: 2px;
+    border-color: white;
+}
+
+.table tbody tr:hover td {
+    background-color: #111111;
+}
+
+h1 {
+    text-align: center;
+    color: white;
+    font-size: 100px;
+}
