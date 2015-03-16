@@ -89,7 +89,7 @@ function(config, Phaser, utils, player, map, fog, ControlPoint, timer){
         this.fogSprite.mask = this.fogGraphics;
 
         this.infoBar = this.game.add.graphics(this.minimap.position.x + this.minimapWidth,
-                                              this.minimap.position.y+this.minimap.position.y*0.1);
+                                              this.minimap.position.y+this.minimap.position.y*0.05);
         this.infoBarIconGraphics = this.game.add.graphics(0, 0);
         this.infoBar.addChild(this.infoBarIconGraphics);
 
