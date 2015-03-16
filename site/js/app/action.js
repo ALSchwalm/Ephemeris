@@ -103,6 +103,7 @@ function(config, network, player, utils, Ship, Bomber, Carrier){
             this.game.running = false;
             if (id != player) {
                 $("#game-over h1").html("Victory");
+                $("#game-over h3").html("Opponent Has Forfeited");
             } else {
                 $("#game-over h1").html("Defeat");
             }

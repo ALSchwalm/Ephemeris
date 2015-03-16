@@ -79,9 +79,12 @@ function(config, io, player, utils){
         }.bind(this));
 
         this.socket.on("disconnected", function(msg){
-            $("#game-over h1").html("Victory");
-            $("#game-over").removeClass("hidden");
-            this.game.running = false;
+            if (this.game.running) {
+                $("#game-over h1").html("Victory");
+                $("#game-over h3").html("Opponent Has Left The Game");
+                $("#game-over").removeClass("hidden");
+                this.game.running = false;
+            }
         }.bind(this));
         return this;
     }
