@@ -1,0 +1,123 @@
+{
+    "seed": "random_seed",
+    "width": 4000,
+    "height": 4000,
+    "startingPoints" : [
+        {"x": 0, "y": 0},
+        {"x": 3600, "y": 3600}
+    ],
+    "startingUnits" : {
+        "1" : [
+            {
+                "type": "create",
+                "data": { "type": "fighter", "x" : 400, "y" : 450 }
+            },
+            {
+                "type": "create",
+                "data": { "type": "fighter", "x" : 400, "y" : 500 }
+            },
+            {
+                "type": "create",
+                "data": { "type": "fighter", "x" : 400, "y" : 550 }
+            },
+            {
+                "type": "create",
+                "data": { "type": "bomber", "x" : 450, "y" : 450 }
+            },
+            {
+                "type": "create",
+                "data": { "type": "bomber", "x" : 450, "y" : 500 }
+            }
+        ],
+        "2" : [
+            {
+                "type" : "create",
+                "data" : { "type": "fighter", "x" : 3600, "y" : 3650 }
+            },
+            {
+                "type": "create",
+                "data": { "type": "fighter", "x" : 3600, "y" : 3700 }
+            },
+            {
+                "type": "create",
+                "data": { "type": "fighter", "x" : 3600, "y" : 3750 }
+            },
+            {
+                "type": "create",
+                "data": { "type": "bomber", "x" : 3650, "y" : 3650 }
+            },
+            {
+                "type": "create",
+                "data": { "type": "bomber", "x" : 3650, "y" : 3700 }
+            }
+        ]
+    },
+    "controlPoints" : [
+        {"x": 400,  "y": 400,  "scale": 1, "owner": 1},
+        {"x": 3600, "y": 3600, "scale": 1, "owner": 2},
+        {"x": 2000, "y": 2000, "scale": 0.9, "owner": null},
+        {"x": 400, "y": 3600, "scale": 0.6, "owner": null},
+        {"x": 3600, "y": 400, "scale": 0.6, "owner": null}
+    ],
+    "regions" : [
+        {
+            "type": "planet",
+            "position" : { "x": 400, "y": 400 },
+            "scale" : { "x" : 0.8, "y" : 0.8 },
+            "asset" : "planets/3.png"
+        },
+        {
+            "type": "planet",
+            "position" : { "x": 3600, "y": 3600 },
+            "scale" : { "x" : 0.8, "y" : 0.8 },
+            "asset" : "planets/5.png"
+        },
+        {
+            "type": "nebula",
+            "position" : { "x": 2000, "y": 2000 },
+            "asset" : "nebulas/0.png",
+            "tint" : 65280,
+            "scale" : { "x" : 3, "y" : 3 },
+            "effectRadius" : 400,
+            "effect" : {
+                "heal" : 1
+            }
+        },
+        {
+            "type": "planet",
+            "position" : { "x": 400, "y": 3600 },
+            "scale" : { "x" : 0.4, "y" : 0.4 },
+            "asset" : "planets/2.png"
+        },
+        {
+            "type": "planet",
+            "position" : { "x": 3600, "y": 400 },
+            "scale" : { "x" : 0.4, "y" : 0.4 },
+            "asset" : "planets/4.png"
+        },
+        {
+            "type": "nebula",
+            "position" : { "x": 2000, "y": 600 },
+            "asset" : "nebulas/11.png",
+            "tint" : 16711680,
+            "angle" : 90,
+            "scale" : { "x" : 4, "y" : 4 },
+            "effectRadius" : 400,
+            "effect" : {
+                "damage" : 1
+            }
+        },
+        {
+            "type": "nebula",
+            "position" : { "x": 2000, "y": 3400 },
+            "asset" : "nebulas/11.png",
+            "tint" : 16711680,
+            "angle" : 180,
+            "scale" : { "x" : 4, "y" : 4 },
+            "effectRadius" : 400,
+            "effect" : {
+                "damage" : 1
+            }
+        }
+    ]
+}
