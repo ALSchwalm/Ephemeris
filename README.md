@@ -83,7 +83,7 @@ The following individuals created assets which are used in Ephemeris:
 - Explosion sound by Isaac200000 available [here][explosion] (unmodified).
 - Fighter selection sound by Kijadzel available [here][fighterSelect] (shortened).
 - Bomber selection sound by M-RED available [here][bomberSelect] (unmodified).
-- Carrier selection sound by tcpp available [here][carrierSelect] (unmodified).
+- Carrier selection sound by THE_bizniss available [here][carrierSelect] (unmodified).
 - Laser sound by Nbs Dark available [here][laser] (unmodified).
 - Movement sound by Sergenious available [here][move] (unmodified).
 - Activate sound by Yuroun available [here][activate] (unmodified).
@@ -96,7 +96,7 @@ The following individuals created assets which are used in Ephemeris:
 [explosion]: http://www.freesound.org/people/Isaac200000/sounds/184651/
 [fighterSelect]: http://www.freesound.org/people/Kijadzel/sounds/170608/
 [bomberSelect]: http://www.freesound.org/people/M-RED/sounds/55356/
-[carrierSelect]: http://www.freesound.org/people/tcpp/sounds/151309/
+[carrierSelect]: http://www.freesound.org/people/THE_bizniss/sounds/39469/
 [laser]: http://www.freesound.org/people/Nbs%20Dark/sounds/83562/
 [move]: http://www.freesound.org/people/Sergenious/sounds/55849/
 [activate]: http://www.freesound.org/people/Yuroun/sounds/233028/

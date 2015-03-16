@@ -143,7 +143,7 @@ function(config, Phaser, player, Fighter, Bomber, Carrier, timer){
             );
             this.targetGraphics.visible = true;
         }
-        if (this.owner.number == 0) {
+        if (!this.owner || this.owner.number == 0) {
             this.selectGraphicBlue.visible = true;
         } else {
             this.selectGraphicRed.visible = true;

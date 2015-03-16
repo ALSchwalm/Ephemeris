@@ -134,6 +134,7 @@ function(config, Phaser, utils, player, map, fog, ControlPoint, timer){
                                                       range);
             }, this);
             ControlPoint.redraw = false;
+            this.reconstructInfoPanel();
         }
         return this;
     }
@@ -160,11 +161,17 @@ function(config, Phaser, utils, player, map, fog, ControlPoint, timer){
                     "Health: " + Math.floor(this.game.selected[0].health) +
                     "/" + this.game.selected[0].maxHealth;
             } else {
-                if (!timer.expired()){
+                if (!this.game.selected[0].owner && this.game.selected[0].convertPercent) {
                     this.infoBarSelectedText[0].text =
-                        "Building: " + Math.floor(this.game.selected[0].buildPercent) + "%";
-                } else {
-                    this.infoBarSelectedText[0].text = "Build Time Ended";
+                        "Capturing: " + Math.floor(this.game.selected[0].convertPercent) + "%";
+                }
+                else {
+                    if (!timer.expired()){
+                        this.infoBarSelectedText[0].text =
+                            "Building: " + Math.floor(this.game.selected[0].buildPercent) + "%";
+                    } else {
+                        this.infoBarSelectedText[0].text = "Build Time Ended";
+                    }
                 }
             }
         } else if (this.game.selected.length > 1) {
@@ -179,6 +186,9 @@ function(config, Phaser, utils, player, map, fog, ControlPoint, timer){
         var options = ["fighterIcon", "bomberIcon", "carrierIcon"];
         var names = ["Fighter", "Bomber", "Carrier"];
         var point = this.game.selected[0];
+
+        if (!point.owner)
+            return;
 
         options.map(function(option, i){
             var button = this.game.add.button(50+config.interface.iconSize*i, 160,
