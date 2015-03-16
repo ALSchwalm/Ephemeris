@@ -38,11 +38,15 @@ var createGame = function(gamename, map, replay, player) {
 
 // For the time being, just redirect from index to game creation
 app.get(["/", "/index", "/index.html"], function(req, res){
-    res.redirect("newgame");
+    res.render("index.html");
 });
 
 app.get("/newgame", function(req, res){
     res.render("newgame.html");
+});
+
+app.get("/tutorial", function(req, res){
+    res.render("tutorial.html");
 });
 
 app.get("/lobby", function(req, res){

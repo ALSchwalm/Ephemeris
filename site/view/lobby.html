@@ -8,6 +8,7 @@
     <script src="js/lib/jquery.js"></script>
   </head>
   <body>
+    <div id="overlay"></div>
     <div class="container">
       <div class="row col-sm-offset-4 col-sm-4">
         <h1>Lobby</h1>
@@ -34,8 +35,14 @@
         </table>
       </div>
     </div>
+    <audio id="background-music" autoplay loop>
+      <source src="assets/sounds/background.mp3" type="audio/mp3">
+      Your browser does not support the audio element.
+    </audio>
   </body>
   <script>
+   $("#overlay").fadeOut();
+   $("audio")[0].volume = 0.1;
    $("tr td").click(function(){
      var id = $(this).parent().attr("gameid");
      document.location.href = '/game?id=' + id;

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Tutorial</title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/tutorial.css" rel="stylesheet">
+    <script src="js/lib/jquery.js"></script>
+  </head>
+  <body>
+    <div id="overlay"></div>
+    <div class="container">
+      <h1>Tutorial</h1>
+      <div id="tutorial-content">
+        <h2>How to Play</h2>
+        <p>
+          Each game consists of two opposing players. These players attempt to
+          capture control points distributed in key locations around the map. Once
+          a player has taken a control point, it will start producing units over
+          time. These units may be used to destroy units controlled by the other
+          player, or to capture additional control points. If a player controls no
+          points and has no units, they lose.
+        </p>
+        <h2>The Map</h2>
+        <p>
+          The map also contains different regions which have effects on the units within them.
+          Some regions may regenerate or damage health over time. These regions are color
+          coded, and display indicators of their effects on the units within them. The location
+          of enemy units is obscured by the Fog of War. This fog hides enemy units, but is
+          revealed by nearby friendly units or captured control points.
+        </p>
+        <h2>The Units</h2>
+        <p>
+          There are three units in Ephemeris: Fighters, Bombers and Carriers. Each unit does
+          double damage against on other unit type, while taking double damage from a
+          different unit type.
+        </p>
+        <h2>The Controls</h2>
+        <p>
+          Units may be selected by left clicking on them. If a unit or group of
+          units is selected, it can be moved by right clicking on the map or
+          minimap. If an enemy unit is right clicked, the currently selected unit
+          or group of units will attack it. The player may also left click and
+          drag to select a group of friendly units. The player may hold select and
+          draw a shape using the mouse. This will cause the currently selected
+          units to "form up" to that shape, allowing for easy, complex formations.
+
+          If the player clicks a control point, the HUD will display a series of
+          buttons which determine what unit is currently being built. Different
+          units have different build times.
+        </p>
+      </div>
+    </div>
+    <audio id="background-music" autoplay loop>
+      <source src="assets/sounds/background.mp3" type="audio/mp3">
+      Your browser does not support the audio element.
+    </audio>
+    <script>
+     $("audio")[0].volume = 0.1;
+     $("#overlay").fadeOut();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,42 @@
+.container {
+    background-color: transparent;
+    text-align: center;
+    color: white;
+}
+
+h1 {
+    text-align: center;
+    color: white;
+    font-size: 150px;
+    margin-top: 200px;
+}
+
+body {
+    background-image: url(/assets/images/star-background.jpg) ;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+}
+
+.btn{
+    background: rgba(122, 130, 136, 0.7) !important;
+}
+
+#buttons {
+    margin-top: 200px;
+}
+
+#tutorial {
+    margin-top: 20px;
+}
+
+#overlay {
+    position: absolute;
+    display: none;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: black;
+    z-index: 99;
+}
